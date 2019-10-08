@@ -31,15 +31,22 @@ canvas {
 	background-color: green;
 	height:20px;
 	width:1000px;
+	
 }
 </style>
 </head>
 <body onload="disconnect()">
 	<p id="info" align="center"></p>
 	<p id="user-info"></p>
-	<div style="width:1000px; border:solid 1px blue;">
+	<h3 id="ws-info"></h3>
+	<table>
+	<tr>
+	<td>Health:</td>
+	<td><div style="width:1000px; padding:5px; border:solid 1px blue;">
 		<div id="life-bar" class="life-bar"></div>
-	</div>
+	</div></td>
+	</tr></table>
+	<hr>
 	<canvas id="tutorial" width="1200" height="600"> </canvas>
 	<hr />
 	<label>Input Name: </label>
@@ -80,7 +87,7 @@ canvas {
 		function join(){
 			var name = document.getElementById("name").value;
 			user.name = name;
-			postReq("/websocket1/chat-simple/join","name="+name,"join",function(response) {
+			postReq("/websocket1/game-app-simple/join","name="+name,"join",function(response) {
 				var responseObject = JSON.parse(response);
 				console.log("RESPONSE", responseObject);
 				if(responseObject.responseCode == "00"){
@@ -120,12 +127,14 @@ canvas {
 		}
 
 		function doConnect() {
-			var socket = new SockJS('/websocket1/chat');
+			var socket = new SockJS('/websocket1/game-app');
 			stompClient = Stomp.over(socket);
 			stompClient.connect({}, function(frame) {
 				setConnected(true);
 				console.log('Connected -> ' + frame);
-				stompClient.subscribe('/wsResp/messages', function(response) {
+				console.log('stomp client',stompClient);
+				document.getElementById("ws-info").innerHTML = stompClient.ws._transport.ws.url;
+				stompClient.subscribe('/wsResp/players', function(response) {
 					var respObject = JSON.parse(response.body);
 				//	console.log("subscribed", respObject);
 				document.getElementById("msg-info").innerHTML = JSON.stringify(respObject);
@@ -133,6 +142,9 @@ canvas {
 				});
 				updateMovement();
 			});
+			stompClient.onmessage = function(ee){
+				console.log("ON Message",ee)
+;			};
 		}
 
 		function disconnect() {

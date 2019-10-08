@@ -14,8 +14,8 @@ public class Entity implements Serializable{
 	private Integer x;
 	private Integer y;
 	private String color;
-	private Integer w = 50;
-	private Integer h = 50;
+	private Integer w = 63;
+	private Integer h = 63;
 	private String direction = "r";
 	
 	

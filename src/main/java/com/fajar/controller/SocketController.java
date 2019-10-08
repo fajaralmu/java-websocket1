@@ -21,6 +21,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.fajar.dto.RealtimeRequest;
 import com.fajar.dto.RealtimeResponse;
@@ -31,7 +32,7 @@ import com.fajar.service.RealtimeUserService;
 import com.fajar.util.JSONUtil;
 
 @CrossOrigin
-@Controller
+@RestController
 public class SocketController {
 	Logger log = LoggerFactory.getLogger(SocketController.class);
 	
@@ -42,30 +43,30 @@ public class SocketController {
 		log.info("------------------SOCKET CONTROLLER #1-----------------");
 	}
 	
-	@PostMapping(value="/chat-simple/join", consumes=MediaType.APPLICATION_FORM_URLENCODED_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
-	public void register( HttpServletRequest request, HttpServletResponse response) throws IOException {
+	@PostMapping(value="/game-app-simple/join", consumes=MediaType.APPLICATION_FORM_URLENCODED_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
+	public RealtimeResponse register( HttpServletRequest request, HttpServletResponse response) throws IOException {
 		response.setContentType(APPLICATION_JSON);
 		response.setCharacterEncoding(UTF_8);
 		RealtimeResponse responseObject = realtimeUserService.registerUser(request);
-		response.getWriter().write(JSONUtil.objectToJson(responseObject));
+		return responseObject;
 	}
 	
 	@MessageMapping("/addUser")
-	@SendTo("/wsResp/messages")
+	@SendTo("/wsResp/players")
 	public RealtimeResponse join( RealtimeRequest request) throws IOException {
 		
 		return realtimeUserService.connectUser(request);
 	}
 	
 	@MessageMapping("/move")
-	@SendTo("/wsResp/messages")
+	@SendTo("/wsResp/players")
 	public RealtimeResponse move( RealtimeRequest request) throws IOException {
-		//log.info("MOVE: {},",request);
+		log.info("MOVE: {},",request);
 		return realtimeUserService.move(request);
 	}
 	
 	@MessageMapping("/leave")
-	@SendTo("/wsResp/messages")
+	@SendTo("/wsResp/players")
 	public RealtimeResponse leave( RealtimeRequest request) throws IOException {
 		
 		return realtimeUserService.disconnectUser(request);
@@ -74,7 +75,7 @@ public class SocketController {
 	
 	
 	@MessageMapping("/chat")
-	@SendTo("/wsResp/messages")
+	@SendTo("/wsResp/players")
 	public RealtimeResponse send(Message message){
 		RealtimeResponse response = new RealtimeResponse();
 		System.out.println("Message > "+message);

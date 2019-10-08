@@ -3,16 +3,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
-<head>
-<title>Chat WebSocket</title>
-
-<script src="<c:url value="/res/js/sockjs-0.3.2.min.js"></c:url >"></script>
-<script src="<c:url value="/res/js/stomp.js"></c:url >"></script>
-<script src="<c:url value="/res/js/ajax.js"></c:url >"></script>
-<script src="<c:url value="/res/js/util.js"></c:url >"></script>
-	
+<head>                                                                                                                                                                                                   
 </head>
 <body onload="disconnect()">
 	<p id="info" align="center"></p>
@@ -71,7 +62,7 @@
 	}
 
 	function doConnect() {
-		var socket = new SockJS('/puskesmas/chat');
+		var socket = new SockJS('/websocket1/chat');
 		stompClient = Stomp.over(socket);
 		stompClient.connect({}, function(frame) {
 			setConnected(true);
@@ -119,7 +110,7 @@
 		console.log("WILL JOIN",name);
 		
 		user.name = name;
-		postReq("/puskesmas/chat-simple/join","name="+name,"join",function(response) {
+		postReq("/websocket/chat-simple/join","name="+name,"join",function(response) {
 			var responseObject = JSON.parse(response);
 			console.log("RESPONSE", responseObject);
 			if(responseObject.responseCode == "00"){

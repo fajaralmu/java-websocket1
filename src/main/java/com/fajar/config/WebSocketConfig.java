@@ -29,10 +29,10 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
  
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-    	System.out.println("registerStompEndpoints");
-         registry.addEndpoint("/chat");
-         registry.addEndpoint("/random").withSockJS();
-         registry.addEndpoint("/ws").withSockJS();
-         registry.addEndpoint("/chat").withSockJS();
+    	log.info("registerStompEndpoints");
+      //   registry.addEndpoint("/chat");
+         registry.addEndpoint("/random").setAllowedOrigins("*").withSockJS();
+         registry.addEndpoint("/ws").setAllowedOrigins("*").withSockJS();
+         registry.addEndpoint("/game-app").setAllowedOrigins("*").withSockJS();
     }
 }
