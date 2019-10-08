@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,7 +36,8 @@ import com.fajar.util.JSONUtil;
 @RestController
 public class SocketController {
 	Logger log = LoggerFactory.getLogger(SocketController.class);
-	
+	@Autowired
+	private SimpMessagingTemplate webSocket;
 	@Autowired
 	RealtimeUserService realtimeUserService;
 	
@@ -48,7 +50,17 @@ public class SocketController {
 		response.setContentType(APPLICATION_JSON);
 		response.setCharacterEncoding(UTF_8);
 		RealtimeResponse responseObject = realtimeUserService.registerUser(request);
+		responseObject.setUsers(realtimeUserService.getUsers());
+		//webSocket.convertAndSend(destination, responseObject);
+		join2(responseObject);
 		return responseObject;
+	}
+	
+	//@MessageMapping("/move")
+	//@SendTo("/wsResp/players")
+	public RealtimeResponse join2( RealtimeResponse response) throws IOException {
+		webSocket.convertAndSend("/wsResp/players", response);
+		return response;
 	}
 	
 	@MessageMapping("/addUser")
