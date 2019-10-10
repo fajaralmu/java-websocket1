@@ -10,6 +10,8 @@
 <script src="<c:url value="/res/js/stomp.js"></c:url >"></script>
 <script src="<c:url value="/res/js/ajax.js"></c:url >"></script>
 <script src="<c:url value="/res/js/util.js"></c:url >"></script>
+<script src="<c:url value="/res/js/player.js"></c:url >"></script>
+<script src="<c:url value="/res/js/websocket-util.js"></c:url >"></script>
 <title>Canvas Animation</title>
 <style type="text/css">
 canvas {
@@ -63,7 +65,6 @@ canvas {
 	<script type="text/javascript">
 		var WIN_W= 1200;
 		var WIN_H = 600;
-		var stompClient = null;
 		var connectBtn = document.getElementById('connect');
 		var canvas = document.getElementById('tutorial');
 		var ctx = canvas.getContext('2d');
@@ -78,6 +79,7 @@ canvas {
 		var dirLeft = "l";
 		var dirRight = "r";
 		var dirDown = "d";
+		var userDirection = "r";
 		var firing = false;
 
 		function connect(){
@@ -105,63 +107,13 @@ canvas {
 			});
 		}
 
-		function updateMovement(){
-			stompClient.send("/app/move", {}, JSON.stringify({
-				'user' :{
-				'id':user.id*1,
-				'life':user.life,
-				'active':true,
-				'entity':	{
-					'x' : user.entity.x,
-					'y' : user.entity.y,
-					'direction':user.entity.direction,
-					'color':user.entity.color
-				},
-				'missiles':user.missiles
-				} 
-			}));
-		}
-
 		function setConnected(connected) {
 			document.getElementById('connect-info').innerHTML = connected;
 		}
 
-		function doConnect() {
-			var socket = new SockJS('/websocket1/game-app');
-			stompClient = Stomp.over(socket);
-			stompClient.connect({}, function(frame) {
-				setConnected(true);
-				console.log('Connected -> ' + frame);
-				console.log('stomp client',stompClient);
-				document.getElementById("ws-info").innerHTML = stompClient.ws._transport.ws.url;
-				stompClient.subscribe('/wsResp/players', function(response) {
-					var respObject = JSON.parse(response.body);
-				//	console.log("subscribed", respObject);
-				document.getElementById("msg-info").innerHTML = JSON.stringify(respObject);
-					users = respObject.users;
-				});
-				updateMovement();
-			});
-			stompClient.onmessage = function(ee){
-				console.log("ON Message",ee)
-;			};
-		}
-
-		function disconnect() {
-			if (stompClient != null) {
-				stompClient.disconnect();
-			}
-			setConnected(false);
-			console.log("Disconnected");
-		}
-		
 		function leave(){
 			window.document.title = "0FF-PLAYER: "+user.name;
-		stompClient.send("/app/leave", {}, JSON.stringify({
-				'user' : {
-					'id':user.id*1
-				}
-			}));
+			leaveApp(user.id);
 	}
 	</script>
 	<script type="text/javascript">
@@ -184,63 +136,36 @@ canvas {
 		}
 		
 		function release(key){
-			if(key == "a" || key == "d"){
+			if(key == "a" || key == "d")
 				velX = 0;
-			}else if(key == "w" || key == "s"){
+			 if(key == "w" || key == "s") 
 				velY =0;
-			}
 			
 		}
 		
-		function getDirImage(dir){
-			let imgName = "up.png";
-			switch (dir){
-			case dirUp:
-				imgName = "up.png";
-				break;
-			case dirDown:
-				imgName= "down.png";
-				break;
-			case dirLeft:
-				imgName = "left.png";
-				break;
-			case dirRight:
-				imgName = "right.png";
-				break;
-			default:
-				break;
-			
-			}
-			return imgName;
-		}
-		
-		function setEntityDirection(dir){
-			if(user!=null && user.entity!= null){
-				user.entity.direction = dir;
-			}
-		}
+	 	
 		var run = 0;
 		var runIncrement=0.5;
 		function move(key) {
 			if (key=="d"){
 				velX = 1+run;
 				run+=runIncrement;
-				setEntityDirection(dirRight);
+				userDirection=(dirRight);
 			}
 			if(key== "a"){
 				velX = -1-run;
 				run+=runIncrement;
-				setEntityDirection(dirLeft);
+				userDirection=(dirLeft);
 			}
 			if(key=="s"){
 				velY = 1+run;
 				run+=runIncrement;
-				setEntityDirection(dirDown);
+				userDirection=(dirDown);
 			}
 			if(key== "w"){
 				velY = -1-run;
 				run+=runIncrement;
-				setEntityDirection(dirUp);
+				userDirection=(dirUp);
 			}
 			if(key=="o"){
 				fireMissile();
@@ -249,51 +174,25 @@ canvas {
 		}
 
 		function initAnimation() {
-			//connectBtn.disabled = false;
 			isAnimate = !isAnimate;
 			window.requestAnimationFrame(animate);
 		}
 
 		function animate() {
 			clearCanvas();
-			//var x = Math.floor(Math.random()*400);
-			//var y = Math.floor(Math.random()*500);
 			render();
 			if (isAnimate) {
 				window.requestAnimationFrame(animate);
 			}
 		}
-		
-		function getVelocity(dir, vel){
-			var velocity = {};
-			velocity.x = 0;
-			velocity.y= 0;
-			switch (dir){
-			case dirUp:
-				velocity.y = -vel;
-				break;
-			case dirDown:
-				velocity.y = vel;
-				break;
-			case dirLeft:
-				velocity.x = -vel;
-				break;
-			case dirRight:
-				velocity.x = vel;
-				break;
-			default:
-				break;
-			}
-			return velocity;
-		}
-		
+				
 		function renderUser(currentUser){
 			var isPlayer =(currentUser.id == this.user.id);
 			for(let i=0;i<currentUser.missiles.length;i++){
 				let missile = currentUser.missiles[i];
 				
 				let velocity = getVelocity(missile.entity.direction, 5);
-			//	console.log("Missile Vel",velocity, isPlayer);
+				
 				currentUser.missiles[i].entity.x += velocity.x;
 				currentUser.missiles[i].entity.y += velocity.y;
 				
@@ -311,36 +210,35 @@ canvas {
 						firing = true;
 						this.user.life--;
 						continue;
-						
 					}
 				}
 				if(currentUser.missiles[i].entity.x<0 || currentUser.missiles[i].entity.x>WIN_W
 					||
 					currentUser.missiles[i].entity.y<0 || currentUser.missiles[i].entity.y>WIN_H){
-					
 						currentUser.missiles.splice(i,1);
-						
 				}
 				let missileEntity = missile.entity;
 				ctx.save();
 				ctx.fillStyle = missileEntity.color;
 				ctx.fillRect(missileEntity.x, missileEntity.y, missileEntity.w, missileEntity.h);
 				ctx.restore();
-				
 			}
 			
 			if(isPlayer){
+				let currentEntity =currentUser.entity;
+				let outOfBounds = isOutOfBounds(currentEntity, WIN_W, WIN_H, velX, velY);
 				
-				currentUser.entity.x += velX;
-				currentUser.entity.y += velY;
+				if(!outOfBounds){
+					currentUser.entity.x += velX;
+					currentUser.entity.y += velY;
+				}
+				this.user.entity.direction=userDirection;
 				currentUser.entity.direction = this.user.entity.direction;
 				currentUser.life = this.user.life;
 				//currentUser.missiles = this.user.missiles;
 				this.user = currentUser;
 				document.getElementById("user-info").innerHTML = JSON.stringify(this.user);
 				updateUserInfo();
-				
-				
 			}
 			if(velX != 0 || velY!=0 || currentUser.missiles.length>0 || firing){
 				//console.log("=================",currentUser.entity);
@@ -362,25 +260,13 @@ canvas {
 		}
 		
 		function fireMissile(){
-			 if(fireCount<20)
+			if(fireCount<20)
 			{
-			return;
+				return;
 			} 
 			 firing =true;
 			fireCount = 0;
-			var userEntity = this.user.entity;
-			var missile = {
-					'id':Math.floor(Math.random() * 10000),
-					'userId': this.user.id,
-					'entity':{
-						'x':userEntity.x,
-						'y':userEntity.y,
-						'color':userEntity.color,
-						'direction':userEntity.direction,
-						'w':10,
-						'h':5
-					}
-			}
+			var missile = createMissile(this.user);
 			console.log("000000000000000000000000000000Fire Missile",missile);
 			this.user.missiles.push(missile);
 			updateMovement();
@@ -388,12 +274,9 @@ canvas {
 		
 		function getUserImage(dir){
 			var fullAddress = window.location.protocol+'//'+window.location.hostname+(window.location.port ? ':'+window.location.port: '');
-		//	console.log("URI",fullAddress);
 			let url = fullAddress+"<c:url value="/res/img/player/"/>"+getDirImage(dir);
 			 for(var i=0;i<userImages.length;i++){
-				// console.log("```````````````````````````````",userImages[i].src,url);
 				 if(userImages[i].src == url){
-				//	 console.log("======================IMAGE ",userImages[i].src);
 					 return userImages[i];
 				 }
 			 }
@@ -431,18 +314,6 @@ canvas {
 		}
 		
 		
-		function drawImage() {
-			var img = new Image();
-			img.onload = function() {
-				for (var i = 0; i < 4; i++) {
-					for (var j = 0; j < 3; j++) {
-						ctx.drawImage(img, j * 50, i * 38, 50, 38);
-					}
-				}
-			};
-			img.src = 'asset/image1.png';
-		}
-
 		function draw() {
 			if (canvas.getContext) {
 				ctx.beginPath();
@@ -457,56 +328,6 @@ canvas {
 		function clearCanvas() {
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
 		}
-		
-		function intersect(mainuser,user){
-			var mainPos = mainuser.entity;
-			var userPos = user.entity;
-			var mainX = mainPos.x;
-			var mainY = mainPos.y;
-			var mainW = mainPos.w;
-			var mainH = mainPos.h;
-			var userX = userPos.x;
-			var userY = userPos.y;
-			var userW = userPos.w;
-			var userH = userPos.h;
-		//	console.log("MAIN",mainPos);
-			//console.log("USER",userPos);
-			let cond1 = false;
-			let cond2 = false;
-			let cond3 = false;
-			let cond4 = false;
-			
-			if(userX >= mainX && mainX + mainW >=userX){
-				//console.log("1");
-				if(userY >= mainY && mainY + mainH >=userY){
-					//console.log("2");
-					cond1 = true;
-				}
-			}
-			if(mainX >= userX && userX + userW >=mainX){
-				//console.log("3");
-				if(mainY >=userY && userY + userH >=mainY){
-					//console.log("-----4");
-					cond2 = true;
-				}
-			}
-			if(mainX <= userX && mainX + mainW >= userX){
-				if(mainY >= userY && userY + userH >= mainY){
-					cond3 = true;
-				}
-			}
-			if(userX <= mainX && userX+userW >= mainX){
-				if(userY >= mainY && mainY+mainH >= userY){
-					cond4 = true;
-				}
-			}
-			if(cond1 || cond2 || cond3 || cond4){
-				return true;
-			}
-				
-			return false;
-		}
-		
 		draw();
 		
 		

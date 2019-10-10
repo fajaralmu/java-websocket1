@@ -132,8 +132,7 @@ public class RealtimeUserService {
 		RealtimeResponse response = new RealtimeResponse("00","OK");
 		for(RealtimeUser user:users) {
 			if(user.getId().equals(request.getUser().getId())) {
-//				user.getEntity().setX(request.getUser().getEntity().getX());
-//				user.getEntity().setY(request.getUser().getEntity().getY());
+				
 				user.setEntity(request.getUser().getEntity());
 				user.setMissiles(request.getUser().getMissiles());
 				user.setLife(request.getUser().getLife());
