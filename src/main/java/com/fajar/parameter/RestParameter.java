@@ -8,9 +8,9 @@ public class RestParameter {
 	public static final String PROCESS = "process";
 	public static final String FALSE = "false";
 	public static final String TRUE = "true";
-	public static final String BASE_PAGE ="/puskesmas";
-	public static final String HOME_PAGE ="home-page";
+	public static final String BASE_PAGE = "/puskesmas";
+	public static final String HOME_PAGE = "home-page";
 	public static final String ENTITY_PAGE = "entity-mng-page";
 	public static final String LOGIN_PAGE = "login-page";
-	
+		 
 }

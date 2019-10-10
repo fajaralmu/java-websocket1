@@ -30,9 +30,9 @@ canvas {
 
 .life-bar{
 	border:solid 1px black;
-	background-color: green;
+	background-color: rgb(100,200,0);
 	height:20px;
-	width:1000px;
+	width:${winW}px;
 	
 }
 </style>
@@ -44,12 +44,12 @@ canvas {
 	<table>
 	<tr>
 	<td>Health:</td>
-	<td><div style="width:1000px; padding:5px; border:solid 1px blue;">
+	<td><div style="width:${winW}px; padding:5px; border:solid 1px blue;">
 		<div id="life-bar" class="life-bar"></div>
 	</div></td>
 	</tr></table>
 	<hr>
-	<canvas id="tutorial" width="1200" height="600"> </canvas>
+	<canvas id="tutorial" width="${winW}" height="600"> </canvas>
 	<hr />
 	<label>Input Name: </label>
 	<input id="name" type="text" />
@@ -63,8 +63,9 @@ canvas {
 	
 	<p id="msg-info"></p>
 	<script type="text/javascript">
-		var WIN_W= 1200;
-		var WIN_H = 600;
+		var WIN_W= ${winW};
+		var WIN_H = ${winH};
+		var baseHealth = ${baseHealth};
 		var connectBtn = document.getElementById('connect');
 		var canvas = document.getElementById('tutorial');
 		var ctx = canvas.getContext('2d');
@@ -123,7 +124,8 @@ canvas {
 		var allMissiles = new Array();
 
 		function updateUserInfo(){
-			document.getElementById("life-bar").style.width=this.user.life+"px";
+			var amount = this.user.life/baseHealth* WIN_W;
+			document.getElementById("life-bar").style.width=amount+"px";
 		}
 		
 		window.onkeydown = function (e){

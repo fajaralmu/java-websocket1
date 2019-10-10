@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.fajar.annotation.Dto;
+import com.fajar.parameter.EntityParameter;
 
 @Dto
 public class RealtimeUser implements Serializable{
@@ -18,7 +19,7 @@ public class RealtimeUser implements Serializable{
 	private String name;
 	private Date joinedDate;
 	private Entity entity;
-	private Integer life = 30;
+	private Integer life =EntityParameter.baseHealth;
 	private boolean active;
 	private List<Missile>  missiles = new ArrayList<>();
 	

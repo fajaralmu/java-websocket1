@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.fajar.parameter.EntityParameter;
+
 /**
  * 
  * @author fajar
@@ -50,6 +52,9 @@ public class GeneralController {
 	}
 	@GetMapping(value = "canvasv1")
 	public String canvasv1(Model model)  {
+		model.addAttribute("winW", EntityParameter.WIN_W);
+		model.addAttribute("winH", EntityParameter.WIN_H);
+		model.addAttribute("baseHealth", EntityParameter.baseHealth);
 		return "websocket/anim/canvas1";
 	}
 }
