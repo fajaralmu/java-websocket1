@@ -135,8 +135,8 @@ public class RealtimeUserService {
 		bonus.setActive(true);
 		bonus.setName("Extra Life "+bonus.getId());
 		Entity entity = new Entity();
-		Integer x = rand.nextInt(EntityParameter.WIN_W);
-		Integer y = rand.nextInt(EntityParameter.WIN_H);
+		Integer x = rand.nextInt(EntityParameter.WIN_W-entity.getW());
+		Integer y = rand.nextInt(EntityParameter.WIN_H-entity.getH());
 		entity.setRole(EntityParameter.ROLE_BONUS_LIFE);
 		entity.setPeriod(10000L);
 		entity.setX(x);
@@ -155,9 +155,7 @@ public class RealtimeUserService {
 		List<RealtimePlayer> playerList = new ArrayList<>();
 		playerList.addAll(users);
 		for(RealtimePlayer player:playerList) {
-			System.out.println(playerList.size()+"**************************************************");
 			if(player.getEntity().getRole().equals(role)) {
-			//	System.out.println("cc---------------------------------------------");
 				removePlayer(player.getId());
 			}
 		}
