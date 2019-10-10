@@ -18,7 +18,7 @@ public class RealtimeUser implements Serializable{
 	private String name;
 	private Date joinedDate;
 	private Entity entity;
-	private Integer life = 1000;
+	private Integer life = 30;
 	private boolean active;
 	private List<Missile>  missiles = new ArrayList<>();
 	

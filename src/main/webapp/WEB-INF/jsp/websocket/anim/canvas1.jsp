@@ -204,15 +204,27 @@ canvas {
 						}
 					}
 				}  */
+				let intersectsUser = false;
 				if(!isPlayer){
 					if(intersect(this.user, missile)){
-						currentUser.missiles.splice(i,1);
 						firing = true;
 						this.user.life--;
-						continue;
+						
 					}
 				}
-				if(currentUser.missiles[i].entity.x<0 || currentUser.missiles[i].entity.x>WIN_W
+				if(isPlayer)
+				for(let x=0;x<users.length;x++){
+					if(users[x].id != this.user.id){
+						if(intersect(missile,users[x])){
+							firing = true;
+					//		console.log("===============intersects",this.user.id,users[i].id );
+							intersectsUser = true;
+						}
+					}
+				}
+				
+				//this works
+				if(intersectsUser || currentUser.missiles[i].entity.x<0 || currentUser.missiles[i].entity.x>WIN_W
 					||
 					currentUser.missiles[i].entity.y<0 || currentUser.missiles[i].entity.y>WIN_H){
 						currentUser.missiles.splice(i,1);
