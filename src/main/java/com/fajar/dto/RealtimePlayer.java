@@ -9,7 +9,7 @@ import com.fajar.annotation.Dto;
 import com.fajar.parameter.EntityParameter;
 
 @Dto
-public class RealtimeUser implements Serializable{
+public class RealtimePlayer implements Serializable{
 	
 	/**
 	 * 
@@ -17,7 +17,7 @@ public class RealtimeUser implements Serializable{
 	private static final long serialVersionUID = -6053163038967434721L;
 	private Integer id;
 	private String name;
-	private Date joinedDate;
+	private Date joinedDate = new Date();
 	private Entity entity;
 	private Integer life =EntityParameter.baseHealth;
 	private boolean active;
@@ -50,10 +50,10 @@ public class RealtimeUser implements Serializable{
 	public void setEntity(Entity entity) {
 		this.entity = entity;
 	}
-	public RealtimeUser() {
+	public RealtimePlayer() {
 		
 	}
-	public RealtimeUser(Integer id, String name, Date joinedDate) {
+	public RealtimePlayer(Integer id, String name, Date joinedDate) {
 		super();
 		this.id = id;
 		this.name = name;

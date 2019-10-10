@@ -55,6 +55,9 @@ public class GeneralController {
 		model.addAttribute("winW", EntityParameter.WIN_W);
 		model.addAttribute("winH", EntityParameter.WIN_H);
 		model.addAttribute("baseHealth", EntityParameter.baseHealth);
+		model.addAttribute("rolePlayer", EntityParameter.ROLE_PLAYER);
+		model.addAttribute("roleBonusLife", EntityParameter.ROLE_BONUS_LIFE);
+		model.addAttribute("roleBonusArmor", EntityParameter.ROLE_BONUS_ARMOR);
 		return "websocket/anim/canvas1";
 	}
 }

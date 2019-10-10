@@ -8,15 +8,15 @@ public class RealtimeRequest implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = 6891178168583718796L;
-	private RealtimeUser user;
+	private RealtimePlayer user;
 	
-	public RealtimeUser getUser() {
+	public RealtimePlayer getUser() {
 		return user;
 	}
 	
 	
 
-	public void setUser(RealtimeUser user) {
+	public void setUser(RealtimePlayer user) {
 		this.user = user;
 	}
 

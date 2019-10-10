@@ -28,7 +28,7 @@ import com.fajar.dto.RealtimeRequest;
 import com.fajar.dto.RealtimeResponse;
 import com.fajar.dto.Message;
 import com.fajar.dto.OutputMessage;
-import com.fajar.dto.RealtimeUser;
+import com.fajar.dto.RealtimePlayer;
 import com.fajar.service.RealtimeUserService;
 import com.fajar.util.JSONUtil;
 

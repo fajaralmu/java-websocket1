@@ -10,7 +10,7 @@ import java.util.Set;
 
 import com.fajar.annotation.Dto;
 import com.fajar.dto.RealtimeResponse;
-import com.fajar.dto.RealtimeUser;
+import com.fajar.dto.RealtimePlayer;
 
 public class JSONUtil {
 
@@ -18,7 +18,7 @@ public class JSONUtil {
 		RealtimeResponse response = new RealtimeResponse();
 		response.setResponseCode("00");
 		response.setResponseMessage("OK");
-		RealtimeUser user = new RealtimeUser();
+		RealtimePlayer user = new RealtimePlayer();
 		user.setId(1);
 		user.setName("FAJAR AM");
 		user.setJoinedDate(new Date());

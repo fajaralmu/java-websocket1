@@ -65,6 +65,9 @@ canvas {
 	<script type="text/javascript">
 		var WIN_W= ${winW};
 		var WIN_H = ${winH};
+		var rolePlayer = ${rolePlayer};
+		var roleBonusLife = ${roleBonusLife};
+		var roleBonusArmor = ${roleBonusArmor};
 		var baseHealth = ${baseHealth};
 		var connectBtn = document.getElementById('connect');
 		var canvas = document.getElementById('tutorial');
