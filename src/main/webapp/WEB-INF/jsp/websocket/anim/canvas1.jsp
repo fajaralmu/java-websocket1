@@ -86,6 +86,7 @@ canvas {
 		var roleBonusLife = ${roleBonusLife};
 		var roleBonusArmor = ${roleBonusArmor};
 		var roles = ${roles};
+		var staticImages = ${staticImages};
 		var baseHealth = ${baseHealth};
 		var connectBtn = document.getElementById('connect');
 		var canvas = document.getElementById('tutorial');
@@ -401,6 +402,10 @@ canvas {
 								+ "_r.png");
 				urls .push("<c:url value="/res/img/player/"/>" + role
 								+ "_l.png");
+			}
+			for (let i = 0; i < staticImages.length; i++) {
+				let staticImage = staticImages[i];
+				urls .push("<c:url value="/res/img/"/>" + staticImage); 
 			}
 
 			for (let i = 0; i < urls.length; i++) {

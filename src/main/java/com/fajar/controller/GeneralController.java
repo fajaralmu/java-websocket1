@@ -65,6 +65,7 @@ public class GeneralController {
 		model.addAttribute("roleBonusArmor", EntityParameter.ROLE_BONUS_ARMOR);
 		model.addAttribute("roles", JSONUtil.listToJson(EntityParameter.roles()));
 		model.addAttribute("layouts",JSONUtil.listToJson( realtimeService.getLayouts()));
+		model.addAttribute("staticImages",JSONUtil.listToJson(EntityParameter.assets()));
 		return "websocket/anim/canvas1";
 	}
 }

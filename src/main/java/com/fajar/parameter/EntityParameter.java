@@ -19,6 +19,11 @@ public class EntityParameter {
 				ROLE_PLAYER,ROLE_BONUS_LIFE,ROLE_BONUS_ARMOR,ROLE_LAYOUT_1
 		));
 	}
+	public static List<String> assets() {
+		 return new ArrayList<>(List.of(
+				 
+		));
+	}
 	
 	public static void main(String[] dfdf) {
 		System.out.println(JSONUtil.listToJson(roles()));
