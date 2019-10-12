@@ -239,7 +239,7 @@ canvas {
 				}  */
 				let missileIntersects = false;
 				if (!isPlayer) {
-					if (intersect(this.entity, missile)) {
+					if (intersect(this.entity, missile).status == true) {
 						firing = true;
 						this.entity.life--;
 
@@ -248,7 +248,7 @@ canvas {
 				if (isPlayer){
 					for (let x = 0; x < entities.length; x++) {
 						if (entities[x].id != this.entity.id) {
-							if (intersect(missile, entities[x])) {
+							if (intersect(missile, entities[x]).status == true) {
 								firing = true;
 								//		console.log("===============intersects",this.entity.id,entities[i].id );
 								missileIntersects = true;
@@ -256,7 +256,7 @@ canvas {
 						}
 					}
 					for (let x = 0; x < layouts.length; x++) {
-						 	if (intersect(missile, layouts[x])) {
+						 	if (intersect(missile, layouts[x]).status == true) {
 								firing = true;
 								//		console.log("===============intersects",this.entity.id,entities[i].id );
 								missileIntersects = true;
@@ -284,22 +284,33 @@ canvas {
 						velX, velY);
 				let layoutItemIntersects = {};
 				let intersectLayout = false;
+				let intersection = {};
+				let intersectionReverse = {};
 				for (let i = 0; i < layouts.length; i++) {
 					let layoutItem = layouts[i];
-					if (!intersectLayout && intersect(currentEntity,layoutItem )) {
+					if (!intersectLayout && intersect(currentEntity,layoutItem ).status ==true) {
+						intersection  =intersect(currentEntity,layoutItem );
+						intersectionReverse = intersectReverse(currentEntity,layoutItem );
 						intersectLayout = true;
 						layoutItemIntersects = layoutItem;
 					}
 				}
-				let velXToDo = velX;
-				let velYToDo = velY;
-				if (intersectLayout) {
+				
+				if (intersectLayout &&( intersection.direction==currentphysical.direction 
+						||
+						intersectionReverse.direction==currentphysical.direction) ) {
 					printInfo("intersect layout :"+ intersectionInfo+ JSON.stringify(layoutItemIntersects));
-					velXToDo = -velX;
-					velYToDo = -velY;
+					velX = 0;
+					velY = 0;
+					run = 0;
+				} if (intersectLayout){
+					printInfo("WILL intersect layout :"+ intersectionInfo+ JSON.stringify(layoutItemIntersects));
 				}else{
+			 
 					printInfo("NO INTERSECTION");
 				}
+				let velXToDo = velX;
+				let velYToDo = velY;
 				if(currentphysical.lastUpdate< this.entity.physical.lastUpdate){
 					currentEntity.physical.x = this.entity.physical.x;
 					currentEntity.physical.y = this.entity.physical.y;
@@ -416,7 +427,7 @@ canvas {
 
 				if (currentEntity.physical.role == 101
 						&& currentEntity.id != this.entity.id) {
-					if (intersect(this.entity, currentEntity)) {
+					if (intersect(this.entity, currentEntity).status == true) {
 						if (this.entity.life < baseHealth) {
 							this.entity.life += currentEntity.life;
 							if (this.entity.life > baseHealth) {

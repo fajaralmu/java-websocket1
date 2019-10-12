@@ -1,4 +1,4 @@
-var intersectionInfo = "";
+var intersectionInfo = ""; 
 
 function getPixel(img, x, y) {
    var canvas = document.createElement('canvas');
@@ -10,6 +10,8 @@ function getPixel(img, x, y) {
 
 
 function intersect(mainentity, entity) {
+	var intersection = {};
+	intersection.status = false;
 	var mainPos = mainentity.physical;
 	var entityPos = entity.physical;
 	var mainX = mainPos.x;
@@ -32,7 +34,8 @@ function intersect(mainentity, entity) {
 		if (entityY > mainY && mainY + mainH > entityY) {
 			// console.log("2");
 			cond1 = true;
-			intersectionInfo = "COND1";
+			intersectionInfo = "COND1"+mainentity.physical.direction;
+			intersection.direction = "r";
 		}
 	}
 	if (mainX > entityX && entityX + entityW > mainX) {
@@ -40,26 +43,88 @@ function intersect(mainentity, entity) {
 		if (mainY > entityY && entityY + entityH > mainY) {
 			// console.log("-----4");
 			cond2 = true;
-			intersectionInfo = "COND2";
+			intersectionInfo = "COND2"+mainentity.physical.direction;
+			intersection.direction = "l";
 		}
 	}
 	if (mainX < entityX && mainX + mainW > entityX) {
 		if (mainY > entityY && entityY + entityH > mainY) {
 			cond3 = true;
-			intersectionInfo = "COND3";
+			intersectionInfo = "COND3"+mainentity.physical.direction;
+			intersection.direction = "u";
 		}
 	}
 	if (entityX < mainX && entityX + entityW > mainX) {
 		if (entityY > mainY && mainY + mainH > entityY) {
 			cond4 = true;
-			intersectionInfo = "COND4" +(entityX*1 + entityW*1)*1+ ":"+mainX;
+			intersectionInfo = "COND4"+mainentity.physical.direction ;
+			intersection.direction = "d";
 		}
 	}
 	if (cond1 || cond2 || cond3 || cond4) {
-		return true;
+		intersection.status= true;
 	}
 
-	return false;
+	return intersection;
+}
+
+function intersectReverse(mainentity, entity) {
+	var intersection = {};
+	intersection.status = false;
+	var mainPos = mainentity.physical;
+	var entityPos = entity.physical;
+	var mainX = mainPos.x;
+	var mainY = mainPos.y;
+	var mainW = mainPos.w;
+	var mainH = mainPos.h;
+	var entityX = entityPos.x;
+	var entityY = entityPos.y;
+	var entityW = entityPos.w;
+	var entityH = entityPos.h;
+	// console.log("MAIN",mainPos);
+	// console.log("entity",entityPos);
+	let cond1 = false;
+	let cond2 = false;
+	let cond3 = false;
+	let cond4 = false;
+
+	if (entityX > mainX && mainX + mainW > entityX) {
+		// console.log("1");
+		if (entityY > mainY && mainY + mainH > entityY) {
+			// console.log("2");
+			cond1 = true;
+			intersectionInfo = "COND1"+mainentity.physical.direction;
+			intersection.direction = "d";
+		}
+	}
+	if (mainX > entityX && entityX + entityW > mainX) {
+		// console.log("3");
+		if (mainY > entityY && entityY + entityH > mainY) {
+			// console.log("-----4");
+			cond2 = true;
+			intersectionInfo = "COND2"+mainentity.physical.direction;
+			intersection.direction = "u";
+		}
+	}
+	if (mainX < entityX && mainX + mainW > entityX) {
+		if (mainY > entityY && entityY + entityH > mainY) {
+			cond3 = true;
+			intersectionInfo = "COND3"+mainentity.physical.direction;
+			intersection.direction = "r";
+		}
+	}
+	if (entityX < mainX && entityX + entityW > mainX) {
+		if (entityY > mainY && mainY + mainH > entityY) {
+			cond4 = true;
+			intersectionInfo = "COND4"+mainentity.physical.direction ;
+			intersection.direction = "l";
+		}
+	}
+	if (cond1 || cond2 || cond3 || cond4) {
+		intersection.status= true;
+	}
+
+	return intersection;
 }
 
 function getDirImage(role,dir) {
