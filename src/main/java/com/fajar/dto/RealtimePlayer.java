@@ -20,16 +20,16 @@ public class RealtimePlayer implements Serializable{
 	private Date joinedDate = new Date();
 	private Entity entity;
 	private Integer life =EntityParameter.baseHealth;
-	private boolean active;
+	private Boolean active;
 	private List<Missile>  missiles = new ArrayList<>();
 	
 	   
 	
 	
-	public boolean isActive() {
+	public Boolean isActive() {
 		return active;
 	}
-	public void setActive(boolean active) {
+	public void setActive(Boolean active) {
 		this.active = active;
 	}
 	public Integer getLife() {
@@ -79,9 +79,10 @@ public class RealtimePlayer implements Serializable{
 	}
 	@Override
 	public String toString() {
-		return "RealtimeUser [id=" + id + ", name=" + name + ", joinedDate=" + joinedDate + "]";
+		return "RealtimePlayer [id=" + id + ", name=" + name + ", joinedDate=" + joinedDate + ", entity=" + entity
+				+ ", life=" + life + ", active=" + active + ", missiles=" + missiles + "]";
 	}
-	
+
 	
 	
 

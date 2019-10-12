@@ -1,3 +1,14 @@
+var intersectionInfo = "";
+
+function getPixel(img, x, y) {
+   var canvas = document.createElement('canvas');
+  var context = canvas.getContext('2d');
+  context.drawImage(img, 0, 0);
+  return context.getImageData(x, y, 1, 1).data;
+}
+
+
+
 function intersect(mainuser, user) {
 	var mainPos = mainuser.entity;
 	var userPos = user.entity;
@@ -21,6 +32,7 @@ function intersect(mainuser, user) {
 		if (userY >= mainY && mainY + mainH >= userY) {
 			// console.log("2");
 			cond1 = true;
+			intersectionInfo = "COND1";
 		}
 	}
 	if (mainX >= userX && userX + userW >= mainX) {
@@ -28,16 +40,19 @@ function intersect(mainuser, user) {
 		if (mainY >= userY && userY + userH >= mainY) {
 			// console.log("-----4");
 			cond2 = true;
+			intersectionInfo = "COND2";
 		}
 	}
 	if (mainX <= userX && mainX + mainW >= userX) {
 		if (mainY >= userY && userY + userH >= mainY) {
 			cond3 = true;
+			intersectionInfo = "COND3";
 		}
 	}
 	if (userX <= mainX && userX + userW >= mainX) {
 		if (userY >= mainY && mainY + mainH >= userY) {
 			cond4 = true;
+			intersectionInfo = "COND4" +(userX*1 + userW*1)*1+ ":"+mainX;
 		}
 	}
 	if (cond1 || cond2 || cond3 || cond4) {

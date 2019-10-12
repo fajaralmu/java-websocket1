@@ -17,23 +17,30 @@
 canvas {
 	border: 1px solid black;
 }
-.btn-ok{
+
+.btn-ok {
 	background-color: green;
-	font-size:2em;
-	color:white
-}
-.btn-danger{
-	background-color: red;
-	font-size:2em;
-	color:white
+	font-size: 2em;
+	color: white
 }
 
-.life-bar{
-	border:solid 1px black;
-	background-color: rgb(100,200,0);
-	height:20px;
-	width:${winW}px;
+.btn-danger {
+	background-color: red;
+	font-size: 2em;
+	color: white
+}
+
+.life-bar {
+	border: solid 1px black;
+	background-color: rgb(100, 200, 0);
+	height: 20px;
+	width: ${winW
+}
+px
+;
+
 	
+
 }
 </style>
 </head>
@@ -41,29 +48,34 @@ canvas {
 	<p id="info" align="center"></p>
 	<p id="user-info"></p>
 	<h3 id="ws-info"></h3>
+	<p id="realtime-info"></p>
 	<table>
-	<tr>
-	<td>Health:</td>
-	<td><div style="width:${winW}px; padding:5px; border:solid 1px blue;">
-		<div id="life-bar" class="life-bar"></div>
-	</div></td>
-	</tr></table>
+		<tr>
+			<td>Health:</td>
+			<td><div
+					style="width:${winW}px; padding:5px; border:solid 1px blue;">
+					<div id="life-bar" class="life-bar"></div>
+				</div></td>
+		</tr>
+	</table>
 	<hr>
-	<canvas id="tutorial" width="${winW}" height="600"> </canvas>
+	<canvas id="tutorial" width="${winW}" height="${winH}"> </canvas>
 	<hr />
 	<label>Input Name: </label>
 	<input id="name" type="text" />
-	<button class="btn-ok" id="join" onclick="join()">Join</button>	 
+	<button class="btn-ok" id="join" onclick="join()">Join</button>
 	<button class="btn-ok" id="connect" onclick="connect()">Connect</button>
 	<button class="btn-danger" id="leave" onclick="leave()">Leave</button>
 	<hr />
 	<p>
 		Connected: <span id="connect-info" />
 	</p>
-	
+
 	<p id="msg-info"></p>
 	<script type="text/javascript">
-		var WIN_W= ${winW};
+		var layouts = ${layouts};
+
+		var WIN_W = ${winW};
 		var WIN_H = ${winH};
 		var rolePlayer = ${rolePlayer};
 		var roleBonusLife = ${roleBonusLife};
@@ -87,95 +99,102 @@ canvas {
 		var userDirection = "r";
 		var firing = false;
 
-		function connect(){
+		function printInfo(text) {
+			document.getElementById("realtime-info").innerHTML = text;
+		}
+
+		function connect() {
 			doConnect();
 		}
-		
-		function join(){
+
+		function join() {
 			var name = document.getElementById("name").value;
 			user.name = name;
-			postReq("/websocket1/game-app-simple/join","name="+name,"join",function(response) {
-				var responseObject = JSON.parse(response);
-				console.log("RESPONSE", responseObject);
-				if(responseObject.responseCode == "00"){
-					user = responseObject.user;
-				//	console.log("USER",user);
-					document.getElementById("user-info").innerHTML = JSON.stringify(user);
-					window.document.title = "PLAYER: "+user.name;
-					document.getElementById("name").disabled = true;
-					initAnimation();
-					loadImages();
-					
-				}else{
-					alert("FAILED :"+responseObject.responseMessage);
-				}
-			});
+			postReq(
+					"/websocket1/game-app-simple/join",
+					"name=" + name,
+					"join",
+					function(response) {
+						var responseObject = JSON.parse(response);
+						console.log("RESPONSE", responseObject);
+						if (responseObject.responseCode == "00") {
+							user = responseObject.user;
+							//	console.log("USER",user);
+							document.getElementById("user-info").innerHTML = JSON
+									.stringify(user);
+							window.document.title = "PLAYER: " + user.name;
+							document.getElementById("name").disabled = true;
+							initAnimation();
+							loadImages();
+
+						} else {
+							alert("FAILED :" + responseObject.responseMessage);
+						}
+					});
 		}
 
 		function setConnected(connected) {
 			document.getElementById('connect-info').innerHTML = connected;
 		}
 
-		function leave(){
-			window.document.title = "0FF-PLAYER: "+user.name;
+		function leave() {
+			window.document.title = "0FF-PLAYER: " + user.name;
 			leaveApp(user.id);
-	}
+		}
 	</script>
 	<script type="text/javascript">
-	
-		var fireCount=0;
+		var fireCount = 0;
 		var userImages = new Array();
 		var allMissiles = new Array();
 
-		function updateUserInfo(){
-			var amount = this.user.life/baseHealth* WIN_W;
-			document.getElementById("life-bar").style.width=amount+"px";
+		function updateUserInfo() {
+			var amount = this.user.life / baseHealth * WIN_W;
+			document.getElementById("life-bar").style.width = amount + "px";
 		}
-		
-		window.onkeydown = function (e){
+
+		window.onkeydown = function(e) {
 			move(e.key);
 		}
-		
-		window.onkeyup = function(e){
+
+		window.onkeyup = function(e) {
 			run = 0;
 			release(e.key);
 		}
-		
-		function release(key){
-			if(key == "a" || key == "d")
+
+		function release(key) {
+			if (key == "a" || key == "d")
 				velX = 0;
-			 if(key == "w" || key == "s") 
-				velY =0;
-			
+			if (key == "w" || key == "s")
+				velY = 0;
+
 		}
-		
-	 	
+
 		var run = 0;
-		var runIncrement=0.5;
+		var runIncrement = 0.5;
 		function move(key) {
-			if (key=="d"){
-				velX = 1+run;
-				run+=runIncrement;
-				userDirection=(dirRight);
+			if (key == "d") {
+				velX = 1 + run;
+				run += runIncrement;
+				userDirection = (dirRight);
 			}
-			if(key== "a"){
-				velX = -1-run;
-				run+=runIncrement;
-				userDirection=(dirLeft);
+			if (key == "a") {
+				velX = -1 - run;
+				run += runIncrement;
+				userDirection = (dirLeft);
 			}
-			if(key=="s"){
-				velY = 1+run;
-				run+=runIncrement;
-				userDirection=(dirDown);
+			if (key == "s") {
+				velY = 1 + run;
+				run += runIncrement;
+				userDirection = (dirDown);
 			}
-			if(key== "w"){
-				velY = -1-run;
-				run+=runIncrement;
-				userDirection=(dirUp);
+			if (key == "w") {
+				velY = -1 - run;
+				run += runIncrement;
+				userDirection = (dirUp);
 			}
-			if(key=="o"){
+			if (key == "o") {
 				fireMissile();
-				
+
 			}
 		}
 
@@ -191,17 +210,17 @@ canvas {
 				window.requestAnimationFrame(animate);
 			}
 		}
-				
-		function renderUser(currentUser){
-			var isPlayer =(currentUser.id == this.user.id);
-			for(let i=0;i<currentUser.missiles.length;i++){
+
+		function renderUser(currentUser) {
+			var isPlayer = (currentUser.id == this.user.id);
+			for (let i = 0; i < currentUser.missiles.length; i++) {
 				let missile = currentUser.missiles[i];
-				
+
 				let velocity = getVelocity(missile.entity.direction, 5);
-				
+
 				currentUser.missiles[i].entity.x += velocity.x;
 				currentUser.missiles[i].entity.y += velocity.y;
-				
+
 				/* for(let j=0;j<users.length;j++){
 					var u = users[i];
 					if(u.id != missile.userId){
@@ -210,150 +229,196 @@ canvas {
 						}
 					}
 				}  */
-				let intersectsUser = false;
-				if(!isPlayer){
-					if(intersect(this.user, missile)){
+				let missileIntersects = false;
+				if (!isPlayer) {
+					if (intersect(this.user, missile)) {
 						firing = true;
 						this.user.life--;
-						
+
 					}
 				}
-				if(isPlayer)
-				for(let x=0;x<users.length;x++){
-					if(users[x].id != this.user.id){
-						if(intersect(missile,users[x])){
-							firing = true;
-					//		console.log("===============intersects",this.user.id,users[i].id );
-							intersectsUser = true;
+				if (isPlayer){
+					for (let x = 0; x < users.length; x++) {
+						if (users[x].id != this.user.id) {
+							if (intersect(missile, users[x])) {
+								firing = true;
+								//		console.log("===============intersects",this.user.id,users[i].id );
+								missileIntersects = true;
+							}
 						}
 					}
+					for (let x = 0; x < layouts.length; x++) {
+						 	if (intersect(missile, layouts[x])) {
+								firing = true;
+								//		console.log("===============intersects",this.user.id,users[i].id );
+								missileIntersects = true;
+						 }
+					}	
 				}
-				
+
 				//this works
-				if(intersectsUser || currentUser.missiles[i].entity.x<0 || currentUser.missiles[i].entity.x>WIN_W
-					||
-					currentUser.missiles[i].entity.y<0 || currentUser.missiles[i].entity.y>WIN_H){
-						currentUser.missiles.splice(i,1);
+				if (missileIntersects
+						|| currentUser.missiles[i].entity.x<0 || currentUser.missiles[i].entity.x>WIN_W
+						|| currentUser.missiles[i].entity.y<0 || currentUser.missiles[i].entity.y>WIN_H) {
+					currentUser.missiles.splice(i, 1);
 				}
 				let missileEntity = missile.entity;
 				ctx.save();
 				ctx.fillStyle = missileEntity.color;
-				ctx.fillRect(missileEntity.x, missileEntity.y, missileEntity.w, missileEntity.h);
+				ctx.fillRect(missileEntity.x, missileEntity.y, missileEntity.w,
+						missileEntity.h);
 				ctx.restore();
 			}
-			
-			if(isPlayer){
-				let currentEntity =currentUser.entity;
-				let outOfBounds = isOutOfBounds(currentEntity, WIN_W, WIN_H, velX, velY);
-				
-				if(!outOfBounds){
-					currentUser.entity.x += velX;
-					currentUser.entity.y += velY;
+
+			if (isPlayer) {
+				let currentEntity = currentUser.entity;
+				let outOfBounds = isOutOfBounds(currentEntity, WIN_W, WIN_H,
+						velX, velY);
+				let layoutItemIntersects = {};
+				let intersectLayout = false;
+				for (let i = 0; i < layouts.length; i++) {
+					let layoutItem = layouts[i];
+					if (!intersectLayout && intersect(currentUser,layoutItem )) {
+						intersectLayout = true;
+						layoutItemIntersects = layoutItem;
+					}
 				}
-				this.user.entity.direction=userDirection;
+				let velXToDo = velX;
+				let velYToDo = velY;
+				if (intersectLayout) {
+					printInfo("intersect layout :"+ intersectionInfo+ JSON.stringify(layoutItemIntersects));
+					velXToDo = -velX;
+					velYToDo = -velY;
+				}else{
+					printInfo("NO INTERSECTION");
+				}
+				if (!outOfBounds) {
+					currentUser.entity.x += velXToDo;
+					currentUser.entity.y += velYToDo;
+				}
+				this.user.entity.direction = userDirection;
 				currentUser.entity.direction = this.user.entity.direction;
 				currentUser.life = this.user.life;
 				//currentUser.missiles = this.user.missiles;
 				this.user = currentUser;
-				document.getElementById("user-info").innerHTML = JSON.stringify(this.user);
+				document.getElementById("user-info").innerHTML = JSON
+						.stringify(this.user);
 				updateUserInfo();
 			}
-			if(velX != 0 || velY!=0 || currentUser.missiles.length>0 || firing){
+			if (velX != 0 || velY != 0 || currentUser.missiles.length > 0
+					|| firing) {
 				//console.log("=================",currentUser.entity);
-				if(firing)firing =false;
+				if (firing)
+					firing = false;
 				updateMovement();
 			}
-			
+
 			let position = currentUser.entity;
 			ctx.save();
 			ctx.fillStyle = position.color;
-			ctx.font = "30px Arial";
-			ctx.fillText(currentUser.name+"."+position.direction+"."+currentUser.active+".("+currentUser.life+")", position.x, position.y - 10);
-			//ctx.strokeRect(position.x, position.y, currentUser.entity.w, currentUser.entity.h);
+			ctx.font = "15px Arial";
+			
+			if (!currentUser.entity.layout) {
+				ctx.fillText(currentUser.name + "." + position.direction + "."
+						+ currentUser.active + ".(" + currentUser.life + ")",
+						position.x, position.y - 10);
+			} else {
+				 ctx.fillText(currentUser.id, position.x, position.y - 10);
+
+			}//ctx.strokeRect(position.x, position.y, currentUser.entity.w, currentUser.entity.h);
 			//ctx.fillRect(position.x, position.y, currentUser.entity.w, currentUser.entity.h);
-			ctx.drawImage(getUserImage(currentUser.entity.role,currentUser.entity.direction), position.x, position.y, currentUser.entity.w, currentUser.entity.h);
+			ctx.drawImage(getUserImage(currentUser.entity.role,
+					currentUser.entity.direction), position.x, position.y,
+					currentUser.entity.w, currentUser.entity.h);
 			fireCount++;
 			ctx.restore();
-			
+
 		}
-		
-		function fireMissile(){
-			if(fireCount<20)
-			{
+
+		function fireMissile() {
+			if (fireCount < 20) {
 				return;
-			} 
-			 firing =true;
+			}
+			firing = true;
 			fireCount = 0;
 			var missile = createMissile(this.user);
-			console.log("000000000000000000000000000000Fire Missile",missile);
+			console.log("000000000000000000000000000000Fire Missile", missile);
 			this.user.missiles.push(missile);
 			updateMovement();
 		}
-		
-		function getUserImage(role,dir){
-			var fullAddress = window.location.protocol+'//'+window.location.hostname+(window.location.port ? ':'+window.location.port: '');
-			let url = fullAddress+"<c:url value="/res/img/player/"/>"+getDirImage(role,dir);
-			  for(var i=0;i<userImages.length;i++){
-				 if(userImages[i].src == url){
-					 return userImages[i];
-				 }
-			 }
-			 return new Image();
-			 
-		}
-		
-		function loadImages(){
-			let urls = new Array();
-			for(let i=0;i<roles.length;i++){
-				let role = roles[i];
-				urls.push("<c:url value="/res/img/player/"/>"+role+"_u.png");
-				urls.push("<c:url value="/res/img/player/"/>"+role+"_d.png");
-				urls.push("<c:url value="/res/img/player/"/>"+role+"_r.png");
-				urls.push("<c:url value="/res/img/player/"/>"+role+"_l.png");
+
+		function getUserImage(role, dir) {
+			var fullAddress = window.location.protocol + '//'
+					+ window.location.hostname
+					+ (window.location.port ? ':' + window.location.port : '');
+			let url = fullAddress + "<c:url value="/res/img/player/"/>"
+					+ getDirImage(role, dir);
+			for (var i = 0; i < userImages.length; i++) {
+				if (userImages[i].src == url) {
+					return userImages[i];
+				}
 			}
-			
-			for(let i=0;i<urls.length;i++){
+			return new Image();
+
+		}
+
+		function loadImages() {
+			let urls = new Array();
+			for (let i = 0; i < roles.length; i++) {
+				let role = roles[i];
+				urls .push("<c:url value="/res/img/player/"/>" + role
+								+ "_u.png");
+				urls .push("<c:url value="/res/img/player/"/>" + role
+								+ "_d.png");
+				urls .push("<c:url value="/res/img/player/"/>" + role
+								+ "_r.png");
+				urls .push("<c:url value="/res/img/player/"/>" + role
+								+ "_l.png");
+			}
+
+			for (let i = 0; i < urls.length; i++) {
 				var image = new Image();
-				
-				image.onload = function(){
-					console.log("Image loaded: ",urls[i]);
+
+				image.onload = function() {
+					console.log("Image loaded: ", urls[i], image);
 					ctx.drawImage(image, i * 50, 0, 50, 38);
 				}
 				image.src = urls[i];
 				userImages.push(image);
 			}
 		}
-		
-		function render(){
-			for(let i=0;i<users.length;i++){
+
+		function render() {
+			for (let i = 0; i < layouts.length; i++) {
+				let currentLayout = layouts[i];
+				renderUser(currentLayout);
+			}
+
+			for (let i = 0; i < users.length; i++) {
 				let currentUser = users[i];
 				renderUser(currentUser);
-				
-				if(currentUser.entity.role == 101 && currentUser.id != this.user.id){
-					if(intersect(this.user,currentUser)){
-						if(this.user.life<baseHealth){
-							this.user.life+=currentUser.life;
-							if(this.user.life>baseHealth){
-								this.user.life=baseHealth
+
+				if (currentUser.entity.role == 101
+						&& currentUser.id != this.user.id) {
+					if (intersect(this.user, currentUser)) {
+						if (this.user.life < baseHealth) {
+							this.user.life += currentUser.life;
+							if (this.user.life > baseHealth) {
+								this.user.life = baseHealth
 							}
 							updateMovement();
 						}
-						
 						leaveApp(currentUser.id);
-						
-				//		console.log("===============intersects",this.user.id,users[i].id );
 					}
 				}
 			}
 		}
-		
-		
+
 		function draw() {
 			if (canvas.getContext) {
 				ctx.beginPath();
 				ctx.arc(70, 80, 10, 0, 2 * Math.PI, false);
 				ctx.fill();
-				
 			} else {
 				alert("Not Supported");
 			}
@@ -363,8 +428,6 @@ canvas {
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
 		}
 		draw();
-		
-		
 	</script>
 </body>
 </html>

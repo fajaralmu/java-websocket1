@@ -3,14 +3,13 @@ package com.fajar.util;
 import java.lang.reflect.Field;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import com.fajar.annotation.Dto;
-import com.fajar.dto.RealtimeResponse;
 import com.fajar.dto.RealtimePlayer;
+import com.fajar.dto.RealtimeResponse;
 
 public class JSONUtil {
 
@@ -39,7 +38,10 @@ public class JSONUtil {
 		String json = "{";
 		Class clazz = o.getClass();
 		if (clazz.getAnnotation(Dto.class) == null) {
-			return "\""+ o.toString() +"\"";
+			if (isNotString(clazz )) {
+				return o.toString();
+			}
+			return "\"" + o.toString() + "\"";
 		}
 		Field[] fields = clazz.getDeclaredFields();
 		int fieldCount = fields.length;
@@ -50,15 +52,20 @@ public class JSONUtil {
 			Class fieldType = field.getType();
 			field.setAccessible(true);
 			try {
-				if (fieldType != List.class && field.get(o) != null && fieldType != Map.class && fieldType.getAnnotation(Dto.class) == null) {
-					value = "\"" + field.get(o).toString() + "\"";
+				if (fieldType != List.class && field.get(o) != null && fieldType != Map.class
+						&& fieldType.getAnnotation(Dto.class) == null) {
+					if (isNotString(fieldType ))  {
+						value = field.get(o).toString();
+					} else
+						value = "\"" + field.get(o).toString() + "\"";
 				} else if (fieldType != List.class && field.get(o) != null && fieldType != Map.class
 						&& fieldType.getAnnotation(Dto.class) != null) {
 					value = objectToJson(field.get(o));
 				} else if (field.get(o) != null && fieldType == Map.class) {
 					value = mapToJson((Map<String, Object>) field.get(o));
-				}  else if(field.get(o) != null &&fieldType == List.class) {
-					value = listToJson((List) field.get(o));;
+				} else if (field.get(o) != null && fieldType == List.class) {
+					value = listToJson((List) field.get(o));
+					;
 				}
 			} catch (IllegalArgumentException | IllegalAccessException e) {
 				// TODO Auto-generated catch block
@@ -74,6 +81,21 @@ public class JSONUtil {
 		json += "}";
 		return json;
 	}
+	
+	private static Boolean isNotString(Class clazz) {
+		//System.out.println("00000000000 "+clazz.getCanonicalName());
+		Class[] classes = new Class[] {
+				Integer.class,Double.class,Long.class,Boolean.class
+		};
+		for (int i = 0; i < classes.length; i++) {
+			Class class1 = classes[i];
+			if(clazz.equals(class1)) {
+				return true;
+			}
+		}
+		//System.out.println("FALSE");
+		return false;
+	}
 
 	public static String mapToJson(Map<String, Object> o) {
 		String json = "{";
@@ -85,16 +107,20 @@ public class JSONUtil {
 			String value = null;
 			Object mapvalue = o.get(field);
 			if (mapvalue != null) {
-				Class fieldType = mapvalue.getClass();
+				Class valueClass = mapvalue.getClass();
 
-				if (fieldType != List.class && fieldType != Map.class && fieldType.getAnnotation(Dto.class) == null) {
-					value = "\"" + mapvalue.toString() + "\"";
-				} else if (fieldType != List.class && fieldType != Map.class && fieldType.getAnnotation(Dto.class) != null) {
+				if (valueClass != List.class && valueClass != Map.class && valueClass.getAnnotation(Dto.class) == null) {
+					if (isNotString(valueClass )) {
+						value = mapvalue.toString();
+					} else
+						value = "\"" + mapvalue.toString() + "\"";
+				} else if (valueClass != List.class && valueClass != Map.class && valueClass.getAnnotation(Dto.class) != null) {
 					value = objectToJson(mapvalue);
-				} else if (fieldType == Map.class) {
+				} else if (valueClass == Map.class) {
 					value = mapToJson((Map<String, Object>) mapvalue);
-				} else if(fieldType == List.class) {
-					value = listToJson((List) mapvalue);;
+				} else if (valueClass == List.class) {
+					value = listToJson((List) mapvalue);
+					;
 				}
 
 			}
@@ -111,21 +137,21 @@ public class JSONUtil {
 
 	public static String listToJson(List list) {
 		String json = "[";
-		
+
 		for (int i = 0; i < list.size(); i++) {
 			Object array_element = list.get(i);
 			String value = null;
-			if(array_element!=null) {
+			if (array_element != null) {
 				value = objectToJson(array_element);
 			}
-			json+=value;
-			if(i<list.size()-1) {
-				json+=",";
+			json += value;
+			if (i < list.size() - 1) {
+				json += ",";
 			}
-			
+
 		}
-		
-		json+="]";
+
+		json += "]";
 		return json;
 	}
 }

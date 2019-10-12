@@ -51,7 +51,6 @@ public class SocketController {
 		response.setCharacterEncoding(UTF_8);
 		RealtimeResponse responseObject = realtimeUserService.registerUser(request);
 		responseObject.setUsers(realtimeUserService.getUsers());
-		//webSocket.convertAndSend(destination, responseObject);
 		join2(responseObject);
 		return responseObject;
 	}
@@ -68,6 +67,13 @@ public class SocketController {
 	public RealtimeResponse join( RealtimeRequest request) throws IOException {
 		
 		return realtimeUserService.connectUser(request);
+	}
+	
+	@MessageMapping("/addEntity")
+	@SendTo("/wsResp/players")
+	public RealtimeResponse addEntity( RealtimeRequest request) throws IOException {
+		
+		return realtimeUserService.addEntity(request);
 	}
 	
 	@MessageMapping("/move")

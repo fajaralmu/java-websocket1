@@ -13,44 +13,62 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
-import com.fajar.controller.SocketController;
-import com.fajar.dto.RealtimeRequest;
-import com.fajar.dto.RealtimeResponse;
-import com.fajar.parameter.EntityParameter;
 import com.fajar.dto.Entity;
 import com.fajar.dto.OutputMessage;
 import com.fajar.dto.RealtimePlayer;
-
+import com.fajar.dto.RealtimeRequest;
+import com.fajar.dto.RealtimeResponse;
+import com.fajar.parameter.EntityParameter;
+import javax.annotation.PostConstruct;
 @Service
 public class RealtimeUserService {
 	Logger log = LoggerFactory.getLogger(RealtimeUserService.class);
 	
 	private Integer bonusCount=0;
 	private List<RealtimePlayer> users = new ArrayList<>();
+	private List<RealtimePlayer> layouts = new ArrayList<>();
 	private Random random = new Random();
 	private Long currentTime = new Date().getTime();
-	private boolean isRegistering = false;
+	private Boolean isRegistering = false;
+	private Long deltaTime= 8000L;
 	
 	@Autowired
 	private SimpMessagingTemplate webSocket;
+	@Autowired
+	private LayoutService layoutService;
 	
 	public RealtimeUserService() {
 		log.info("-----------------REALTIME SERVICE-------------------");
 		startThread();
+		
 	}
 	
+	@PostConstruct
+	private void loadLayout() {
+		List<RealtimePlayer> layouts = layoutService.getLayouts();
+		this.layouts.addAll(layouts);
+	}
+	
+	
+	
+	public List<RealtimePlayer> getLayouts() {
+		return layouts;
+	}
+
+	public void setLayouts(List<RealtimePlayer> layouts) {
+		this.layouts = layouts;
+	}
+
 	private void startThread() {
 		currentTime = new Date().getTime();
 		Thread thread  = new Thread(new Runnable() {
 			
 			@Override
 			public void run() {
-				// TODO Auto-generated method stub
-				while(true) {
+			 while(true) {
 					Long systemDate = new Date().getTime();
 					Long delta =systemDate - currentTime;
-					//System.out.println(delta+"______________________________");
-					if(delta >= 8000 && isRegistering == false) {
+				 	if(delta >= deltaTime && isRegistering == false) {
 						System.out.println("..............Adding new Bonus");
 						addBonusLife();
 						currentTime=systemDate;
@@ -67,6 +85,14 @@ public class RealtimeUserService {
 	
 	public List<RealtimePlayer> getUsers(){
 		return users;
+	}
+	
+	private boolean intersectLayout(RealtimePlayer player) {
+		for (RealtimePlayer layoutItem : layouts) {
+			if(Entity.intersect(player, layoutItem))
+				return true;
+		}
+		return false;
 	}
 	
 	public RealtimePlayer getUser(Integer id) {
@@ -144,6 +170,9 @@ public class RealtimeUserService {
 		entity.setY(y);
 		bonus.setEntity(entity);
 		removeByRole(EntityParameter.ROLE_BONUS_LIFE);
+		if(intersectLayout(bonus)) {
+			return;
+		}
 		users.add(bonus);
 		bonusCount++;
 		RealtimeResponse response = new  RealtimeResponse("00","OK");
@@ -193,6 +222,13 @@ public class RealtimeUserService {
 		response.setUser(user);
 		response.setMessage(new  OutputMessage(user.getName(), "HI!, i'm joining conversation!", new Date().toString()));
 		return response;
+	}
+	
+	public RealtimeResponse addEntity(RealtimeRequest request) {
+		 
+		RealtimeResponse response = new RealtimeResponse("00","OK");
+		response.setUsers(users);
+		 return response;
 	}
 
 	public RealtimeResponse move(RealtimeRequest request) {

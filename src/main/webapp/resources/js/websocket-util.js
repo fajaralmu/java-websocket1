@@ -29,7 +29,7 @@ function doConnect() {
 		stompClient.subscribe('/wsResp/players', function(response) {
 			var respObject = JSON.parse(response.body);
 		//	console.log("subscribed", respObject);
-		document.getElementById("msg-info").innerHTML = JSON.stringify(respObject);
+	//	document.getElementById("msg-info").innerHTML = JSON.stringify(respObject);
 			users = respObject.users;
 		});
 		updateMovement();

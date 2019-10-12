@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.fajar.parameter.EntityParameter;
+import com.fajar.service.RealtimeUserService;
 import com.fajar.util.JSONUtil;
 
 /**
@@ -23,6 +25,8 @@ import com.fajar.util.JSONUtil;
 public class GeneralController {
 	
 	Logger log = LoggerFactory.getLogger(GeneralController.class);
+	@Autowired
+	private RealtimeUserService realtimeService;
 	
 	public GeneralController() {
 		log.info("-----------------GENERAL CONTROLLER------------------");
@@ -60,6 +64,7 @@ public class GeneralController {
 		model.addAttribute("roleBonusLife", EntityParameter.ROLE_BONUS_LIFE);
 		model.addAttribute("roleBonusArmor", EntityParameter.ROLE_BONUS_ARMOR);
 		model.addAttribute("roles", JSONUtil.listToJson(EntityParameter.roles()));
+		model.addAttribute("layouts",JSONUtil.listToJson( realtimeService.getLayouts()));
 		return "websocket/anim/canvas1";
 	}
 }
