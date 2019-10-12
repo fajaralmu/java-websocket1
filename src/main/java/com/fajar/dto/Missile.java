@@ -11,14 +11,14 @@ public class Missile implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private Entity entity;
+	private Physical physical;
 	private Integer id;
-	private Integer userId;
-	public Entity getEntity() {
-		return entity;
+	private Integer entityId;
+	public Physical getPhysical() {
+		return physical;
 	}
-	public void setEntity(Entity entity) {
-		this.entity = entity;
+	public void setPhysical(Physical entity) {
+		this.physical = entity;
 	}
 	public Integer getId() {
 		return id;
@@ -26,11 +26,11 @@ public class Missile implements Serializable{
 	public void setId(Integer id) {
 		this.id = id;
 	}
-	public Integer getUserId() {
-		return userId;
+	public Integer getEntityId() {
+		return entityId;
 	}
-	public void setUserId(Integer userId) {
-		this.userId = userId;
+	public void setEntityId(Integer userId) {
+		this.entityId = userId;
 	}
 	
 	

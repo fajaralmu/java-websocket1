@@ -1,145 +1,162 @@
 package com.fajar.dto;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import com.fajar.annotation.Dto;
 import com.fajar.parameter.EntityParameter;
 
 @Dto
 public class Entity implements Serializable{
-
+	
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -8774779913578007103L;
-	private Integer x;
-	private Integer y;
-	private String color = "rgb(0,0,0)";
-	private Integer w = 63;
-	private Integer h = 63;
-	private String direction = "r";
-	private Boolean layout;
-	private Integer role = EntityParameter.ROLE_PLAYER;
-	private Long period;
+	private static final long serialVersionUID = -6053163038967434721L;
+	private Integer id;
+	private String name;
+	private Date joinedDate = new Date();
+	private Physical physical;
+	private Integer life =EntityParameter.baseHealth;
+	private Boolean active;
+	private List<Missile>  missiles = new ArrayList<>();
 	
+	   
+	public Entity() {
+		super();
+	}
+	
+	 
+	public Integer getId() {
+		return id;
+	}
 
-	
-	
-	public Boolean isLayout() {
-		return layout;
+
+
+
+
+	public void setId(Integer id) {
+		this.id = id;
 	}
-	public void setLayout(Boolean layout) {
-		this.layout = layout;
+
+
+
+
+
+	public String getName() {
+		return name;
 	}
-	public Long getPeriod() {
-		return period;
+
+
+
+
+
+	public void setName(String name) {
+		this.name = name;
 	}
-	public void setPeriod(Long period) {
-		this.period = period;
+
+
+
+
+
+	public Date getJoinedDate() {
+		return joinedDate;
 	}
-	public Integer getRole() {
-		return role;
+
+
+
+
+
+	public void setJoinedDate(Date joinedDate) {
+		this.joinedDate = joinedDate;
 	}
-	public void setRole(Integer role) {
-		this.role = role;
+
+
+
+
+
+	public Physical getPhysical() {
+		return physical;
 	}
-	public String getDirection() {
-		return direction;
+
+
+
+
+
+	public void setPhysical(Physical phy) {
+		this.physical = phy;
 	}
-	public void setDirection(String direction) {
-		this.direction = direction;
+
+
+
+
+
+	public Integer getLife() {
+		return life;
 	}
-	public Integer getW() {
-		return w;
+
+
+
+
+
+	public void setLife(Integer life) {
+		this.life = life;
 	}
-	public void setW(Integer w) {
-		this.w = w;
+
+
+
+
+
+	public Boolean isActive() {
+		return active;
 	}
-	public Integer getH() {
-		return h;
+
+
+
+
+
+	public void setActive(Boolean active) {
+		this.active = active;
 	}
-	public void setH(Integer h) {
-		this.h = h;
+
+
+
+
+
+	public List<Missile> getMissiles() {
+		return missiles;
 	}
-	public String getColor() {
-		return color;
+
+
+
+
+
+	public void setMissiles(List<Missile> missiles) {
+		this.missiles = missiles;
 	}
-	public void setColor(String color) {
-		this.color = color;
+
+
+
+
+
+	public Entity(Integer id, String name, Date joinedDate) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.joinedDate = joinedDate;
 	}
-	public Integer getX() {
-		return x;
-	}
-	public void setX(Integer x) {
-		this.x = x;
-	}
-	public Integer getY() {
-		return y;
-	}
-	public void setY(Integer y) {
-		this.y = y;
-	}
+
+
 	@Override
 	public String toString() {
-		return "Entity [x=" + x + ", y=" + y + ", color=" + color + ", w=" + w + ", h=" + h + ", direction=" + direction
-				+ ", role=" + role + ", period=" + period + "]";
+		return "Entity [id=" + id + ", name=" + name + ", joinedDate=" + joinedDate + ", physical=" + physical
+				+ ", life=" + life + ", active=" + active + ", missiles=" + missiles + "]";
 	}
-	
-	public static Boolean intersect(RealtimePlayer mainuser,RealtimePlayer user) {
-		Entity mainPos = mainuser.getEntity();
-		Entity userPos = user.getEntity();
-		Integer mainX = mainPos.x;
-		Integer mainY = mainPos.y;
-		Integer mainW = mainPos.w;
-		Integer mainH = mainPos.h;
-		Integer userX = userPos.x;
-		Integer userY = userPos.y;
-		Integer userW = userPos.w;
-		Integer userH = userPos.h;
-		// console.log("MAIN",mainPos);
-		// console.log("USER",userPos);
-		boolean cond1 = false;
-		boolean cond2 = false;
-		boolean cond3 = false;
-		boolean cond4 = false;
-
-		if (userX >= mainX && mainX + mainW >= userX) {
-			// console.log("1");
-			if (userY >= mainY && mainY + mainH >= userY) {
-				// console.log("2");
-				cond1 = true;
-				 
-			}
-		}
-		if (mainX >= userX && userX + userW >= mainX) {
-			// console.log("3");
-			if (mainY >= userY && userY + userH >= mainY) {
-				// console.log("-----4");
-				cond2 = true;
-				 
-			}
-		}
-		if (mainX <= userX && mainX + mainW >= userX) {
-			if (mainY >= userY && userY + userH >= mainY) {
-				cond3 = true;
-			 
-			}
-		}
-		if (userX <= mainX && userX + userW >= mainX) {
-			if (userY >= mainY && mainY + mainH >= userY) {
-				cond4 = true;
-				 
-			}
-		}
-		if (cond1 || cond2 || cond3 || cond4) {
-			return true;
-		}
-
-		return false;
-	}
-
 	 
+
 	
 	
-	
+
 }

@@ -9,50 +9,50 @@ function getPixel(img, x, y) {
 
 
 
-function intersect(mainuser, user) {
-	var mainPos = mainuser.entity;
-	var userPos = user.entity;
+function intersect(mainentity, entity) {
+	var mainPos = mainentity.physical;
+	var entityPos = entity.physical;
 	var mainX = mainPos.x;
 	var mainY = mainPos.y;
 	var mainW = mainPos.w;
 	var mainH = mainPos.h;
-	var userX = userPos.x;
-	var userY = userPos.y;
-	var userW = userPos.w;
-	var userH = userPos.h;
+	var entityX = entityPos.x;
+	var entityY = entityPos.y;
+	var entityW = entityPos.w;
+	var entityH = entityPos.h;
 	// console.log("MAIN",mainPos);
-	// console.log("USER",userPos);
+	// console.log("entity",entityPos);
 	let cond1 = false;
 	let cond2 = false;
 	let cond3 = false;
 	let cond4 = false;
 
-	if (userX >= mainX && mainX + mainW >= userX) {
+	if (entityX > mainX && mainX + mainW > entityX) {
 		// console.log("1");
-		if (userY >= mainY && mainY + mainH >= userY) {
+		if (entityY > mainY && mainY + mainH > entityY) {
 			// console.log("2");
 			cond1 = true;
 			intersectionInfo = "COND1";
 		}
 	}
-	if (mainX >= userX && userX + userW >= mainX) {
+	if (mainX > entityX && entityX + entityW > mainX) {
 		// console.log("3");
-		if (mainY >= userY && userY + userH >= mainY) {
+		if (mainY > entityY && entityY + entityH > mainY) {
 			// console.log("-----4");
 			cond2 = true;
 			intersectionInfo = "COND2";
 		}
 	}
-	if (mainX <= userX && mainX + mainW >= userX) {
-		if (mainY >= userY && userY + userH >= mainY) {
+	if (mainX < entityX && mainX + mainW > entityX) {
+		if (mainY > entityY && entityY + entityH > mainY) {
 			cond3 = true;
 			intersectionInfo = "COND3";
 		}
 	}
-	if (userX <= mainX && userX + userW >= mainX) {
-		if (userY >= mainY && mainY + mainH >= userY) {
+	if (entityX < mainX && entityX + entityW > mainX) {
+		if (entityY > mainY && mainY + mainH > entityY) {
 			cond4 = true;
-			intersectionInfo = "COND4" +(userX*1 + userW*1)*1+ ":"+mainX;
+			intersectionInfo = "COND4" +(entityX*1 + entityW*1)*1+ ":"+mainX;
 		}
 	}
 	if (cond1 || cond2 || cond3 || cond4) {
@@ -66,15 +66,15 @@ function getDirImage(role,dir) {
 	return role+"_"+dir+".png"; 
 }
 
-function createMissile(user) {
+function createMissile(entity) {
 	var missile = {
 		'id' : Math.floor(Math.random() * 10000),
-		'userId' : user.id,
-		'entity' : {
-			'x' : user.entity.x,
-			'y' : user.entity.y,
-			'color' : user.entity.color,
-			'direction' : user.entity.direction,
+		'entityId' : entity.id,
+		'physical' : {
+			'x' : entity.physical.x,
+			'y' : entity.physical.y,
+			'color' : entity.physical.color,
+			'direction' : entity.physical.direction,
 			'w' : 10,
 			'h' : 5
 		}
@@ -82,14 +82,14 @@ function createMissile(user) {
 	return missile;
 }
 
-function isOutOfBounds(currentEntity, WIN_W, WIN_H, velX, velY) {
-	if (currentEntity.x + currentEntity.w + velX > WIN_W) {
+function isOutOfBounds(currentphysical, WIN_W, WIN_H, velX, velY) {
+	if (currentphysical.x + currentphysical.w + velX > WIN_W) {
 		return true;
-	} else if (currentEntity.y + currentEntity.h + velY > WIN_H) {
+	} else if (currentphysical.y + currentphysical.h + velY > WIN_H) {
 		return true;
-	} else if (currentEntity.x + velX < 0) {
+	} else if (currentphysical.x + velX < 0) {
 		return true;
-	} else if (currentEntity.y + velY < 0) {
+	} else if (currentphysical.y + velY < 0) {
 		return true;
 	}
 	return false;

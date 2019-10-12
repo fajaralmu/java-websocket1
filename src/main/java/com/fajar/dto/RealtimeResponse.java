@@ -15,11 +15,11 @@ public class RealtimeResponse implements Serializable{
 	 */
 	private static final long serialVersionUID = 4025058368937979008L;
 	private OutputMessage message;
-	private RealtimePlayer user;
+	private Entity entity;
 	private String responseCode;
 	private String responseMessage;
 	private Map<String, Object> info;
-	private List<RealtimePlayer> users = new ArrayList<RealtimePlayer>();
+	private List<Entity> entities = new ArrayList<Entity>();
 	
 	private List<String> infos = new ArrayList<>();
 
@@ -40,12 +40,12 @@ public class RealtimeResponse implements Serializable{
 		this.message = message;
 	}
 
-	public RealtimePlayer getUser() {
-		return user;
+	public Entity getEntity() {
+		return entity;
 	}
 
-	public void setUser(RealtimePlayer user) {
-		this.user = user;
+	public void setEntity(Entity user) {
+		this.entity = user;
 	}
 
 	public String getResponseCode() {
@@ -72,12 +72,12 @@ public class RealtimeResponse implements Serializable{
 		this.info = info;
 	}
 
-	public List<RealtimePlayer> getUsers() {
-		return users;
+	public List<Entity> getEntities() {
+		return entities;
 	}
 
-	public void setUsers(List<RealtimePlayer> users) {
-		this.users = users;
+	public void setEntities(List<Entity> users) {
+		this.entities = users;
 	}
 
 	public List<String> getInfos() {

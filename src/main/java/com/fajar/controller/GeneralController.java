@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.fajar.parameter.EntityParameter;
-import com.fajar.service.RealtimeUserService;
+import com.fajar.service.RealtimeService;
 import com.fajar.util.JSONUtil;
 
 /**
@@ -26,7 +26,7 @@ public class GeneralController {
 	
 	Logger log = LoggerFactory.getLogger(GeneralController.class);
 	@Autowired
-	private RealtimeUserService realtimeService;
+	private RealtimeService realtimeService;
 	
 	public GeneralController() {
 		log.info("-----------------GENERAL CONTROLLER------------------");

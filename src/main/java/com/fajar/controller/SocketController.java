@@ -28,8 +28,8 @@ import com.fajar.dto.RealtimeRequest;
 import com.fajar.dto.RealtimeResponse;
 import com.fajar.dto.Message;
 import com.fajar.dto.OutputMessage;
-import com.fajar.dto.RealtimePlayer;
-import com.fajar.service.RealtimeUserService;
+import com.fajar.dto.Entity;
+import com.fajar.service.RealtimeService;
 import com.fajar.util.JSONUtil;
 
 @CrossOrigin
@@ -39,7 +39,7 @@ public class SocketController {
 	@Autowired
 	private SimpMessagingTemplate webSocket;
 	@Autowired
-	RealtimeUserService realtimeUserService;
+	RealtimeService realtimeUserService;
 	
 	public SocketController() {
 		log.info("------------------SOCKET CONTROLLER #1-----------------");
@@ -50,7 +50,7 @@ public class SocketController {
 		response.setContentType(APPLICATION_JSON);
 		response.setCharacterEncoding(UTF_8);
 		RealtimeResponse responseObject = realtimeUserService.registerUser(request);
-		responseObject.setUsers(realtimeUserService.getUsers());
+		responseObject.setEntities(realtimeUserService.getUsers());
 		join2(responseObject);
 		return responseObject;
 	}

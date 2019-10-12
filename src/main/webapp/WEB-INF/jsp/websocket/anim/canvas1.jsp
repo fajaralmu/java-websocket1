@@ -34,10 +34,7 @@ canvas {
 	border: solid 1px black;
 	background-color: rgb(100, 200, 0);
 	height: 20px;
-	width: ${winW
-}
-px
-;
+	width: ${winW}px;
 
 	
 
@@ -46,21 +43,29 @@ px
 </head>
 <body onload="disconnect()">
 	<p id="info" align="center"></p>
-	<p id="user-info"></p>
 	<h3 id="ws-info"></h3>
-	<p id="realtime-info"></p>
-	<table>
+	
+	<table style="layout:fixed">
 		<tr>
-			<td>Health:</td>
-			<td><div
+			<td><h3>Health</h3><div
 					style="width:${winW}px; padding:5px; border:solid 1px blue;">
 					<div id="life-bar" class="life-bar"></div>
 				</div></td>
+			<td></td>
 		</tr>
+		
+		<tr valign="top">
+			<td>
+				<canvas id="tutorial" width="${winW}" height="${winH}"> </canvas>
+			</td>
+			<td>
+				<p id="entity-info"></p>
+				<p id="realtime-info"></p>
+				<p id="msg-info"></p>
+			</td>
+		</tr>
+	
 	</table>
-	<hr>
-	<canvas id="tutorial" width="${winW}" height="${winH}"> </canvas>
-	<hr />
 	<label>Input Name: </label>
 	<input id="name" type="text" />
 	<button class="btn-ok" id="join" onclick="join()">Join</button>
@@ -71,7 +76,7 @@ px
 		Connected: <span id="connect-info" />
 	</p>
 
-	<p id="msg-info"></p>
+	
 	<script type="text/javascript">
 		var layouts = ${layouts};
 
@@ -90,13 +95,13 @@ px
 		var isAnimate = false;
 		var velX = 0, velY = 0;
 		var x = 10, y = 10;
-		var users = new Array();
-		var user = {};
+		var entities = new Array();
+		var entity = {};
 		var dirUp = "u";
 		var dirLeft = "l";
 		var dirRight = "r";
 		var dirDown = "d";
-		var userDirection = "r";
+		var entityDirection = "r";
 		var firing = false;
 
 		function printInfo(text) {
@@ -109,7 +114,7 @@ px
 
 		function join() {
 			var name = document.getElementById("name").value;
-			user.name = name;
+			entity.name = name;
 			postReq(
 					"/websocket1/game-app-simple/join",
 					"name=" + name,
@@ -118,11 +123,11 @@ px
 						var responseObject = JSON.parse(response);
 						console.log("RESPONSE", responseObject);
 						if (responseObject.responseCode == "00") {
-							user = responseObject.user;
-							//	console.log("USER",user);
-							document.getElementById("user-info").innerHTML = JSON
-									.stringify(user);
-							window.document.title = "PLAYER: " + user.name;
+							entity = responseObject.entity;
+							//	console.log("USER",entity);
+							document.getElementById("entity-info").innerHTML = JSON
+									.stringify(entity);
+							window.document.title = "PLAYER: " + entity.name;
 							document.getElementById("name").disabled = true;
 							initAnimation();
 							loadImages();
@@ -138,25 +143,27 @@ px
 		}
 
 		function leave() {
-			window.document.title = "0FF-PLAYER: " + user.name;
-			leaveApp(user.id);
+			window.document.title = "0FF-PLAYER: " + entity.name;
+			leaveApp(entity.id);
 		}
 	</script>
 	<script type="text/javascript">
 		var fireCount = 0;
-		var userImages = new Array();
+		var entityImages = new Array();
 		var allMissiles = new Array();
 
-		function updateUserInfo() {
-			var amount = this.user.life / baseHealth * WIN_W;
+		function updateEntityInfo() {
+			var amount = this.entity.life / baseHealth * WIN_W;
 			document.getElementById("life-bar").style.width = amount + "px";
 		}
 
 		window.onkeydown = function(e) {
+			this.entity.physical.lastUpdated = new Date();
 			move(e.key);
 		}
 
 		window.onkeyup = function(e) {
+			this.entity.physical.lastUpdated = new Date();
 			run = 0;
 			release(e.key);
 		}
@@ -175,22 +182,22 @@ px
 			if (key == "d") {
 				velX = 1 + run;
 				run += runIncrement;
-				userDirection = (dirRight);
+				entityDirection = (dirRight);
 			}
 			if (key == "a") {
 				velX = -1 - run;
 				run += runIncrement;
-				userDirection = (dirLeft);
+				entityDirection = (dirLeft);
 			}
 			if (key == "s") {
 				velY = 1 + run;
 				run += runIncrement;
-				userDirection = (dirDown);
+				entityDirection = (dirDown);
 			}
 			if (key == "w") {
 				velY = -1 - run;
 				run += runIncrement;
-				userDirection = (dirUp);
+				entityDirection = (dirUp);
 			}
 			if (key == "o") {
 				fireMissile();
@@ -211,38 +218,38 @@ px
 			}
 		}
 
-		function renderUser(currentUser) {
-			var isPlayer = (currentUser.id == this.user.id);
-			for (let i = 0; i < currentUser.missiles.length; i++) {
-				let missile = currentUser.missiles[i];
+		function renderEntity(currentEntity) {
+			var isPlayer = (currentEntity.id == this.entity.id);
+			for (let i = 0; i < currentEntity.missiles.length; i++) {
+				let missile = currentEntity.missiles[i];
 
-				let velocity = getVelocity(missile.entity.direction, 5);
+				let velocity = getVelocity(missile.physical.direction, 5);
 
-				currentUser.missiles[i].entity.x += velocity.x;
-				currentUser.missiles[i].entity.y += velocity.y;
+				currentEntity.missiles[i].physical.x += velocity.x;
+				currentEntity.missiles[i].physical.y += velocity.y;
 
-				/* for(let j=0;j<users.length;j++){
-					var u = users[i];
-					if(u.id != missile.userId){
+				/* for(let j=0;j<entities.length;j++){
+					var u = entities[i];
+					if(u.id != missile.entityId){
 						if(intersect(u, missile)){
-							users[i].life--;
+							entities[i].life--;
 						}
 					}
 				}  */
 				let missileIntersects = false;
 				if (!isPlayer) {
-					if (intersect(this.user, missile)) {
+					if (intersect(this.entity, missile)) {
 						firing = true;
-						this.user.life--;
+						this.entity.life--;
 
 					}
 				}
 				if (isPlayer){
-					for (let x = 0; x < users.length; x++) {
-						if (users[x].id != this.user.id) {
-							if (intersect(missile, users[x])) {
+					for (let x = 0; x < entities.length; x++) {
+						if (entities[x].id != this.entity.id) {
+							if (intersect(missile, entities[x])) {
 								firing = true;
-								//		console.log("===============intersects",this.user.id,users[i].id );
+								//		console.log("===============intersects",this.entity.id,entities[i].id );
 								missileIntersects = true;
 							}
 						}
@@ -250,7 +257,7 @@ px
 					for (let x = 0; x < layouts.length; x++) {
 						 	if (intersect(missile, layouts[x])) {
 								firing = true;
-								//		console.log("===============intersects",this.user.id,users[i].id );
+								//		console.log("===============intersects",this.entity.id,entities[i].id );
 								missileIntersects = true;
 						 }
 					}	
@@ -258,27 +265,27 @@ px
 
 				//this works
 				if (missileIntersects
-						|| currentUser.missiles[i].entity.x<0 || currentUser.missiles[i].entity.x>WIN_W
-						|| currentUser.missiles[i].entity.y<0 || currentUser.missiles[i].entity.y>WIN_H) {
-					currentUser.missiles.splice(i, 1);
+						|| currentEntity.missiles[i].physical.x<0 || currentEntity.missiles[i].physical.x>WIN_W
+						|| currentEntity.missiles[i].physical.y<0 || currentEntity.missiles[i].physical.y>WIN_H) {
+					currentEntity.missiles.splice(i, 1);
 				}
-				let missileEntity = missile.entity;
+				let missilephysical = missile.physical;
 				ctx.save();
-				ctx.fillStyle = missileEntity.color;
-				ctx.fillRect(missileEntity.x, missileEntity.y, missileEntity.w,
-						missileEntity.h);
+				ctx.fillStyle = missilephysical.color;
+				ctx.fillRect(missilephysical.x, missilephysical.y, missilephysical.w,
+						missilephysical.h);
 				ctx.restore();
 			}
 
 			if (isPlayer) {
-				let currentEntity = currentUser.entity;
-				let outOfBounds = isOutOfBounds(currentEntity, WIN_W, WIN_H,
+				let currentphysical = currentEntity.physical;
+				let outOfBounds = isOutOfBounds(currentphysical, WIN_W, WIN_H,
 						velX, velY);
 				let layoutItemIntersects = {};
 				let intersectLayout = false;
 				for (let i = 0; i < layouts.length; i++) {
 					let layoutItem = layouts[i];
-					if (!intersectLayout && intersect(currentUser,layoutItem )) {
+					if (!intersectLayout && intersect(currentEntity,layoutItem )) {
 						intersectLayout = true;
 						layoutItemIntersects = layoutItem;
 					}
@@ -292,44 +299,49 @@ px
 				}else{
 					printInfo("NO INTERSECTION");
 				}
-				if (!outOfBounds) {
-					currentUser.entity.x += velXToDo;
-					currentUser.entity.y += velYToDo;
+				if(currentphysical.lastUpdate< this.entity.physical.lastUpdate){
+					currentEntity.physical.x = this.entity.physical.x;
+					currentEntity.physical.y = this.entity.physical.y;
 				}
-				this.user.entity.direction = userDirection;
-				currentUser.entity.direction = this.user.entity.direction;
-				currentUser.life = this.user.life;
-				//currentUser.missiles = this.user.missiles;
-				this.user = currentUser;
-				document.getElementById("user-info").innerHTML = JSON
-						.stringify(this.user);
-				updateUserInfo();
+				
+				if (!outOfBounds) {
+					currentEntity.physical.x += velXToDo;
+					currentEntity.physical.y += velYToDo;
+				}
+				this.entity.physical.direction = entityDirection;
+				currentEntity.physical.direction = this.entity.physical.direction;
+				currentEntity.life = this.entity.life;
+				//currentEntity.missiles = this.entity.missiles;
+				this.entity = currentEntity;
+				document.getElementById("entity-info").innerHTML = JSON
+						.stringify(this.entity);
+				updateEntityInfo();
 			}
-			if (velX != 0 || velY != 0 || currentUser.missiles.length > 0
+			if (velX != 0 || velY != 0 || currentEntity.missiles.length > 0
 					|| firing) {
-				//console.log("=================",currentUser.entity);
+				//console.log("=================",currentEntity.physical);
 				if (firing)
 					firing = false;
 				updateMovement();
 			}
 
-			let position = currentUser.entity;
-			ctx.save();
-			ctx.fillStyle = position.color;
+			let physical = currentEntity.physical;
+		 	ctx.save();
+		 	ctx.fillStyle = physical.color;
 			ctx.font = "15px Arial";
 			
-			if (!currentUser.entity.layout) {
-				ctx.fillText(currentUser.name + "." + position.direction + "."
-						+ currentUser.active + ".(" + currentUser.life + ")",
-						position.x, position.y - 10);
+			if (!currentEntity.physical.layout) {
+				ctx.fillText(currentEntity.name + "." + physical.direction + "."
+						+ currentEntity.active + ".(" + currentEntity.life + ")",
+						physical.x, physical.y - 10);
 			} else {
-				 ctx.fillText(currentUser.id, position.x, position.y - 10);
+				 ctx.fillText(currentEntity.id, physical.x, physical.y - 10);
 
-			}//ctx.strokeRect(position.x, position.y, currentUser.entity.w, currentUser.entity.h);
-			//ctx.fillRect(position.x, position.y, currentUser.entity.w, currentUser.entity.h);
-			ctx.drawImage(getUserImage(currentUser.entity.role,
-					currentUser.entity.direction), position.x, position.y,
-					currentUser.entity.w, currentUser.entity.h);
+			}//ctx.strokeRect(physical.x, physical.y, currentEntity.physical.w, currentEntity.physical.h);
+			//ctx.fillRect(physical.x, physical.y, currentEntity.physical.w, currentEntity.physical.h);
+			ctx.drawImage(getEntityImage(currentEntity.physical.role,
+					currentEntity.physical.direction), physical.x, physical.y,
+					currentEntity.physical.w, currentEntity.physical.h);
 			fireCount++;
 			ctx.restore();
 
@@ -341,21 +353,21 @@ px
 			}
 			firing = true;
 			fireCount = 0;
-			var missile = createMissile(this.user);
+			var missile = createMissile(this.entity);
 			console.log("000000000000000000000000000000Fire Missile", missile);
-			this.user.missiles.push(missile);
+			this.entity.missiles.push(missile);
 			updateMovement();
 		}
 
-		function getUserImage(role, dir) {
+		function getEntityImage(role, dir) {
 			var fullAddress = window.location.protocol + '//'
 					+ window.location.hostname
 					+ (window.location.port ? ':' + window.location.port : '');
 			let url = fullAddress + "<c:url value="/res/img/player/"/>"
 					+ getDirImage(role, dir);
-			for (var i = 0; i < userImages.length; i++) {
-				if (userImages[i].src == url) {
-					return userImages[i];
+			for (var i = 0; i < entityImages.length; i++) {
+				if (entityImages[i].src == url) {
+					return entityImages[i];
 				}
 			}
 			return new Image();
@@ -384,31 +396,31 @@ px
 					ctx.drawImage(image, i * 50, 0, 50, 38);
 				}
 				image.src = urls[i];
-				userImages.push(image);
+				entityImages.push(image);
 			}
 		}
 
 		function render() {
 			for (let i = 0; i < layouts.length; i++) {
 				let currentLayout = layouts[i];
-				renderUser(currentLayout);
+				renderEntity(currentLayout);
 			}
 
-			for (let i = 0; i < users.length; i++) {
-				let currentUser = users[i];
-				renderUser(currentUser);
+			for (let i = 0; i < entities.length; i++) {
+				let currentEntity = entities[i];
+				renderEntity(currentEntity);
 
-				if (currentUser.entity.role == 101
-						&& currentUser.id != this.user.id) {
-					if (intersect(this.user, currentUser)) {
-						if (this.user.life < baseHealth) {
-							this.user.life += currentUser.life;
-							if (this.user.life > baseHealth) {
-								this.user.life = baseHealth
+				if (currentEntity.physical.role == 101
+						&& currentEntity.id != this.entity.id) {
+					if (intersect(this.entity, currentEntity)) {
+						if (this.entity.life < baseHealth) {
+							this.entity.life += currentEntity.life;
+							if (this.entity.life > baseHealth) {
+								this.entity.life = baseHealth
 							}
 							updateMovement();
 						}
-						leaveApp(currentUser.id);
+						leaveApp(currentEntity.id);
 					}
 				}
 			}

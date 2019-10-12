@@ -3,17 +3,18 @@ var stompClient = null;
 
 function updateMovement() {
 	stompClient.send("/app/move", {}, JSON.stringify({
-		'user' : {
-			'id' : user.id * 1,
-			'life' : user.life,
+		'entity' : {
+			'id' : entity.id * 1,
+			'life' : entity.life,
 			'active' : true,
-			'entity' : {
-				'x' : user.entity.x,
-				'y' : user.entity.y,
-				'direction' : user.entity.direction,
-				'color' : user.entity.color
+			'physical' : {
+				'x' : entity.physical.x,
+				'y' : entity.physical.y,
+				'direction' : entity.physical.direction,
+				'color' : entity.physical.color,
+				'lastUpdated': new Date()
 			},
-			'missiles' : user.missiles
+			'missiles' : entity.missiles
 		}
 	}));
 }
@@ -28,9 +29,8 @@ function doConnect() {
 		document.getElementById("ws-info").innerHTML = stompClient.ws._transport.ws.url;
 		stompClient.subscribe('/wsResp/players', function(response) {
 			var respObject = JSON.parse(response.body);
-		//	console.log("subscribed", respObject);
-	//	document.getElementById("msg-info").innerHTML = JSON.stringify(respObject);
-			users = respObject.users;
+		 	entities = respObject.entities;
+		 	//document.getElementById("realtime-info").innerHTML = response.body;
 		});
 		updateMovement();
 	});
@@ -45,10 +45,10 @@ function disconnect() {
 	console.log("Disconnected");
 }
 
-function leaveApp(userId){
+function leaveApp(entityId){
 	stompClient.send("/app/leave", {}, JSON.stringify({
-		'user' : {
-			'id':userId*1
+		'entity' : {
+			'id':entityId*1
 		}
 	}));
 }

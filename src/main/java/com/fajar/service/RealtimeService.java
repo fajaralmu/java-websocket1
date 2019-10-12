@@ -13,20 +13,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
-import com.fajar.dto.Entity;
+import com.fajar.dto.Physical;
 import com.fajar.dto.OutputMessage;
-import com.fajar.dto.RealtimePlayer;
+import com.fajar.dto.Entity;
 import com.fajar.dto.RealtimeRequest;
 import com.fajar.dto.RealtimeResponse;
 import com.fajar.parameter.EntityParameter;
 import javax.annotation.PostConstruct;
 @Service
-public class RealtimeUserService {
-	Logger log = LoggerFactory.getLogger(RealtimeUserService.class);
+public class RealtimeService {
+	Logger log = LoggerFactory.getLogger(RealtimeService.class);
 	
 	private Integer bonusCount=0;
-	private List<RealtimePlayer> users = new ArrayList<>();
-	private List<RealtimePlayer> layouts = new ArrayList<>();
+	private List<Entity> entities = new ArrayList<>();
+	private List<Entity> layouts = new ArrayList<>();
 	private Random random = new Random();
 	private Long currentTime = new Date().getTime();
 	private Boolean isRegistering = false;
@@ -37,7 +37,7 @@ public class RealtimeUserService {
 	@Autowired
 	private LayoutService layoutService;
 	
-	public RealtimeUserService() {
+	public RealtimeService() {
 		log.info("-----------------REALTIME SERVICE-------------------");
 		startThread();
 		
@@ -45,17 +45,17 @@ public class RealtimeUserService {
 	
 	@PostConstruct
 	private void loadLayout() {
-		List<RealtimePlayer> layouts = layoutService.getLayouts();
+		List<Entity> layouts = layoutService.getLayouts();
 		this.layouts.addAll(layouts);
 	}
 	
 	
 	
-	public List<RealtimePlayer> getLayouts() {
+	public List<Entity> getLayouts() {
 		return layouts;
 	}
 
-	public void setLayouts(List<RealtimePlayer> layouts) {
+	public void setLayouts(List<Entity> layouts) {
 		this.layouts = layouts;
 	}
 
@@ -69,7 +69,6 @@ public class RealtimeUserService {
 					Long systemDate = new Date().getTime();
 					Long delta =systemDate - currentTime;
 				 	if(delta >= deltaTime && isRegistering == false) {
-						System.out.println("..............Adding new Bonus");
 						addBonusLife();
 						currentTime=systemDate;
 					}
@@ -79,24 +78,24 @@ public class RealtimeUserService {
 		thread.start();
 	}
 	
-	public synchronized void addUser(RealtimePlayer user) {
-		users.add(user);
+	public synchronized void addUser(Entity user) {
+		entities.add(user);
 	}
 	
-	public List<RealtimePlayer> getUsers(){
-		return users;
+	public List<Entity> getUsers(){
+		return entities;
 	}
 	
-	private boolean intersectLayout(RealtimePlayer player) {
-		for (RealtimePlayer layoutItem : layouts) {
-			if(Entity.intersect(player, layoutItem))
+	private boolean intersectLayout(Entity player) {
+		for (Entity layoutItem : layouts) {
+			if(Physical.intersect(player, layoutItem))
 				return true;
 		}
 		return false;
 	}
 	
-	public RealtimePlayer getUser(Integer id) {
-		for(RealtimePlayer user:users) {
+	public Entity getUser(Integer id) {
+		for(Entity user:entities) {
 			if(user.getId().equals(id)) {
 				return user;
 			}
@@ -104,8 +103,8 @@ public class RealtimeUserService {
 		return null;
 	}
 
-	public RealtimePlayer getUser(String name) {
-		for(RealtimePlayer user:users) {
+	public Entity getUser(String name) {
+		for(Entity user:entities) {
 			if(user.getName().equals(name)) {
 				return user;
 			}
@@ -119,19 +118,19 @@ public class RealtimeUserService {
 		RealtimeResponse responseObject = new RealtimeResponse();
 		String name =request.getParameter("name");
 		
-		RealtimePlayer user;
+		Entity user;
 		if(getUser(name)!=null) {
 //			responseObject.setResponseCode("01");
 //			responseObject.setResponseMessage("Please choose another name!");
 //			return responseObject;
 			user =getUser(name);
 		}else {
-			user = new RealtimePlayer(random.nextInt(100),name,new Date());
-			Entity entity = new Entity();
+			user = new Entity(random.nextInt(100),name,new Date());
+			Physical entity = new Physical();
 			entity.setX(10);
 			entity.setY(10);
 			entity.setColor("rgb("+random.nextInt(200)+","+random.nextInt(200)+","+random.nextInt(200)+")");
-			user.setEntity(entity);
+			user.setPhysical(entity);
 			
 		}
 		responseObject.setResponseCode("00");
@@ -139,16 +138,16 @@ public class RealtimeUserService {
 		
 		
 		addUser(user);
-		responseObject.setUser(user);
-		responseObject.setUsers(getUsers());
+		responseObject.setEntity(user);
+		responseObject.setEntities(getUsers());
 		isRegistering = false;
 		return responseObject;
 	}
 	
 	public void removePlayer(Integer id) {
-		for (RealtimePlayer realtimeUser : users) {
+		for (Entity realtimeUser : entities) {
 			if(realtimeUser.getId().equals(id)) {
-				users.remove(realtimeUser);
+				entities.remove(realtimeUser);
 				break;
 			}
 		}
@@ -156,44 +155,46 @@ public class RealtimeUserService {
 	
 	public void addBonusLife() {
 		Random rand = new Random();
-		RealtimePlayer bonus = new RealtimePlayer();
+		Entity bonus = new Entity();
 		bonus.setId(rand.nextInt(101010)+1);
 		bonus.setActive(true);
 		bonus.setName("Extra Life "+bonus.getId());
 		bonus.setLife(rand.nextInt(9)+1);
-		Entity entity = new Entity();
+		Physical entity = new Physical();
 		Integer x = rand.nextInt(EntityParameter.WIN_W-entity.getW());
 		Integer y = rand.nextInt(EntityParameter.WIN_H-entity.getH());
 		entity.setRole(EntityParameter.ROLE_BONUS_LIFE);
 		entity.setPeriod(10000L);
 		entity.setX(x);
 		entity.setY(y);
-		bonus.setEntity(entity);
+		bonus.setPhysical(entity);
 		removeByRole(EntityParameter.ROLE_BONUS_LIFE);
 		if(intersectLayout(bonus)) {
 			return;
 		}
-		users.add(bonus);
+		entities.add(bonus);
 		bonusCount++;
 		RealtimeResponse response = new  RealtimeResponse("00","OK");
-		response.setUsers(users);
+		response.setEntities(entities);
+		log.info("..............Adding new Bonus");
+		
 		webSocket.convertAndSend("/wsResp/players", response);
 		
 	}
 	
 	private synchronized void removeByRole(Integer role) {
-		List<RealtimePlayer> playerList = new ArrayList<>();
-		playerList.addAll(users);
-		for(RealtimePlayer player:playerList) {
-			if(player.getEntity().getRole().equals(role)) {
+		List<Entity> playerList = new ArrayList<>();
+		playerList.addAll(entities);
+		for(Entity player:playerList) {
+			if(player.getPhysical().getRole().equals(role)) {
 				removePlayer(player.getId());
 			}
 		}
 	}
 
 	public RealtimeResponse disconnectUser(RealtimeRequest request) {
-		Integer userId = request.getUser().getId();
-		RealtimePlayer user = getUser(userId);
+		Integer userId = request.getEntity().getId();
+		Entity user = getUser(userId);
 		log.info("REQ: {}",request);
 		if(user == null) {
 			RealtimeResponse response = new RealtimeResponse("01","Invalid USER!");
@@ -202,16 +203,15 @@ public class RealtimeUserService {
 		}
 		removePlayer(userId);
 		RealtimeResponse response = new RealtimeResponse("00","OK");
-		response.setUser(user);
-		response.setUsers(users);
+		response.setEntity(user);
+		response.setEntities(entities);
 		response.setMessage(new  OutputMessage(user.getName(), "Good bye! i'm leaving now", new Date().toString()));
 		return response;
 	}
 	
 	public RealtimeResponse connectUser(RealtimeRequest request) {
-		// TODO Auto-generated method stub
-		Integer userId = request.getUser().getId();
-		RealtimePlayer user = getUser(userId);
+		 Integer userId = request.getEntity().getId();
+		Entity user = getUser(userId);
 		log.info("REQ: {}",request);
 		if(user == null) {
 			RealtimeResponse response = new RealtimeResponse("01","Invalid USER!");
@@ -219,7 +219,7 @@ public class RealtimeUserService {
 			return response;
 		}
 		RealtimeResponse response = new RealtimeResponse("00","OK");
-		response.setUser(user);
+		response.setEntity(user);
 		response.setMessage(new  OutputMessage(user.getName(), "HI!, i'm joining conversation!", new Date().toString()));
 		return response;
 	}
@@ -227,24 +227,25 @@ public class RealtimeUserService {
 	public RealtimeResponse addEntity(RealtimeRequest request) {
 		 
 		RealtimeResponse response = new RealtimeResponse("00","OK");
-		response.setUsers(users);
+		response.setEntities(entities);
 		 return response;
 	}
 
 	public RealtimeResponse move(RealtimeRequest request) {
 		RealtimeResponse response = new RealtimeResponse("00","OK");
-		for(RealtimePlayer user:users) {
-			if(user.getId().equals(request.getUser().getId())) {
+		for(Entity entity:entities) {
+			entity.getPhysical().setLastUpdated(new Date());
+			if(entity.getId().equals(request.getEntity().getId())) {
 				
-				user.setEntity(request.getUser().getEntity());
-				user.setMissiles(request.getUser().getMissiles());
-				user.setLife(request.getUser().getLife());
-				user.setActive(request.getUser().isActive());
+				entity.setPhysical(request.getEntity().getPhysical());
+				entity.setMissiles(request.getEntity().getMissiles());
+				entity.setLife(request.getEntity().getLife());
+				entity.setActive(request.getEntity().isActive());
 			}
 		}
 		
 		
-		response.setUsers(users);
+		response.setEntities(entities);
 		return response;
 	}
 	

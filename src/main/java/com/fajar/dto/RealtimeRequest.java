@@ -8,21 +8,21 @@ public class RealtimeRequest implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = 6891178168583718796L;
-	private RealtimePlayer user;
+	private Entity entity;
 	
-	public RealtimePlayer getUser() {
-		return user;
+	public Entity getEntity() {
+		return entity;
 	}
 	
 	
 
-	public void setUser(RealtimePlayer user) {
-		this.user = user;
+	public void setEntity(Entity user) {
+		this.entity = user;
 	}
 
 	@Override
 	public String toString() {
-		return "ChatRequest [user=" + user + "]";
+		return "ChatRequest [user=" + entity + "]";
 	}
 	
 	
