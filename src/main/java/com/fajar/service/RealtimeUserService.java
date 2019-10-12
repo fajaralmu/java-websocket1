@@ -134,6 +134,7 @@ public class RealtimeUserService {
 		bonus.setId(rand.nextInt(101010)+1);
 		bonus.setActive(true);
 		bonus.setName("Extra Life "+bonus.getId());
+		bonus.setLife(rand.nextInt(9)+1);
 		Entity entity = new Entity();
 		Integer x = rand.nextInt(EntityParameter.WIN_W-entity.getW());
 		Integer y = rand.nextInt(EntityParameter.WIN_H-entity.getH());

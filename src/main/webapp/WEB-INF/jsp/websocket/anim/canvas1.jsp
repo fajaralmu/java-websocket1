@@ -68,6 +68,7 @@ canvas {
 		var rolePlayer = ${rolePlayer};
 		var roleBonusLife = ${roleBonusLife};
 		var roleBonusArmor = ${roleBonusArmor};
+		var roles = ${roles};
 		var baseHealth = ${baseHealth};
 		var connectBtn = document.getElementById('connect');
 		var canvas = document.getElementById('tutorial');
@@ -270,7 +271,7 @@ canvas {
 			ctx.fillText(currentUser.name+"."+position.direction+"."+currentUser.active+".("+currentUser.life+")", position.x, position.y - 10);
 			//ctx.strokeRect(position.x, position.y, currentUser.entity.w, currentUser.entity.h);
 			//ctx.fillRect(position.x, position.y, currentUser.entity.w, currentUser.entity.h);
-			ctx.drawImage(getUserImage(currentUser.entity.direction), position.x, position.y, currentUser.entity.w, currentUser.entity.h);
+			ctx.drawImage(getUserImage(currentUser.entity.role,currentUser.entity.direction), position.x, position.y, currentUser.entity.w, currentUser.entity.h);
 			fireCount++;
 			ctx.restore();
 			
@@ -289,10 +290,10 @@ canvas {
 			updateMovement();
 		}
 		
-		function getUserImage(dir){
+		function getUserImage(role,dir){
 			var fullAddress = window.location.protocol+'//'+window.location.hostname+(window.location.port ? ':'+window.location.port: '');
-			let url = fullAddress+"<c:url value="/res/img/player/"/>"+getDirImage(dir);
-			 for(var i=0;i<userImages.length;i++){
+			let url = fullAddress+"<c:url value="/res/img/player/"/>"+getDirImage(role,dir);
+			  for(var i=0;i<userImages.length;i++){
 				 if(userImages[i].src == url){
 					 return userImages[i];
 				 }
@@ -303,10 +304,14 @@ canvas {
 		
 		function loadImages(){
 			let urls = new Array();
-			urls.push("<c:url value="/res/img/player/"/>up.png");
-			urls.push("<c:url value="/res/img/player/"/>down.png");
-					urls.push("<c:url value="/res/img/player/"/>right.png");
-							urls.push("<c:url value="/res/img/player/"/>left.png");
+			for(let i=0;i<roles.length;i++){
+				let role = roles[i];
+				urls.push("<c:url value="/res/img/player/"/>"+role+"_u.png");
+				urls.push("<c:url value="/res/img/player/"/>"+role+"_d.png");
+				urls.push("<c:url value="/res/img/player/"/>"+role+"_r.png");
+				urls.push("<c:url value="/res/img/player/"/>"+role+"_l.png");
+			}
+			
 			for(let i=0;i<urls.length;i++){
 				var image = new Image();
 				
@@ -321,9 +326,21 @@ canvas {
 		
 		function render(){
 			for(let i=0;i<users.length;i++){
-				renderUser(users[i]);
-				if(users[i].id != this.user.id){
-					if(intersect(this.user,users[i])){
+				let currentUser = users[i];
+				renderUser(currentUser);
+				
+				if(currentUser.entity.role == 101 && currentUser.id != this.user.id){
+					if(intersect(this.user,currentUser)){
+						if(this.user.life<baseHealth){
+							this.user.life+=currentUser.life;
+							if(this.user.life>baseHealth){
+								this.user.life=baseHealth
+							}
+							updateMovement();
+						}
+						
+						leaveApp(currentUser.id);
+						
 				//		console.log("===============intersects",this.user.id,users[i].id );
 					}
 				}

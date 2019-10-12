@@ -47,26 +47,8 @@ function intersect(mainuser, user) {
 	return false;
 }
 
-function getDirImage(dir) {
-	let imgName = "up.png";
-	switch (dir) {
-	case dirUp:
-		imgName = "up.png";
-		break;
-	case dirDown:
-		imgName = "down.png";
-		break;
-	case dirLeft:
-		imgName = "left.png";
-		break;
-	case dirRight:
-		imgName = "right.png";
-		break;
-	default:
-		break;
-
-	}
-	return imgName;
+function getDirImage(role,dir) {
+	return role+"_"+dir+".png"; 
 }
 
 function createMissile(user) {

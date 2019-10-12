@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.fajar.parameter.EntityParameter;
+import com.fajar.util.JSONUtil;
 
 /**
  * 
@@ -58,6 +59,7 @@ public class GeneralController {
 		model.addAttribute("rolePlayer", EntityParameter.ROLE_PLAYER);
 		model.addAttribute("roleBonusLife", EntityParameter.ROLE_BONUS_LIFE);
 		model.addAttribute("roleBonusArmor", EntityParameter.ROLE_BONUS_ARMOR);
+		model.addAttribute("roles", JSONUtil.listToJson(EntityParameter.roles()));
 		return "websocket/anim/canvas1";
 	}
 }
