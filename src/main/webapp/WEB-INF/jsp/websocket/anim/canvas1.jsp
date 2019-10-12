@@ -151,6 +151,8 @@ canvas {
 		var fireCount = 0;
 		var entityImages = new Array();
 		var allMissiles = new Array();
+		var run = 0;
+		var runIncrement = 0.5;
 
 		function updateEntityInfo() {
 			var amount = this.entity.life / baseHealth * WIN_W;
@@ -176,8 +178,7 @@ canvas {
 
 		}
 
-		var run = 0;
-		var runIncrement = 0.5;
+		
 		function move(key) {
 			if (key == "d") {
 				velX = 1 + run;
@@ -302,6 +303,9 @@ canvas {
 				if(currentphysical.lastUpdate< this.entity.physical.lastUpdate){
 					currentEntity.physical.x = this.entity.physical.x;
 					currentEntity.physical.y = this.entity.physical.y;
+					velXToDo = 0;
+					velYToDo = 0;
+					run = 0;
 				}
 				
 				if (!outOfBounds) {
