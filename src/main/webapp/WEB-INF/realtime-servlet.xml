@@ -24,7 +24,7 @@
 	</bean>
 
 	<!-- Configuration for Redis Client -->
-	<bean id="jedisPoolConfig"
+	<!-- <bean id="jedisPoolConfig"
 		class="redis.clients.jedis.JedisPoolConfig">
 		
 	</bean>
@@ -40,7 +40,7 @@
 		class="org.springframework.data.redis.core.RedisTemplate"
 		p:connection-factory-ref="jedisConnectionFactory">
 	</bean>
-
+ -->
 <!-- 	<bean id="transactionManager"
 		class="org.springframework.orm.jpa.JpaTransactionManager" />
  -->

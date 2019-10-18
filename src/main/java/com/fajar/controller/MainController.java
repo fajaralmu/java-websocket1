@@ -19,7 +19,7 @@ public class MainController {
 	Logger log = LoggerFactory.getLogger(MainController.class);
 	
 	public MainController(){
-		log.info("---------------------------GOTO puskesmas controller------------------------------");
+		log.info("---------------------------GOTO WebSocket controller------------------------------");
 	}
 
 	@RequestMapping(value = { "/", "home" })

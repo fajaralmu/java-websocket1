@@ -222,10 +222,15 @@ canvas {
 
 		function renderEntity(currentEntity) {
 			var isPlayer = (currentEntity.id == this.entity.id);
+			if(isPlayer){
+			//	missiles = this.entity.missiles;
+				currentEntity = this.entity;
+			}
 			for (let i = 0; i < currentEntity.missiles.length; i++) {
 				let missile = currentEntity.missiles[i];
+				
 
-				let velocity = getVelocity(missile.physical.direction, 5);
+				let velocity = getVelocity(missile.physical.direction, 10);
 
 				currentEntity.missiles[i].physical.x += velocity.x;
 				currentEntity.missiles[i].physical.y += velocity.y;
@@ -280,6 +285,8 @@ canvas {
 			}
 
 			if (isPlayer) {
+			//	this.entity.missiles = currentEntity.missiles;
+			//	currentEntity = this.entity;
 				let currentphysical = currentEntity.physical;
 				let outOfBounds = isOutOfBounds(currentphysical, WIN_W, WIN_H,
 						velX, velY);
@@ -315,9 +322,9 @@ canvas {
 				if(currentphysical.lastUpdate< this.entity.physical.lastUpdate){
 					currentEntity.physical.x = this.entity.physical.x;
 					currentEntity.physical.y = this.entity.physical.y;
-					velXToDo = 0;
+					/* velXToDo = 0;
 					velYToDo = 0;
-					run = 0;
+					run = 0; */
 				}
 				
 				if (!outOfBounds) {

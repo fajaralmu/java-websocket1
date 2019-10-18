@@ -14,7 +14,7 @@
 		enable-matrix-variables="true" />
 	<mvc:resources location="/resources/" mapping="/res/**"></mvc:resources>
 	<jpa:repositories base-package="com.fajar.repo" />
-
+ 
 
 	<context:component-scan base-package="com.fajar" />
 
