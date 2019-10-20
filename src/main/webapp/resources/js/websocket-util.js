@@ -1,26 +1,41 @@
 var stompClient = null;
-		
+var baseCount = 10;
+var updateCount = baseCount;
+var contextPath = "";
 
-function updateMovement() {
-	stompClient.send("/app/move", {}, JSON.stringify({
-		'entity' : {
-			'id' : entity.id * 1,
-			'life' : entity.life,
-			'active' : true,
-			'physical' : {
-				'x' : entity.physical.x,
-				'y' : entity.physical.y,
-				'direction' : entity.physical.direction,
-				'color' : entity.physical.color,
-				'lastUpdated': new Date()
-			},
-			'missiles' : entity.missiles
-		}
-	}));
+function updateMovement(entity) {
+	updateCount++;
+	if(entity == null){
+		return null;
+	}
+	if(updateCount<baseCount){
+		return;
+	}
+	updateCount = 0;
+	
+	return new Promise((resolve, reject) => {
+	//	console.log("===============Update Entity, ",entity);
+		stompClient.send("/app/move", {}, JSON.stringify({
+			'entity' : {
+				'id' : entity.id * 1,
+				'life' : entity.life,
+				'active' : true,
+				'physical' : {
+					'x' : entity.physical.x,
+					'y' : entity.physical.y,
+					'direction' : entity.physical.direction,
+					'color' : entity.physical.color,
+					'lastUpdated': new Date()
+				},
+				'missiles' : entity.missiles
+			}
+		}));
+	
+	});
 }
 
-function doConnect() {
-	var socket = new SockJS('/websocket1/game-app');
+function doConnect(entity) {
+	var socket = new SockJS(contextPath+'/game-app');
 	stompClient = Stomp.over(socket);
 	stompClient.connect({}, function(frame) {
 		setConnected(true);
@@ -32,7 +47,7 @@ function doConnect() {
 		 	entities = respObject.entities;
 		 	//document.getElementById("realtime-info").innerHTML = response.body;
 		});
-		updateMovement();
+		updateMovement(entity);
 	});
 	
 }

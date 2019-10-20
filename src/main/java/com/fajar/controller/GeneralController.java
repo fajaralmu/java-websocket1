@@ -2,6 +2,9 @@ package com.fajar.controller;
 
 import java.io.IOException;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,7 +59,7 @@ public class GeneralController {
 		return "websocket/chat2";
 	}
 	@GetMapping(value = "canvasv1")
-	public String canvasv1(Model model)  {
+	public String canvasv1(Model model, HttpServletRequest request, HttpServletResponse response)  {
 		model.addAttribute("winW", EntityParameter.WIN_W);
 		model.addAttribute("winH", EntityParameter.WIN_H);
 		model.addAttribute("baseHealth", EntityParameter.baseHealth);
@@ -66,6 +69,7 @@ public class GeneralController {
 		model.addAttribute("roles", JSONUtil.listToJson(EntityParameter.roles()));
 		model.addAttribute("layouts",JSONUtil.listToJson( realtimeService.getLayouts()));
 		model.addAttribute("staticImages",JSONUtil.listToJson(EntityParameter.assets()));
+		model.addAttribute("contextPath",request.getContextPath());
 		return "websocket/anim/canvas1";
 	}
 }

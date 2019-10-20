@@ -8,155 +8,49 @@ import java.util.List;
 import com.fajar.annotation.Dto;
 import com.fajar.parameter.EntityParameter;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 @Dto
-public class Entity implements Serializable{
-	
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class Entity implements Serializable {
+
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -6053163038967434721L;
 	private Integer id;
 	private String name;
+	@Builder.Default
 	private Date joinedDate = new Date();
 	private Physical physical;
-	private Integer life =EntityParameter.baseHealth;
-	private Boolean active;
-	private List<Missile>  missiles = new ArrayList<>();
-	
-	   
-	public Entity() {
-		super();
-	}
-	
-	 
-	public Integer getId() {
-		return id;
-	}
+	@Builder.Default
+	private Integer life = EntityParameter.baseHealth;
+	private boolean active;
+	@Builder.Default
+	@Getter(value = AccessLevel.NONE)
+	private List<Missile> missiles = new ArrayList<Missile>();
 
-
-
-
-
-	public void setId(Integer id) {
+	public Entity(Integer id, String name, Date createdDate) {
 		this.id = id;
-	}
-
-
-
-
-
-	public String getName() {
-		return name;
-	}
-
-
-
-
-
-	public void setName(String name) {
 		this.name = name;
+		this.joinedDate = createdDate;
+		this.missiles = new ArrayList<>();
+		life = EntityParameter.baseHealth;
 	}
-
-
-
-
-
-	public Date getJoinedDate() {
-		return joinedDate;
-	}
-
-
-
-
-
-	public void setJoinedDate(Date joinedDate) {
-		this.joinedDate = joinedDate;
-	}
-
-
-
-
-
-	public Physical getPhysical() {
-		return physical;
-	}
-
-
-
-
-
-	public void setPhysical(Physical phy) {
-		this.physical = phy;
-	}
-
-
-
-
-
-	public Integer getLife() {
-		return life;
-	}
-
-
-
-
-
-	public void setLife(Integer life) {
-		this.life = life;
-	}
-
-
-
-
-
-	public Boolean isActive() {
-		return active;
-	}
-
-
-
-
-
-	public void setActive(Boolean active) {
-		this.active = active;
-	}
-
-
-
-
-
+	
 	public List<Missile> getMissiles() {
-		return missiles;
+		if(this.missiles == null) {
+			return new ArrayList<>();
+		}
+		return this.missiles;
 	}
-
-
-
-
-
-	public void setMissiles(List<Missile> missiles) {
-		this.missiles = missiles;
-	}
-
-
-
-
-
-	public Entity(Integer id, String name, Date joinedDate) {
-		super();
-		this.id = id;
-		this.name = name;
-		this.joinedDate = joinedDate;
-	}
-
-
-	@Override
-	public String toString() {
-		return "Entity [id=" + id + ", name=" + name + ", joinedDate=" + joinedDate + ", physical=" + physical
-				+ ", life=" + life + ", active=" + active + ", missiles=" + missiles + "]";
-	}
-	 
-
-	
-	
 
 }

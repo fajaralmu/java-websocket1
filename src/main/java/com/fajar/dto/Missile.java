@@ -4,7 +4,17 @@ import java.io.Serializable;
 
 import com.fajar.annotation.Dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+
 @Dto
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Missile implements Serializable{
 
 	/**
@@ -14,25 +24,6 @@ public class Missile implements Serializable{
 	private Physical physical;
 	private Integer id;
 	private Integer entityId;
-	public Physical getPhysical() {
-		return physical;
-	}
-	public void setPhysical(Physical entity) {
-		this.physical = entity;
-	}
-	public Integer getId() {
-		return id;
-	}
-	public void setId(Integer id) {
-		this.id = id;
-	}
-	public Integer getEntityId() {
-		return entityId;
-	}
-	public void setEntityId(Integer userId) {
-		this.entityId = userId;
-	}
-	
-	
+	 
 
 }

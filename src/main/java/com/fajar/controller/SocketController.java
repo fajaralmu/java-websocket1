@@ -6,7 +6,6 @@ import static com.fajar.parameter.RestParameter.UTF_8;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -18,19 +17,15 @@ import org.springframework.http.MediaType;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fajar.dto.RealtimeRequest;
-import com.fajar.dto.RealtimeResponse;
 import com.fajar.dto.Message;
 import com.fajar.dto.OutputMessage;
-import com.fajar.dto.Entity;
+import com.fajar.dto.RealtimeRequest;
+import com.fajar.dto.RealtimeResponse;
 import com.fajar.service.RealtimeService;
-import com.fajar.util.JSONUtil;
 
 @CrossOrigin
 @RestController
@@ -77,10 +72,10 @@ public class SocketController {
 	}
 	
 	@MessageMapping("/move")
-	@SendTo("/wsResp/players")
-	public RealtimeResponse move( RealtimeRequest request) throws IOException {
-		log.info("MOVE: {},",request);
-		return realtimeUserService.move(request);
+	//@SendTo("/wsResp/players")
+	public void move( RealtimeRequest request) throws IOException {
+//		log.info("MOVE: {},",request);
+		 realtimeUserService.move(request);
 	}
 	
 	@MessageMapping("/leave")

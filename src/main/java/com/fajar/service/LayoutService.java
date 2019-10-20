@@ -24,6 +24,26 @@ public class LayoutService {
 	Logger log = LoggerFactory.getLogger(LayoutService.class);
 
 	private static List<Entity> layouts = new ArrayList<>();
+	private Integer startX=10;
+	private Integer startY=10;
+	
+	
+
+	public Integer getStartX() {
+		return startX;
+	}
+
+	public void setStartX(Integer startX) {
+		this.startX = startX;
+	}
+
+	public Integer getStartY() {
+		return startY;
+	}
+
+	public void setStartY(Integer startY) {
+		this.startY = startY;
+	}
 
 	public static void main(String[] ddf) {
 		new LayoutService().load();
@@ -31,12 +51,16 @@ public class LayoutService {
 	}
 
 	public LayoutService() {
-		load();
+		log.info("======================LAYOUT SERVICE======================");
 	}
 
 	public void load() {
 		try {
-			URL path = getClass().getResource("layout1.png");
+			log.info("------------------WILL.... LOAD LAYOUT LAYOUT: {}", getClass().getCanonicalName());
+			URL path = new URL("file:/D:/Development/Assets/websocket/layout1.png");
+			log.info("------------------IMAGE PATH1: {}", path);
+			log.info("------------------IMAGE PATH2: {}", path.getPath());
+			log.info("------------------IMAGE PATH3: {}", path.getFile());
 			BufferedImage layout1 = ImageIO.read(path);
 			createLayout(layout1);
 			log.info("------------------LOADED LAYOUT: {}", layouts);
@@ -56,6 +80,12 @@ public class LayoutService {
 				int green = (pixel >> 8) & 0xff;
 				int blue = (pixel) & 0xff;
 
+				if (red == 120 && green == 120 && blue == 120) {
+					int xPos = x * 60 + 30;
+					int yPos = y * 40+ 30;
+					setStartX(xPos);
+					setStartY(yPos);
+				}
 				if (red == 255 && green == 0 && blue == 0) {
 					int xPos = x * 60 + 30;
 					int yPos = y * 40+ 30;
@@ -78,6 +108,7 @@ public class LayoutService {
 					entity.setX(xPos);
 					entity.setLayout(true);
 					entity.setY(yPos);
+					entity.setW(50);
 					entity.setRole(EntityParameter.ROLE_LAYOUT_1);
 					layoutEntity.setPhysical(entity);
 					layouts.add(layoutEntity);

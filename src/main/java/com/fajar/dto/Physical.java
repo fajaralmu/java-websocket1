@@ -1,12 +1,25 @@
 package com.fajar.dto;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 import com.fajar.annotation.Dto;
+import com.fajar.dto.RealtimeResponse.RealtimeResponseBuilder;
 import com.fajar.parameter.EntityParameter;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 @Dto
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Physical implements Serializable{
 
 	/**
@@ -15,11 +28,16 @@ public class Physical implements Serializable{
 	private static final long serialVersionUID = -8774779913578007103L;
 	private Integer x;
 	private Integer y;
+	@Builder.Default
 	private String color = "rgb(0,0,0)";
-	private Integer w = 63;
-	private Integer h = 63;
+	@Builder.Default
+	private Integer w = 30;
+	@Builder.Default
+	private Integer h = 30;
+	@Builder.Default
 	private String direction = "r";
 	private Boolean layout;
+	@Builder.Default
 	private Integer role = EntityParameter.ROLE_PLAYER;
 	private Long period;
 	private Date lastUpdated;

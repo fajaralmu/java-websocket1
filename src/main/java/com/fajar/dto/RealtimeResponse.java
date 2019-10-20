@@ -7,7 +7,16 @@ import java.util.Map;
 
 import com.fajar.annotation.Dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 @Dto
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class RealtimeResponse implements Serializable{
 	
 	/**
@@ -19,74 +28,18 @@ public class RealtimeResponse implements Serializable{
 	private String responseCode;
 	private String responseMessage;
 	private Map<String, Object> info;
+	@Builder.Default
 	private List<Entity> entities = new ArrayList<Entity>();
-	
+	@Builder.Default
 	private List<String> infos = new ArrayList<>();
 
-	public RealtimeResponse() {
-		super();
-	}
+	 
 	public RealtimeResponse(String rc,String rm) {
 		this.responseCode = rc;
 		this.responseMessage = rm;
 	}
 	
 	
-	public OutputMessage getMessage() {
-		return message;
-	}
-
-	public void setMessage(OutputMessage message) {
-		this.message = message;
-	}
-
-	public Entity getEntity() {
-		return entity;
-	}
-
-	public void setEntity(Entity user) {
-		this.entity = user;
-	}
-
-	public String getResponseCode() {
-		return responseCode;
-	}
-
-	public void setResponseCode(String responseCode) {
-		this.responseCode = responseCode;
-	}
-
-	public String getResponseMessage() {
-		return responseMessage;
-	}
-
-	public void setResponseMessage(String responseMessage) {
-		this.responseMessage = responseMessage;
-	}
-
-	public Map<String, Object> getInfo() {
-		return info;
-	}
-
-	public void setInfo(Map<String, Object> info) {
-		this.info = info;
-	}
-
-	public List<Entity> getEntities() {
-		return entities;
-	}
-
-	public void setEntities(List<Entity> users) {
-		this.entities = users;
-	}
-
-	public List<String> getInfos() {
-		return infos;
-	}
-
-	public void setInfos(List<String> infos) {
-		this.infos = infos;
-	}
 	
 	
 	

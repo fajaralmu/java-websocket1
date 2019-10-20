@@ -34,9 +34,14 @@ canvas {
 	border: solid 1px black;
 	background-color: rgb(100, 200, 0);
 	height: 20px;
-	width: ${winW}px;
+	width: ${winW
+}
+px
+;
+
 
 	
+
 
 }
 </style>
@@ -44,27 +49,26 @@ canvas {
 <body onload="disconnect()">
 	<p id="info" align="center"></p>
 	<h3 id="ws-info"></h3>
-	
-	<table style="layout:fixed">
+
+	<table style="layout: fixed">
 		<tr>
-			<td><h3>Health</h3><div
-					style="width:${winW}px; padding:5px; border:solid 1px blue;">
+			<td><h3>Health</h3>
+				<div style="width:${winW}px; padding:5px; border:solid 1px blue;">
 					<div id="life-bar" class="life-bar"></div>
 				</div></td>
 			<td></td>
 		</tr>
-		
+
 		<tr valign="top">
-			<td>
-				<canvas id="tutorial" width="${winW}" height="${winH}"> </canvas>
-			</td>
+			<td><canvas id="tutorial" width="${winW}" height="${winH}">
+				</canvas></td>
 			<td>
 				<p id="entity-info"></p>
 				<p id="realtime-info"></p>
 				<p id="msg-info"></p>
 			</td>
 		</tr>
-	
+
 	</table>
 	<label>Input Name: </label>
 	<input id="name" type="text" />
@@ -76,18 +80,19 @@ canvas {
 		Connected: <span id="connect-info" />
 	</p>
 
-	
+
 	<script type="text/javascript">
 		var layouts = ${layouts};
+		contextPath = "${contextPath}"
 
-		var WIN_W = ${winW};
-		var WIN_H = ${winH};
-		var rolePlayer = ${rolePlayer};
-		var roleBonusLife = ${roleBonusLife};
-		var roleBonusArmor = ${roleBonusArmor};
+		var WIN_W = "${winW}";
+		var WIN_H = "${winH}";
+		var rolePlayer = ${rolePlayer} ;
+		var roleBonusLife =  ${roleBonusLife} ;
+		var roleBonusArmor =  ${roleBonusArmor} ;
 		var roles = ${roles};
 		var staticImages = ${staticImages};
-		var baseHealth = ${baseHealth};
+		var baseHealth =  ${baseHealth} ;
 		var connectBtn = document.getElementById('connect');
 		var canvas = document.getElementById('tutorial');
 		var ctx = canvas.getContext('2d');
@@ -110,14 +115,14 @@ canvas {
 		}
 
 		function connect() {
-			doConnect();
+			doConnect(entity);
 		}
 
 		function join() {
 			var name = document.getElementById("name").value;
 			entity.name = name;
 			postReq(
-					"/websocket1/game-app-simple/join",
+					"<spring:url value="/game-app-simple/join" />",
 					"name=" + name,
 					"join",
 					function(response) {
@@ -154,6 +159,9 @@ canvas {
 		var allMissiles = new Array();
 		var run = 0;
 		var runIncrement = 0.5;
+		var stoppingMode = false;
+		var stopIncrement = 0.5;
+		var stopVel  = 0;
 
 		function updateEntityInfo() {
 			var amount = this.entity.life / baseHealth * WIN_W;
@@ -172,31 +180,52 @@ canvas {
 		}
 
 		function release(key) {
-			if (key == "a" || key == "d")
+			if (key == "a" || key == "d"){
+				stoppingMode = true;
 				velX = 0;
-			if (key == "w" || key == "s")
+				stopVel = stopIncrement;
+				if(key == "a"){
+					stopVel = -stopVel;
+				}
+			}
+				
+			if (key == "w" || key == "s"){
+				stoppingMode = true;
 				velY = 0;
+				stopVel = stopIncrement;
+				if(key == "w"){
+					stopVel = -stopVel;
+				}
+			}
+				
 
 		}
 
+		function update(){
+			 
+		}
 		
 		function move(key) {
 			if (key == "d") {
+				stoppingMode = false;
 				velX = 1 + run;
 				run += runIncrement;
 				entityDirection = (dirRight);
 			}
 			if (key == "a") {
+				stoppingMode = false;
 				velX = -1 - run;
 				run += runIncrement;
 				entityDirection = (dirLeft);
 			}
 			if (key == "s") {
+				stoppingMode = false;
 				velY = 1 + run;
 				run += runIncrement;
 				entityDirection = (dirDown);
 			}
 			if (key == "w") {
+				stoppingMode = false;
 				velY = -1 - run;
 				run += runIncrement;
 				entityDirection = (dirUp);
@@ -214,6 +243,7 @@ canvas {
 
 		function animate() {
 			clearCanvas();
+			update();
 			render();
 			if (isAnimate) {
 				window.requestAnimationFrame(animate);
@@ -222,71 +252,76 @@ canvas {
 
 		function renderEntity(currentEntity) {
 			var isPlayer = (currentEntity.id == this.entity.id);
-			if(isPlayer){
-			//	missiles = this.entity.missiles;
+			if (isPlayer && this.entity != null) {
+				//	missiles = this.entity.missiles;
 				currentEntity = this.entity;
 			}
-			for (let i = 0; i < currentEntity.missiles.length; i++) {
-				let missile = currentEntity.missiles[i];
-				
+			
+			if (currentEntity.missiles != null)
+				for (let i = 0; i < currentEntity.missiles.length; i++) {
+					let missile = currentEntity.missiles[i];
 
-				let velocity = getVelocity(missile.physical.direction, 10);
+					let velocity = getVelocity(missile.physical.direction, 10);
 
-				currentEntity.missiles[i].physical.x += velocity.x;
-				currentEntity.missiles[i].physical.y += velocity.y;
+					currentEntity.missiles[i].physical.x += velocity.x;
+					currentEntity.missiles[i].physical.y += velocity.y;
 
-				/* for(let j=0;j<entities.length;j++){
-					var u = entities[i];
-					if(u.id != missile.entityId){
-						if(intersect(u, missile)){
-							entities[i].life--;
+					/* for(let j=0;j<entities.length;j++){
+						var u = entities[i];
+						if(u.id != missile.entityId){
+							if(intersect(u, missile)){
+								entities[i].life--;
+							}
+						}
+					}  */
+					let missileIntersects = false;
+					if (!isPlayer) {
+						if (intersect(this.entity, missile).status == true) {
+							firing = true;
+							this.entity.life--;
+
 						}
 					}
-				}  */
-				let missileIntersects = false;
-				if (!isPlayer) {
-					if (intersect(this.entity, missile).status == true) {
-						firing = true;
-						this.entity.life--;
-
-					}
-				}
-				if (isPlayer){
-					for (let x = 0; x < entities.length; x++) {
-						if (entities[x].id != this.entity.id) {
-							if (intersect(missile, entities[x]).status == true) {
+					if (isPlayer) {
+						if (this.entity.life <= 0) {
+							alert("GAME OVER....");
+							leave();
+						}
+						for (let x = 0; x < entities.length; x++) {
+							if (entities[x].id != this.entity.id) {
+								if (intersect(missile, entities[x]).status == true) {
+									firing = true;
+									//		console.log("===============intersects",this.entity.id,entities[i].id );
+									missileIntersects = true;
+								}
+							}
+						}
+						for (let x = 0; x < layouts.length; x++) {
+							if (intersect(missile, layouts[x]).status == true) {
 								firing = true;
 								//		console.log("===============intersects",this.entity.id,entities[i].id );
 								missileIntersects = true;
 							}
 						}
 					}
-					for (let x = 0; x < layouts.length; x++) {
-						 	if (intersect(missile, layouts[x]).status == true) {
-								firing = true;
-								//		console.log("===============intersects",this.entity.id,entities[i].id );
-								missileIntersects = true;
-						 }
-					}	
-				}
 
-				//this works
-				if (missileIntersects
-						|| currentEntity.missiles[i].physical.x<0 || currentEntity.missiles[i].physical.x>WIN_W
-						|| currentEntity.missiles[i].physical.y<0 || currentEntity.missiles[i].physical.y>WIN_H) {
-					currentEntity.missiles.splice(i, 1);
+					//this works
+					if (missileIntersects
+							|| currentEntity.missiles[i].physical.x<0 || currentEntity.missiles[i].physical.x>WIN_W
+							|| currentEntity.missiles[i].physical.y<0 || currentEntity.missiles[i].physical.y>WIN_H) {
+						currentEntity.missiles.splice(i, 1);
+					}
+					let missilephysical = missile.physical;
+					ctx.save();
+					ctx.fillStyle = missilephysical.color;
+					ctx.fillRect(missilephysical.x, missilephysical.y,
+							missilephysical.w, missilephysical.h);
+					ctx.restore();
 				}
-				let missilephysical = missile.physical;
-				ctx.save();
-				ctx.fillStyle = missilephysical.color;
-				ctx.fillRect(missilephysical.x, missilephysical.y, missilephysical.w,
-						missilephysical.h);
-				ctx.restore();
-			}
 
 			if (isPlayer) {
-			//	this.entity.missiles = currentEntity.missiles;
-			//	currentEntity = this.entity;
+				//	this.entity.missiles = currentEntity.missiles;
+				//	currentEntity = this.entity;
 				let currentphysical = currentEntity.physical;
 				let outOfBounds = isOutOfBounds(currentphysical, WIN_W, WIN_H,
 						velX, velY);
@@ -296,37 +331,41 @@ canvas {
 				let intersectionReverse = {};
 				for (let i = 0; i < layouts.length; i++) {
 					let layoutItem = layouts[i];
-					if (!intersectLayout && intersect(currentEntity,layoutItem ).status ==true) {
-						intersection  =intersect(currentEntity,layoutItem );
-						intersectionReverse = intersectReverse(currentEntity,layoutItem );
+					if (!intersectLayout
+							&& intersect(currentEntity, layoutItem).status == true) {
+						intersection = intersect(currentEntity, layoutItem);
+						intersectionReverse = intersectReverse(currentEntity,
+								layoutItem);
 						intersectLayout = true;
 						layoutItemIntersects = layoutItem;
 					}
 				}
-				
-				if (intersectLayout &&( intersection.direction==currentphysical.direction 
-						||
-						intersectionReverse.direction==currentphysical.direction) ) {
-					printInfo("intersect layout :"+ intersectionInfo+ JSON.stringify(layoutItemIntersects));
+
+				if (intersectLayout
+						&& (intersection.direction == currentphysical.direction || intersectionReverse.direction == currentphysical.direction)) {
+					printInfo("intersect layout :" + intersectionInfo
+							+ JSON.stringify(layoutItemIntersects));
 					velX = 0;
 					velY = 0;
 					run = 0;
-				} if (intersectLayout){
-					printInfo("WILL intersect layout :"+ intersectionInfo+ JSON.stringify(layoutItemIntersects));
-				}else{
-			 
+				}
+				if (intersectLayout) {
+					printInfo("WILL intersect layout :" + intersectionInfo
+							+ JSON.stringify(layoutItemIntersects));
+				} else {
+
 					printInfo("NO INTERSECTION");
 				}
 				let velXToDo = velX;
 				let velYToDo = velY;
-				if(currentphysical.lastUpdate< this.entity.physical.lastUpdate){
+				if (currentphysical.lastUpdate < this.entity.physical.lastUpdate) {
 					currentEntity.physical.x = this.entity.physical.x;
 					currentEntity.physical.y = this.entity.physical.y;
 					/* velXToDo = 0;
 					velYToDo = 0;
 					run = 0; */
 				}
-				
+
 				if (!outOfBounds) {
 					currentEntity.physical.x += velXToDo;
 					currentEntity.physical.y += velYToDo;
@@ -345,20 +384,22 @@ canvas {
 				//console.log("=================",currentEntity.physical);
 				if (firing)
 					firing = false;
-				updateMovement();
+				updateMovement(entity);
 			}
 
 			let physical = currentEntity.physical;
-		 	ctx.save();
-		 	ctx.fillStyle = physical.color;
+			ctx.save();
+			ctx.fillStyle = physical.color;
 			ctx.font = "15px Arial";
-			
+
 			if (!currentEntity.physical.layout) {
-				ctx.fillText(currentEntity.name + "." + physical.direction + "."
-						+ currentEntity.active + ".(" + currentEntity.life + ")",
-						physical.x, physical.y - 10);
+				ctx
+						.fillText(currentEntity.name + "." + physical.direction
+								+ "." + currentEntity.active + ".("
+								+ currentEntity.life + ")", physical.x,
+								physical.y - 10);
 			} else {
-				 ctx.fillText(currentEntity.id, physical.x, physical.y - 10);
+				ctx.fillText(currentEntity.id, physical.x, physical.y - 10);
 
 			}//ctx.strokeRect(physical.x, physical.y, currentEntity.physical.w, currentEntity.physical.h);
 			//ctx.fillRect(physical.x, physical.y, currentEntity.physical.w, currentEntity.physical.h);
@@ -379,7 +420,7 @@ canvas {
 			var missile = createMissile(this.entity);
 			console.log("000000000000000000000000000000Fire Missile", missile);
 			this.entity.missiles.push(missile);
-			updateMovement();
+			updateMovement(entity);
 		}
 
 		function getEntityImage(role, dir) {
@@ -401,18 +442,22 @@ canvas {
 			let urls = new Array();
 			for (let i = 0; i < roles.length; i++) {
 				let role = roles[i];
-				urls .push("<c:url value="/res/img/player/"/>" + role
+				urls
+						.push("<c:url value="/res/img/player/"/>" + role
 								+ "_u.png");
-				urls .push("<c:url value="/res/img/player/"/>" + role
+				urls
+						.push("<c:url value="/res/img/player/"/>" + role
 								+ "_d.png");
-				urls .push("<c:url value="/res/img/player/"/>" + role
+				urls
+						.push("<c:url value="/res/img/player/"/>" + role
 								+ "_r.png");
-				urls .push("<c:url value="/res/img/player/"/>" + role
+				urls
+						.push("<c:url value="/res/img/player/"/>" + role
 								+ "_l.png");
 			}
 			for (let i = 0; i < staticImages.length; i++) {
 				let staticImage = staticImages[i];
-				urls .push("<c:url value="/res/img/"/>" + staticImage); 
+				urls.push("<c:url value="/res/img/"/>" + staticImage);
 			}
 
 			for (let i = 0; i < urls.length; i++) {
@@ -440,14 +485,17 @@ canvas {
 				if (currentEntity.physical.role == 101
 						&& currentEntity.id != this.entity.id) {
 					if (intersect(this.entity, currentEntity).status == true) {
+						let lifeEntity = currentEntity;
 						if (this.entity.life < baseHealth) {
-							this.entity.life += currentEntity.life;
+							this.entity.life += lifeEntity.life;
 							if (this.entity.life > baseHealth) {
 								this.entity.life = baseHealth
 							}
-							updateMovement();
+							updateMovement(entity);
 						}
-						leaveApp(currentEntity.id);
+						console.log("-------ADD BONUS", this.entity, lifeEntity);
+						leaveApp(lifeEntity.id);
+						entities.splice(i,1);
 					}
 				}
 			}
