@@ -3,7 +3,11 @@ var baseCount = 10;
 var updateCount = baseCount;
 var contextPath = "";
 
-function updateMovement(entity) {
+async function updateMovement(entity){
+	await sendUpdate(entity);
+}
+
+function sendUpdate(entity) {
 	updateCount++;
 	if(entity == null){
 		return null;
