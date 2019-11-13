@@ -90,7 +90,8 @@ px
 
 	<script type="text/javascript">
 		var layouts = ${layouts};
-		contextPath = "${contextPath}"
+		/*declared in websocket-util.js*/ contextPath = "${contextPath}"
+		var currentLayoutId = 0;
 
 		var WIN_W = "${winW}";
 		var WIN_H = "${winH}";
@@ -130,6 +131,14 @@ px
  		function printInfo(text) {
 			document.getElementById("realtime-info").innerHTML = text;
 		}
+ 		
+ 		function printEntityInfo(entity){
+ 			document.getElementById("entity-info").innerHTML = JSON
+			.stringify(entity);
+ 			document.getElementById("entity-info").innerHTML+=
+ 				"<br> STAGE: "+entity.stageId
+ 				+"<br> LAYOUT ID: "+entity.layoutId;
+ 		}
 
 		function connect() {
 			doConnect(entity);
@@ -148,8 +157,7 @@ px
 						if (responseObject.responseCode == "00") {
 							entity = responseObject.entity;
 							//	console.log("USER",entity);
-							document.getElementById("entity-info").innerHTML = JSON
-									.stringify(entity);
+							printEntityInfo(entity);
 							window.document.title = "PLAYER: " + entity.name;
 							document.getElementById("name").disabled = true;
 							initAnimation();
@@ -291,6 +299,7 @@ px
 			var isPlayer = (currentEntity.id == this.entity.id);
 			if (isPlayer && this.entity != null) {
 				//	missiles = this.entity.missiles;
+				this.entity.stageId = currentEntity.stageId;
 				currentEntity = this.entity;
 			}
 			
@@ -359,6 +368,7 @@ px
 			if (isPlayer) {
 				//	this.entity.missiles = currentEntity.missiles;
 				//	currentEntity = this.entity;
+				//console.log("CURRENT ENTITY :",currentEntity)
 				let currentphysical = currentEntity.physical;
 				let outOfBounds = isOutOfBounds(currentphysical, WIN_W, WIN_H,
 						velX, velY);
@@ -374,6 +384,7 @@ px
 						intersectionReverse = intersectReverse(currentEntity,
 								layoutItem);
 						var layoutRole = layoutItem.physical.role;
+						this.currentLayoutId = layoutItem.id;
 						if(layoutRole != 102){
 							printCircuitInfo(layoutRole+":"+getLayoutRole(layoutRole));
 						}else{
@@ -413,13 +424,13 @@ px
 					currentEntity.physical.x += velXToDo;
 					currentEntity.physical.y += velYToDo;
 				}
+				this.entity.stageId = currentEntity.stageId;
 				this.entity.physical.direction = entityDirection;
 				currentEntity.physical.direction = this.entity.physical.direction;
 				currentEntity.life = this.entity.life;
 				//currentEntity.missiles = this.entity.missiles;
 				this.entity = currentEntity;
-				document.getElementById("entity-info").innerHTML = JSON
-						.stringify(this.entity);
+				printEntityInfo(this.entity);
 				updateEntityInfo();
 			}
 			if (velX != 0 || velY != 0 || currentEntity.missiles.length > 0
@@ -427,6 +438,8 @@ px
 				//console.log("=================",currentEntity.physical);
 				if (firing)
 					firing = false;
+				entity.stageId = currentEntity.stageId;
+				entity.layoutId = this.currentLayoutId;
 				updateMovement(entity);
 			}
 
@@ -463,6 +476,7 @@ px
 			var missile = createMissile(this.entity);
 			console.log("000000000000000000000000000000Fire Missile", missile);
 			this.entity.missiles.push(missile);
+			entity.layoutId = currentLayoutId;
 			updateMovement(entity);
 		}
 
@@ -534,6 +548,7 @@ px
 							if (this.entity.life > baseHealth) {
 								this.entity.life = baseHealth
 							}
+							
 							updateMovement(entity);
 						}
 						console.log("-------ADD BONUS", this.entity, lifeEntity);

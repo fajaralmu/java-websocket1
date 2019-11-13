@@ -24,6 +24,7 @@ function sendUpdate(entity) {
 				'id' : entity.id * 1,
 				'life' : entity.life,
 				'active' : true,
+				'layoutId' : entity.layoutId,
 				'physical' : {
 					'x' : entity.physical.x,
 					'y' : entity.physical.y,
@@ -49,7 +50,8 @@ function doConnect(entity) {
 		stompClient.subscribe('/wsResp/players', function(response) {
 			var respObject = JSON.parse(response.body);
 		 	entities = respObject.entities;
-		 	//document.getElementById("realtime-info").innerHTML = response.body;
+		 	console.log("REALTIME: ",entities);
+//		 	document.getElementById("realtime-info").innerHTML = response.body;
 		});
 		updateMovement(entity);
 	});

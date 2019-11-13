@@ -34,6 +34,11 @@ public class Entity implements Serializable {
 	@Builder.Default
 	private Integer life = EntityParameter.baseHealth;
 	private boolean active;
+	//RACE
+	private Integer layoutId;
+	private Integer stageId;
+	private Integer position;
+	
 	@Builder.Default
 	@Getter(value = AccessLevel.NONE)
 	private List<Missile> missiles = new ArrayList<Missile>();

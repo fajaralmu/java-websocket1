@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import javax.imageio.ImageIO;
@@ -24,8 +26,13 @@ public class LayoutService {
 	Logger log = LoggerFactory.getLogger(LayoutService.class);
 
 	private static List<Entity> layouts = new ArrayList<>();
+	private static List<Integer> greenValues = new ArrayList<>();
+	
+	private static List<Entity> stages = new ArrayList<>();
+	private static Map<Integer, List<Entity>> groupedStages = new HashMap<Integer, List<Entity>>();
 	private Integer startX=100;
 	private Integer startY=100;
+	private Integer maxStage=0;
 	
 	
 
@@ -47,26 +54,123 @@ public class LayoutService {
 
 	public static void main(String[] ddf) {
 		new LayoutService().load();
-		System.out.println(JSONUtil.listToJson(layouts));
+		System.out.println(greenValues);
+		for(Integer key: groupedStages.keySet()) {
+			System.out.println("KEY:"+key+", val: "+groupedStages.get(key));
+		}
+//		System.out.println(JSONUtil.listToJson(layouts));
+//		System.out.println(JSONUtil.listToJson(stages));
+		for (Entity layout : layouts) {
+			System.out.println(layout);
+		}
 	}
 
 	public LayoutService() {
 		log.info("======================LAYOUT SERVICE======================");
 	}
+	
+	public Entity getLayoutById(Integer id) {
+		for (Entity layout : layouts) {
+//			System.out.println("GET BY LAYOUT ID "+layout.getId()+" => " + (layout.getId()-(id)==0));
+			if(layout.getId()-(id)==0) {
+//				System.out.println("LAYOUT:=>"+layout);
+				return layout;
+			}
+			
+		}
+		return null;
+	}
+	 
 
 	public void load() {
 		try {
 			log.info("------------------WILL.... LOAD LAYOUT LAYOUT: {}", getClass().getCanonicalName());
 			URL path = new URL("file:/D:/Development/Assets/websocket/layout1.png");
-			log.info("------------------IMAGE PATH1: {}", path);
-			log.info("------------------IMAGE PATH2: {}", path.getPath());
-			log.info("------------------IMAGE PATH3: {}", path.getFile());
+			URL pathStage = new URL("file:/D:/Development/Assets/websocket/layout1-stage.png");
+			log.info("------------------IMAGE PATH1: {}, {}", path, pathStage);
+			log.info("------------------IMAGE PATH2: {}, {}", path.getPath(), pathStage.getPath());
+			log.info("------------------IMAGE PATH3: {}, {}", path.getFile(), pathStage.getFile());
 			BufferedImage layout1 = ImageIO.read(path);
+			BufferedImage layout1Stage = ImageIO.read(pathStage);
+			loadStage(layout1Stage);
 			createLayout(layout1);
-			log.info("------------------LOADED LAYOUT: {}", layouts);
+			
+			for(Entity layout:layouts) {
+				System.out.println("LAYOUT ITEM: "+layout);
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	
+	private boolean isStored(int greenValue) {
+		for (Integer integer : greenValues) {
+			if(integer.equals(greenValue))
+				return true;
+		}
+		greenValues.add(greenValue);
+		return false;
+	}
+	
+	private void loadStage(BufferedImage denah) {
+		int width = denah.getWidth();
+		int height = denah.getHeight();
+		int currentGreen = 0;
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				System.out.print("*");
+				int pixel = denah.getRGB(x, y);
+				int red = (pixel >> 16) & 0xff;
+				int green = (pixel >> 8) & 0xff;
+				int blue = (pixel) & 0xff;
+
+				if (red == 123 ) {
+					int xPos = x * 10  ;
+					int yPos = y * 10;
+					Entity layoutEntity = new Entity(new Random().nextInt(100100100) + 1,
+							String.valueOf(green), new Date());
+					Physical entity = new Physical();
+					entity.setX(xPos);
+					entity.setLayout(true);
+					entity.setY(yPos);
+					entity.setW(10);
+					entity.setH(10);
+					entity.setRole(EntityParameter.ROLE_STAGE);
+					layoutEntity.setPhysical(entity);
+					stages.add(layoutEntity);
+					isStored(green);
+				}
+			}
+		}
+		System.out.println();
+		groupStages();
+	}
+	
+	private void groupStages() {
+		groupedStages.clear();
+		for (Entity stage : stages) {
+			for (Integer integer : greenValues) {
+				if(stage.getName().equals(integer.toString())) {
+					if(groupedStages.get(integer) == null) {
+						List<Entity> groupedStageList = new ArrayList<>();
+						groupedStageList.add(stage);
+						groupedStages.put(integer, groupedStageList);
+					}else {
+						groupedStages.get(integer).add(stage);
+					}
+				}
+			}
+		}
+	}
+	
+	public int getLayoutRole(int stageId) {
+		for(Integer key:groupedStages.keySet()) {
+			if(key.equals(stageId)) {
+				return groupedStages.get(key).get(0).getPhysical().getRole();
+			}
+		}
+		return 0;
 	}
 
 	public void createLayout(BufferedImage denah) {
@@ -75,6 +179,7 @@ public class LayoutService {
 		int height = denah.getHeight();
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
+				System.out.print("*");
 				int pixel = denah.getRGB(x, y);
 				int red = (pixel >> 16) & 0xff;
 				int green = (pixel >> 8) & 0xff;
@@ -116,12 +221,14 @@ public class LayoutService {
 					layouts.add(layoutEntity);
 				}
 				
-				//CIRCUIT
+				/**
+				 * CIRCUIT AND STAGE
+				 */
 				if (red == 0 && green == 255 && blue == 0) {
 					int xPos = x * 10  ;
 					int yPos = y * 10;
 					Entity layoutEntity = new Entity(new Random().nextInt(100100100) + 1,
-							"layout_" + xPos + "-" + yPos, new Date());
+							"road_" + xPos + "-" + yPos, new Date());
 					Physical entity = new Physical();
 					entity.setX(xPos);
 					entity.setLayout(true);
@@ -130,13 +237,13 @@ public class LayoutService {
 					entity.setH(10);
 					entity.setRole(EntityParameter.ROLE_ROAD_LEFT);
 					layoutEntity.setPhysical(entity);
-					layouts.add(layoutEntity);
+					layouts.add(getStage(layoutEntity));
 				}
 				if (red == 0 && green == 0 && blue == 255) {
 					int xPos = x * 10  ;
 					int yPos = y * 10;
 					Entity layoutEntity = new Entity(new Random().nextInt(100100100) + 1,
-							"layout_" + xPos + "-" + yPos, new Date());
+							"road_" + xPos + "-" + yPos, new Date());
 					Physical entity = new Physical();
 					entity.setX(xPos);
 					entity.setLayout(true);
@@ -145,13 +252,13 @@ public class LayoutService {
 					entity.setH(10);
 					entity.setRole(EntityParameter.ROLE_ROAD_RIGHT);
 					layoutEntity.setPhysical(entity);
-					layouts.add(layoutEntity);
+					layouts.add(getStage(layoutEntity));
 				}
 				if (red == 255 && green == 0 && blue == 100) {
 					int xPos = x * 10  ;
 					int yPos = y * 10;
 					Entity layoutEntity = new Entity(new Random().nextInt(100100100) + 1,
-							"layout_" + xPos + "-" + yPos, new Date());
+							"road_" + xPos + "-" + yPos, new Date());
 					Physical entity = new Physical();
 					entity.setX(xPos);
 					entity.setLayout(true);
@@ -160,13 +267,13 @@ public class LayoutService {
 					entity.setH(10);
 					entity.setRole(EntityParameter.ROLE_ROAD_UP);
 					layoutEntity.setPhysical(entity);
-					layouts.add(layoutEntity);
+					layouts.add(getStage(layoutEntity));
 				}
 				if (red == 255 && green == 100 && blue == 0) {
 					int xPos = x * 10  ;
 					int yPos = y * 10;
 					Entity layoutEntity = new Entity(new Random().nextInt(100100100) + 1,
-							"layout_" + xPos + "-" + yPos, new Date());
+							"road_" + xPos + "-" + yPos, new Date());
 					Physical entity = new Physical();
 					entity.setX(xPos);
 					entity.setLayout(true);
@@ -175,19 +282,33 @@ public class LayoutService {
 					entity.setH(10);
 					entity.setRole(EntityParameter.ROLE_ROAD_DOWN);
 					layoutEntity.setPhysical(entity);
-					layouts.add(layoutEntity);
+					layouts.add(getStage(layoutEntity));
 				}
 			}
 		}
+		System.out.println();
 
+	}
+	
+	private static Entity getStage(Entity layout) {
+		Physical layoutPhysical = layout.getPhysical();
+		System.out.println("CEK");
+		for(Integer key:groupedStages.keySet()) {
+			for (Entity layoutStage : groupedStages.get(key)) {
+				Physical layoutStagePhysical = layoutStage.getPhysical();
+				if(layoutPhysical.getX().equals(layoutStagePhysical.getX())
+						&& layoutPhysical.getY().equals(layoutStagePhysical.getY())) {
+					layout.setStageId(key);
+				}
+			}
+		}
+		
+		return layout;
 	}
 
 	public List<Entity> getLayouts() {
 		return layouts;
 	}
 
-	public void setLayouts(List<Entity> layouts) {
-		LayoutService.layouts = layouts;
-	}
-
+ 
 }

@@ -26,8 +26,7 @@ public class RealtimeService {
 	Logger log = LoggerFactory.getLogger(RealtimeService.class);
 
 	private Integer bonusCount = 0;
-	private List<Entity> entities = new ArrayList<>();
-	private List<Entity> layouts = new ArrayList<>();
+	private List<Entity> entities = new ArrayList<>(); 
 	private Random random = new Random();
 	private Long currentTime = new Date().getTime();
 	private Boolean isRegistering = false;
@@ -46,22 +45,14 @@ public class RealtimeService {
 
 	@PostConstruct
 	private void loadLayout() {
-		
-		
-		
 		layoutService.load();
-		List<Entity> layouts = layoutService.getLayouts();
-		this.layouts.addAll(layouts);
+		 
 	}
 
-	public List<Entity> getLayouts() {
-		return layouts;
+	public List<Entity>getLayouts(){
+		return layoutService.getLayouts();
 	}
-
-	public void setLayouts(List<Entity> layouts) {
-		this.layouts = layouts;
-	}
-
+	 
 	private void startThread() {
 		currentTime = new Date().getTime();
 		Thread thread = new Thread(new Runnable() {
@@ -90,7 +81,7 @@ public class RealtimeService {
 	}
 
 	private boolean intersectLayout(Entity player) {
-		for (Entity layoutItem : layouts) {
+		for (Entity layoutItem : layoutService.getLayouts()) {
 			if (Physical.intersect(player, layoutItem))
 				return true;
 		}
@@ -238,6 +229,13 @@ public class RealtimeService {
 		return response;
 	}
 
+	public void calculatePosition() {
+		
+		for(Entity entity :entities) {
+			
+		}
+	}
+	
 	public void move(RealtimeRequest request) {
 		Thread thread = new Thread(new Runnable() {
 			
@@ -247,7 +245,15 @@ public class RealtimeService {
 				for (Entity entity : entities) {
 					entity.getPhysical().setLastUpdated(new Date());
 					if (entity.getId().equals(request.getEntity().getId())) {
-
+						entity.setLayoutId(request.getEntity().getLayoutId());
+						try {
+							//System.out.println("REQ LAYOUT ID");
+							entity.setStageId(layoutService.getLayoutById(request.getEntity().getLayoutId()).getStageId());
+//							System.out.println("/***********STAGE FOUND***********/");
+						}catch(Exception ex) {
+							System.out.println("/**************NO STAGE HANDLED************/:"+request.getEntity().getLayoutId());
+							ex.printStackTrace();
+						}
 						entity.setPhysical(request.getEntity().getPhysical());
 						entity.setMissiles(request.getEntity().getMissiles());
 						entity.setLife(request.getEntity().getLife());
@@ -256,7 +262,7 @@ public class RealtimeService {
 				}
 
 				response.setEntities(entities);
-				// System.out.println("RESPONSE: "+response);
+//				System.out.println("RESPONSE: "+response);
 				webSocket.convertAndSend("/wsResp/players", response);
 				
 			}
