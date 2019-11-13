@@ -24,8 +24,8 @@ public class LayoutService {
 	Logger log = LoggerFactory.getLogger(LayoutService.class);
 
 	private static List<Entity> layouts = new ArrayList<>();
-	private Integer startX=10;
-	private Integer startY=10;
+	private Integer startX=100;
+	private Integer startY=100;
 	
 	
 
@@ -81,35 +81,99 @@ public class LayoutService {
 				int blue = (pixel) & 0xff;
 
 				if (red == 120 && green == 120 && blue == 120) {
-					int xPos = x * 60 + 30;
-					int yPos = y * 40+ 30;
+					int xPos = x * 10 ;
+					int yPos = y * 10;
 					setStartX(xPos);
 					setStartY(yPos);
 				}
 				if (red == 255 && green == 0 && blue == 0) {
-					int xPos = x * 60 + 30;
-					int yPos = y * 40+ 30;
-					Entity layoutEntity = new Entity(new Random().nextInt(101010) + 1,
+					int xPos = x * 10 ;
+					int yPos = y * 10;
+					Entity layoutEntity = new Entity(new Random().nextInt(100100100) + 1,
 							"layout_" + xPos + "-" + yPos, new Date());
 					Physical entity = new Physical();
 					entity.setX(xPos);
 					entity.setY(yPos);
 					entity.setLayout(true);
+				
 					entity.setRole(EntityParameter.ROLE_LAYOUT_1);
 					layoutEntity.setPhysical(entity);
 					layouts.add(layoutEntity);
 				}
 				if (red == 0 && green == 0 && blue == 0) {
-					int xPos = x * 60 + 30;
-					int yPos = y * 40+ 30;
-					Entity layoutEntity = new Entity(new Random().nextInt(101010) + 1,
+					int xPos = x * 10  ;
+					int yPos = y * 10;
+					Entity layoutEntity = new Entity(new Random().nextInt(100100100) + 1,
 							"layout_" + xPos + "-" + yPos, new Date());
 					Physical entity = new Physical();
 					entity.setX(xPos);
 					entity.setLayout(true);
 					entity.setY(yPos);
-					entity.setW(50);
+					entity.setW(10);
+					entity.setH(10);
 					entity.setRole(EntityParameter.ROLE_LAYOUT_1);
+					layoutEntity.setPhysical(entity);
+					layouts.add(layoutEntity);
+				}
+				
+				//CIRCUIT
+				if (red == 0 && green == 255 && blue == 0) {
+					int xPos = x * 10  ;
+					int yPos = y * 10;
+					Entity layoutEntity = new Entity(new Random().nextInt(100100100) + 1,
+							"layout_" + xPos + "-" + yPos, new Date());
+					Physical entity = new Physical();
+					entity.setX(xPos);
+					entity.setLayout(true);
+					entity.setY(yPos);
+					entity.setW(10);
+					entity.setH(10);
+					entity.setRole(EntityParameter.ROLE_ROAD_LEFT);
+					layoutEntity.setPhysical(entity);
+					layouts.add(layoutEntity);
+				}
+				if (red == 0 && green == 0 && blue == 255) {
+					int xPos = x * 10  ;
+					int yPos = y * 10;
+					Entity layoutEntity = new Entity(new Random().nextInt(100100100) + 1,
+							"layout_" + xPos + "-" + yPos, new Date());
+					Physical entity = new Physical();
+					entity.setX(xPos);
+					entity.setLayout(true);
+					entity.setY(yPos);
+					entity.setW(10);
+					entity.setH(10);
+					entity.setRole(EntityParameter.ROLE_ROAD_RIGHT);
+					layoutEntity.setPhysical(entity);
+					layouts.add(layoutEntity);
+				}
+				if (red == 255 && green == 0 && blue == 100) {
+					int xPos = x * 10  ;
+					int yPos = y * 10;
+					Entity layoutEntity = new Entity(new Random().nextInt(100100100) + 1,
+							"layout_" + xPos + "-" + yPos, new Date());
+					Physical entity = new Physical();
+					entity.setX(xPos);
+					entity.setLayout(true);
+					entity.setY(yPos);
+					entity.setW(10);
+					entity.setH(10);
+					entity.setRole(EntityParameter.ROLE_ROAD_UP);
+					layoutEntity.setPhysical(entity);
+					layouts.add(layoutEntity);
+				}
+				if (red == 255 && green == 100 && blue == 0) {
+					int xPos = x * 10  ;
+					int yPos = y * 10;
+					Entity layoutEntity = new Entity(new Random().nextInt(100100100) + 1,
+							"layout_" + xPos + "-" + yPos, new Date());
+					Physical entity = new Physical();
+					entity.setX(xPos);
+					entity.setLayout(true);
+					entity.setY(yPos);
+					entity.setW(10);
+					entity.setH(10);
+					entity.setRole(EntityParameter.ROLE_ROAD_DOWN);
 					layoutEntity.setPhysical(entity);
 					layouts.add(layoutEntity);
 				}

@@ -44,9 +44,11 @@ px
 
 
 }
+ 
 </style>
 </head>
 <body onload="disconnect()">
+<div id="content" >
 	<p id="info" align="center"></p>
 	<h3 id="ws-info"></h3>
 
@@ -60,9 +62,14 @@ px
 		</tr>
 
 		<tr valign="top">
-			<td><canvas id="tutorial" width="${winW}" height="${winH}">
-				</canvas></td>
 			<td>
+			<div style="background-image:url('<c:url value="/res/img/layout1.png" />')" >
+			<canvas id="tutorial" width="${winW}" height="${winH}">
+				</canvas></div>
+				</td>
+				
+			<td>
+				<p id="circuit-info" ></p>
 				<p id="entity-info"></p>
 				<p id="realtime-info"></p>
 				<p id="msg-info"></p>
@@ -79,7 +86,7 @@ px
 	<p>
 		Connected: <span id="connect-info" />
 	</p>
-
+</div>
 
 	<script type="text/javascript">
 		var layouts = ${layouts};
@@ -90,6 +97,12 @@ px
 		var rolePlayer = ${rolePlayer} ;
 		var roleBonusLife =  ${roleBonusLife} ;
 		var roleBonusArmor =  ${roleBonusArmor} ;
+		//CIRCUIT
+		var roleRight = ${roleRight};
+		var roleLeft = ${roleLeft};
+		var roleUp = ${roleUp};
+		var roleDown = ${roleDown};
+		
 		var roles = ${roles};
 		var staticImages = ${staticImages};
 		var baseHealth =  ${baseHealth} ;
@@ -109,8 +122,12 @@ px
 		var dirDown = "d";
 		var entityDirection = "r";
 		var firing = false;
-
-		function printInfo(text) {
+		
+		function printCircuitInfo(info){
+			document.getElementById("circuit-info").innerHTML = info;
+		}
+		
+ 		function printInfo(text) {
 			document.getElementById("realtime-info").innerHTML = text;
 		}
 
@@ -249,6 +266,26 @@ px
 				window.requestAnimationFrame(animate);
 			}
 		}
+		
+		function getLayoutRole(role){
+			switch (role) {
+			case this.roleRight:
+				return "RIGHT";
+				break;
+			case this.roleLeft:
+				return "LEFT";							
+				break;
+			case this.roleUp:
+				return "UP";
+				break;
+			case this.roleDown:
+				return "DOWN";
+				break;
+			default:
+				break;
+			}
+			return "Not Circuit Role";
+		}
 
 		function renderEntity(currentEntity) {
 			var isPlayer = (currentEntity.id == this.entity.id);
@@ -297,7 +334,7 @@ px
 							}
 						}
 						for (let x = 0; x < layouts.length; x++) {
-							if (intersect(missile, layouts[x]).status == true) {
+							if (layouts[x].physical.role == 102  && intersect(missile, layouts[x]).status == true) {
 								firing = true;
 								//		console.log("===============intersects",this.entity.id,entities[i].id );
 								missileIntersects = true;
@@ -331,12 +368,18 @@ px
 				let intersectionReverse = {};
 				for (let i = 0; i < layouts.length; i++) {
 					let layoutItem = layouts[i];
-					if (!intersectLayout
+					if (  !intersectLayout
 							&& intersect(currentEntity, layoutItem).status == true) {
 						intersection = intersect(currentEntity, layoutItem);
 						intersectionReverse = intersectReverse(currentEntity,
 								layoutItem);
-						intersectLayout = true;
+						var layoutRole = layoutItem.physical.role;
+						if(layoutRole != 102){
+							printCircuitInfo(layoutRole+":"+getLayoutRole(layoutRole));
+						}else{
+							intersectLayout = true;
+						}	
+						
 						layoutItemIntersects = layoutItem;
 					}
 				}
@@ -475,7 +518,7 @@ px
 		function render() {
 			for (let i = 0; i < layouts.length; i++) {
 				let currentLayout = layouts[i];
-				renderEntity(currentLayout);
+				//renderEntity(currentLayout);
 			}
 
 			for (let i = 0; i < entities.length; i++) {

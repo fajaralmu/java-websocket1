@@ -46,6 +46,9 @@ public class RealtimeService {
 
 	@PostConstruct
 	private void loadLayout() {
+		
+		
+		
 		layoutService.load();
 		List<Entity> layouts = layoutService.getLayouts();
 		this.layouts.addAll(layouts);

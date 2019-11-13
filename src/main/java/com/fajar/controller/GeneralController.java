@@ -26,11 +26,11 @@ import com.fajar.util.JSONUtil;
 @Controller
 @RequestMapping("web")
 public class GeneralController {
-	
+
 	Logger log = LoggerFactory.getLogger(GeneralController.class);
 	@Autowired
 	private RealtimeService realtimeService;
-	
+
 	public GeneralController() {
 		log.info("-----------------GENERAL CONTROLLER------------------");
 	}
@@ -40,37 +40,43 @@ public class GeneralController {
 		model.addAttribute("pesan", "Halaman tidak ditemukan");
 		return "error/notfound";
 	}
-	
+
 	@GetMapping(value = "noaccess")
 	public String halamanNotAccessable(Model model) throws IOException {
 		model.addAttribute("pesan", "Halaman tidak dapat diakses");
 		return "error/notfound";
 	}
-	
+
 	/**
 	 * Realtime
 	 */
 	@GetMapping(value = "test-chatv1")
-	public String testChat(Model model)  {
+	public String testChat(Model model) {
 		return "websocket/chat";
 	}
-	@GetMapping( value = "test-chatv2")
-	public String testChat2(Model model)  {
+
+	@GetMapping(value = "test-chatv2")
+	public String testChat2(Model model) {
 		return "websocket/chat2";
 	}
+
 	@GetMapping(value = "canvasv1")
-	public String canvasv1(Model model, HttpServletRequest request, HttpServletResponse response)  {
+	public String canvasv1(Model model, HttpServletRequest request, HttpServletResponse response) {
 		model.addAttribute("winW", EntityParameter.WIN_W);
 		model.addAttribute("winH", EntityParameter.WIN_H);
 		model.addAttribute("baseHealth", EntityParameter.baseHealth);
 		model.addAttribute("rolePlayer", EntityParameter.ROLE_PLAYER);
 		model.addAttribute("roleBonusLife", EntityParameter.ROLE_BONUS_LIFE);
 		model.addAttribute("roleBonusArmor", EntityParameter.ROLE_BONUS_ARMOR);
+
+		model.addAttribute("roleRight", EntityParameter.ROLE_ROAD_RIGHT);
+		model.addAttribute("roleLeft", EntityParameter.ROLE_ROAD_LEFT);
+		model.addAttribute("roleUp", EntityParameter.ROLE_ROAD_UP);
+		model.addAttribute("roleDown", EntityParameter.ROLE_ROAD_DOWN);
 		model.addAttribute("roles", JSONUtil.listToJson(EntityParameter.roles()));
-		model.addAttribute("layouts",JSONUtil.listToJson( realtimeService.getLayouts()));
-		model.addAttribute("staticImages",JSONUtil.listToJson(EntityParameter.assets()));
-		model.addAttribute("contextPath",request.getContextPath());
+		model.addAttribute("layouts", JSONUtil.listToJson(realtimeService.getLayouts()));
+		model.addAttribute("staticImages", JSONUtil.listToJson(EntityParameter.assets()));
+		model.addAttribute("contextPath", request.getContextPath());
 		return "websocket/anim/canvas1";
 	}
 }
-
