@@ -31,6 +31,9 @@ public class RealtimeService {
 	private Long currentTime = new Date().getTime();
 	private Boolean isRegistering = false;
 	private Long deltaTime = 8000L;
+	
+	@Autowired
+	private GamePlayService gamePlayService;
 
 	@Autowired
 	private SimpMessagingTemplate webSocket;
@@ -39,7 +42,7 @@ public class RealtimeService {
 
 	public RealtimeService() {
 		log.info("-----------------REALTIME SERVICE-------------------");
-		startThread();
+	//	startThread();
 
 	}
 
@@ -73,7 +76,8 @@ public class RealtimeService {
 	}
 
 	public synchronized void addUser(Entity user) {
-		entities.add(user);
+		if(getUser(user.getName()) == null)
+			entities.add(user);
 	}
 
 	public List<Entity> getUsers() {
@@ -119,6 +123,8 @@ public class RealtimeService {
 			user = getUser(name);
 		} else {
 			user = new Entity(random.nextInt(100), name, new Date());
+			user.setStageId(layoutService.getMinStage());
+			user.setLayoutId(0);
 			Physical entity = new Physical();
 			entity.setX(layoutService.getStartX());
 			entity.setY(layoutService.getStartY());
@@ -137,6 +143,9 @@ public class RealtimeService {
 		responseObject.setEntities(getUsers());
 		isRegistering = false;
 		System.out.println("----------------------REGISTER USER: " + user);
+		
+		 
+		
 		return responseObject;
 	}
 
@@ -251,8 +260,9 @@ public class RealtimeService {
 							entity.setStageId(layoutService.getLayoutById(request.getEntity().getLayoutId()).getStageId());
 //							System.out.println("/***********STAGE FOUND***********/");
 						}catch(Exception ex) {
-							System.out.println("/**************NO STAGE HANDLED************/:"+request.getEntity().getLayoutId());
-							ex.printStackTrace();
+							System.out.println(ex.getMessage()+"/**************NO STAGE HANDLED************/:"+request.getEntity().getLayoutId());
+							 
+							entity.setStageId(0);
 						}
 						entity.setPhysical(request.getEntity().getPhysical());
 						entity.setMissiles(request.getEntity().getMissiles());
@@ -260,7 +270,8 @@ public class RealtimeService {
 						entity.setActive(request.getEntity().isActive());
 					}
 				}
-
+//				System.out.println("ENTITIES: "+entities.size());
+				entities = gamePlayService.sortPlayer(entities);
 				response.setEntities(entities);
 //				System.out.println("RESPONSE: "+response);
 				webSocket.convertAndSend("/wsResp/players", response);
@@ -269,6 +280,10 @@ public class RealtimeService {
 		});
 		thread.start();
 		
+	}
+
+	public String getJsonListOfLayouts() { 
+		return layoutService.getJsonListOfLayouts();
 	}
 
 }

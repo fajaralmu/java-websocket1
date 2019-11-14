@@ -12,7 +12,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.fajar.parameter.EntityParameter;
 import com.fajar.service.RealtimeService;
@@ -62,21 +61,35 @@ public class GeneralController {
 
 	@GetMapping(value = "canvasv1")
 	public String canvasv1(Model model, HttpServletRequest request, HttpServletResponse response) {
+		System.out.println("----------------REQUESTING GAME PAGE-----------------");
 		model.addAttribute("winW", EntityParameter.WIN_W);
+		System.out.println(1);
 		model.addAttribute("winH", EntityParameter.WIN_H);
+		System.out.println(2);
 		model.addAttribute("baseHealth", EntityParameter.baseHealth);
+		System.out.println(3);
 		model.addAttribute("rolePlayer", EntityParameter.ROLE_PLAYER);
+		System.out.println(4);
 		model.addAttribute("roleBonusLife", EntityParameter.ROLE_BONUS_LIFE);
+		System.out.println(5);
 		model.addAttribute("roleBonusArmor", EntityParameter.ROLE_BONUS_ARMOR);
-
+		System.out.println(6);
 		model.addAttribute("roleRight", EntityParameter.ROLE_ROAD_RIGHT);
+		System.out.println(7);
 		model.addAttribute("roleLeft", EntityParameter.ROLE_ROAD_LEFT);
+		System.out.println(8);
 		model.addAttribute("roleUp", EntityParameter.ROLE_ROAD_UP);
+		System.out.println(9);
 		model.addAttribute("roleDown", EntityParameter.ROLE_ROAD_DOWN);
+		System.out.println(10);
 		model.addAttribute("roles", JSONUtil.listToJson(EntityParameter.roles()));
-		model.addAttribute("layouts", JSONUtil.listToJson(realtimeService.getLayouts()));
+		System.out.println(11);
+		model.addAttribute("layouts", realtimeService.getJsonListOfLayouts());
+		System.out.println(12);
 		model.addAttribute("staticImages", JSONUtil.listToJson(EntityParameter.assets()));
+		System.out.println(13);
 		model.addAttribute("contextPath", request.getContextPath());
+		System.out.println("----------------END REQUESTING GAME PAGE-----------------");
 		return "websocket/anim/canvas1";
 	}
 }

@@ -104,6 +104,8 @@ px
 		var roleUp = ${roleUp};
 		var roleDown = ${roleDown};
 		
+		var playerPosition = 0;
+		
 		var roles = ${roles};
 		var staticImages = ${staticImages};
 		var baseHealth =  ${baseHealth} ;
@@ -137,7 +139,8 @@ px
 			.stringify(entity);
  			document.getElementById("entity-info").innerHTML+=
  				"<br> STAGE: "+entity.stageId
- 				+"<br> LAYOUT ID: "+entity.layoutId;
+ 				+"<br> LAYOUT ID: "+entity.layoutId
+ 				+"<br> POSITION:"+(this.playerPosition+1)+"/"+this.entities.length;
  		}
 
 		function connect() {
@@ -537,6 +540,11 @@ px
 
 			for (let i = 0; i < entities.length; i++) {
 				let currentEntity = entities[i];
+				
+				if(currentEntity.id == this.entity.id){
+					this.playerPosition = i;
+				}
+				
 				renderEntity(currentEntity);
 
 				if (currentEntity.physical.role == 101

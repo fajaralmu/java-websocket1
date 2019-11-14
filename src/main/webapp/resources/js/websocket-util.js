@@ -50,7 +50,7 @@ function doConnect(entity) {
 		stompClient.subscribe('/wsResp/players', function(response) {
 			var respObject = JSON.parse(response.body);
 		 	entities = respObject.entities;
-		 	console.log("REALTIME: ",entities);
+//		 	console.log("************REALTIME: ",entities);
 //		 	document.getElementById("realtime-info").innerHTML = response.body;
 		});
 		updateMovement(entity);

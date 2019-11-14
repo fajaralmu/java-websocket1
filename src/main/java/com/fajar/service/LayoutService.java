@@ -16,54 +16,57 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import com.fajar.dto.Physical;
 import com.fajar.dto.Entity;
+import com.fajar.dto.Physical;
 import com.fajar.parameter.EntityParameter;
 import com.fajar.util.JSONUtil;
 
+import lombok.AllArgsConstructor;
+
 @Service
+ 
+@AllArgsConstructor 
 public class LayoutService {
 	Logger log = LoggerFactory.getLogger(LayoutService.class);
 
-	private static List<Entity> layouts = new ArrayList<>();
-	private static List<Integer> greenValues = new ArrayList<>();
+ 
+	private List<Entity> layouts = new ArrayList<>();
+	 
+	private  List<Integer> greenValues = new ArrayList<>();
+	 
+	private  List<Entity> stages = new ArrayList<>();
+	 
+	private  Map<Integer, List<Entity>> groupedStages = new HashMap<Integer, List<Entity>>();
 	
-	private static List<Entity> stages = new ArrayList<>();
-	private static Map<Integer, List<Entity>> groupedStages = new HashMap<Integer, List<Entity>>();
-	private Integer startX=100;
-	private Integer startY=100;
-	private Integer maxStage=0;
+	private Map<Integer, Integer> stagesRole = new HashMap<>();
+	 
+	private int startX=100;
+	 
+	private int startY=100;
+	 
+	public  int maxStage=0;
+	 
+	public  int minStage=0;
+
+
+	private String jsonLayoutList;
 	
 	
 
-	public Integer getStartX() {
-		return startX;
-	}
+	 
 
-	public void setStartX(Integer startX) {
-		this.startX = startX;
-	}
-
-	public Integer getStartY() {
-		return startY;
-	}
-
-	public void setStartY(Integer startY) {
-		this.startY = startY;
-	}
-
-	public static void main(String[] ddf) {
-		new LayoutService().load();
-		System.out.println(greenValues);
-		for(Integer key: groupedStages.keySet()) {
-			System.out.println("KEY:"+key+", val: "+groupedStages.get(key));
-		}
-//		System.out.println(JSONUtil.listToJson(layouts));
-//		System.out.println(JSONUtil.listToJson(stages));
-		for (Entity layout : layouts) {
-			System.out.println(layout);
-		}
-	}
+//	public static void main(String[] ddf) {
+//		new LayoutService().load();
+//		System.out.println(greenValues);
+//		for(Integer key: groupedStages.keySet()) {
+//			System.out.println("KEY:"+key+", val: "+groupedStages.get(key));
+//		}
+////		System.out.println(JSONUtil.listToJson(layouts));
+////		System.out.println(JSONUtil.listToJson(stages));
+//		for (Entity layout : layouts) {
+//			System.out.println(layout);
+//		}
+//	}
 
 	public LayoutService() {
 		log.info("======================LAYOUT SERVICE======================");
@@ -94,10 +97,16 @@ public class LayoutService {
 			BufferedImage layout1Stage = ImageIO.read(pathStage);
 			loadStage(layout1Stage);
 			createLayout(layout1);
+			System.out.println("==============CREATING JSON LAYOUT===========");
+			this.jsonLayoutList = JSONUtil.listToJson(this.layouts);
+//			for(Entity layout:layouts) {
+//				System.out.println("LAYOUT ITEM: "+layout);
+//			}
+			System.out.println("LAYOUT COUNT: "+layouts.size());
+			System.out.println("LAYOUT STAGES: "+this.stagesRole);
+			System.out.println("JSON LIST: "+jsonLayoutList);
+			System.out.println("**************LAYOUT LOADED************");
 			
-			for(Entity layout:layouts) {
-				System.out.println("LAYOUT ITEM: "+layout);
-			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -145,6 +154,24 @@ public class LayoutService {
 		}
 		System.out.println();
 		groupStages();
+		setMinAndMaxStage();
+	}
+	
+	private void setMinAndMaxStage() {
+		int max = 0;
+		for(Integer key:groupedStages.keySet()) {
+			if(key>=max) {
+				max = key;
+			}
+		}
+		this.maxStage = max;
+		int min = max;
+		for(Integer key:groupedStages.keySet()) {
+			if(key<=min) {
+				min = key;
+			}
+		}
+		this.minStage = min;
 	}
 	
 	private void groupStages() {
@@ -188,8 +215,8 @@ public class LayoutService {
 				if (red == 120 && green == 120 && blue == 120) {
 					int xPos = x * 10 ;
 					int yPos = y * 10;
-					setStartX(xPos);
-					setStartY(yPos);
+					this.startX=(xPos);
+					this.startY=(yPos);
 				}
 				if (red == 255 && green == 0 && blue == 0) {
 					int xPos = x * 10 ;
@@ -237,7 +264,7 @@ public class LayoutService {
 					entity.setH(10);
 					entity.setRole(EntityParameter.ROLE_ROAD_LEFT);
 					layoutEntity.setPhysical(entity);
-					layouts.add(getStage(layoutEntity));
+					layouts.add(getStage(layoutEntity,EntityParameter.ROLE_ROAD_LEFT));
 				}
 				if (red == 0 && green == 0 && blue == 255) {
 					int xPos = x * 10  ;
@@ -252,7 +279,7 @@ public class LayoutService {
 					entity.setH(10);
 					entity.setRole(EntityParameter.ROLE_ROAD_RIGHT);
 					layoutEntity.setPhysical(entity);
-					layouts.add(getStage(layoutEntity));
+					layouts.add(getStage(layoutEntity,EntityParameter.ROLE_ROAD_RIGHT));
 				}
 				if (red == 255 && green == 0 && blue == 100) {
 					int xPos = x * 10  ;
@@ -267,7 +294,7 @@ public class LayoutService {
 					entity.setH(10);
 					entity.setRole(EntityParameter.ROLE_ROAD_UP);
 					layoutEntity.setPhysical(entity);
-					layouts.add(getStage(layoutEntity));
+					layouts.add(getStage(layoutEntity,EntityParameter.ROLE_ROAD_UP));
 				}
 				if (red == 255 && green == 100 && blue == 0) {
 					int xPos = x * 10  ;
@@ -282,7 +309,7 @@ public class LayoutService {
 					entity.setH(10);
 					entity.setRole(EntityParameter.ROLE_ROAD_DOWN);
 					layoutEntity.setPhysical(entity);
-					layouts.add(getStage(layoutEntity));
+					layouts.add(getStage(layoutEntity,EntityParameter.ROLE_ROAD_DOWN));
 				}
 			}
 		}
@@ -290,24 +317,53 @@ public class LayoutService {
 
 	}
 	
-	private static Entity getStage(Entity layout) {
+	public int getStageRole(int stageId) {
+		for(Integer key:stagesRole.keySet()) {
+			if(key.equals(stageId))
+				return stagesRole.get(key);
+		}
+		return EntityParameter.ROLE_ROAD_DOWN;
+	}
+	
+	private Entity getStage(Entity layout,final int role) {
 		Physical layoutPhysical = layout.getPhysical();
-		System.out.println("CEK");
+		
 		for(Integer key:groupedStages.keySet()) {
 			for (Entity layoutStage : groupedStages.get(key)) {
+				layoutStage.getPhysical().setRole(layoutPhysical.getRole());
+				
+				 
 				Physical layoutStagePhysical = layoutStage.getPhysical();
 				if(layoutPhysical.getX().equals(layoutStagePhysical.getX())
 						&& layoutPhysical.getY().equals(layoutStagePhysical.getY())) {
 					layout.setStageId(key);
+					stagesRole.put(key, role);
 				}
 			}
 		}
-		
+		System.out.println("CEK "+role+"->"+layout);
+		System.out.println("MAP STAGES:"+stagesRole);
 		return layout;
 	}
 
 	public List<Entity> getLayouts() {
 		return layouts;
+	}
+
+	public Integer getMinStage() { 
+		return this.minStage;
+	}
+
+	public Integer getStartX() { 
+		return this.startX;
+	}
+
+	public Integer getStartY() { 
+		return this.startY;
+	}
+
+	public String getJsonListOfLayouts() { 
+		return this.jsonLayoutList;
 	}
 
  
