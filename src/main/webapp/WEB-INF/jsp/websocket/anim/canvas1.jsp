@@ -303,6 +303,7 @@ px
 			if (isPlayer && this.entity != null) {
 				//	missiles = this.entity.missiles;
 				this.entity.stageId = currentEntity.stageId;
+				this.entity.stagesPassed = currentEntity.stagesPassed;
 				currentEntity = this.entity;
 			}
 			

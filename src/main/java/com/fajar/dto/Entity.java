@@ -32,6 +32,9 @@ public class Entity implements Serializable {
 	private Date joinedDate = new Date();
 	private Physical physical;
 	@Builder.Default
+	@Getter(value = AccessLevel.NONE)
+	private List<Integer> stagesPassed = new ArrayList<>();
+	@Builder.Default
 	private Integer life = EntityParameter.baseHealth;
 	private boolean active;
 	//RACE
@@ -56,6 +59,27 @@ public class Entity implements Serializable {
 			return new ArrayList<>();
 		}
 		return this.missiles;
+	}
+	
+	public void setStage() {
+		 
+		boolean stageIsInclude = false;
+		for(int stage:getStagesPassed()) {
+			if(stage == stageId) {
+				stageIsInclude = true;
+				break;
+			}
+		}
+		if(stageIsInclude==false) {
+			this.stagesPassed.add(stageId);
+		}
+	}
+	
+	public List<Integer> getStagesPassed(){
+		if(this.stagesPassed == null) {
+			this.stagesPassed = new ArrayList<>();
+		}
+		return this.stagesPassed;
 	}
 
 }

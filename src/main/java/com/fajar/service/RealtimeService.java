@@ -264,10 +264,12 @@ public class RealtimeService {
 							 
 							entity.setStageId(0);
 						}
+						entity.setStagesPassed(request.getEntity().getStagesPassed());
 						entity.setPhysical(request.getEntity().getPhysical());
 						entity.setMissiles(request.getEntity().getMissiles());
 						entity.setLife(request.getEntity().getLife());
 						entity.setActive(request.getEntity().isActive());
+						entity.setStage();
 					}
 				}
 //				System.out.println("ENTITIES: "+entities.size());
