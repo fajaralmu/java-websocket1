@@ -136,9 +136,10 @@ canvas {
  			document.getElementById("entity-info").innerHTML = JSON
 			.stringify(entity);
  			document.getElementById("entity-info").innerHTML+=
- 				"<br> STAGE: "+entity.stageId
- 				+"<br> LAYOUT ID: "+entity.layoutId
- 				+"<br> POSITION:"+(this.playerPosition+1)+"/"+this.entities.length;
+ 				"<br> <b>STAGE</b>: "+entity.stageId
+ 				+"<br> <b>LAYOUT ID</b>: "+entity.layoutId
+ 				+"<br> <b>POSITION</b>:"+(this.playerPosition+1)+"/"+this.entities.length
+ 				+"<br> <b>LAP</b>: "+entity.lap;
  		}
 
 		function connect() {

@@ -15,6 +15,11 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+/**
+ * game entity ; player, layout, etc
+ * @author Republic Of Gamers
+ *
+ */
 @Dto
 @Data
 @Builder
@@ -35,12 +40,12 @@ public class Entity implements Serializable {
 	@Getter(value = AccessLevel.NONE)
 	private List<Integer> stagesPassed = new ArrayList<>();
 	@Builder.Default
-	private Integer life = EntityParameter.baseHealth;
+	private int life = EntityParameter.baseHealth;
 	private boolean active;
 	//RACE
-	private Integer layoutId;
-	private Integer stageId;
-	private Integer position;
+	private int layoutId;
+	private int stageId;
+	private int position;
 	private int lap;
 	
 	@Builder.Default

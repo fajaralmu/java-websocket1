@@ -89,7 +89,7 @@ public class GamePlayService {
 //		System.out.println("PLAYERS: "+players.size());
 		for (int i = maxStage; i >= minStage; i--) {
 			for (Entity player : players) {
-				if (player.getStageId().equals(i)) {
+				if (player.getStageId()==(i)) {
 					if (groupedPlayer.get(i) == null) {
 						groupedPlayer.put(i, singletonList(player));
 					} else {
@@ -113,6 +113,9 @@ public class GamePlayService {
 //					System.out.println("PLAYER LAYOUT: "+playerLayout.getName()+" IS FINISH: "+playerLayout.getPhysical().getRole().equals(EntityParameter.ROLE_FINISH_LINE));
 //				}
 				
+				/**
+				 * Update Lap
+				 */
 				boolean isFinishLine = playerLayout != null && playerLayout.getPhysical().getRole().equals(EntityParameter.ROLE_FINISH_LINE);
 				if(isFinishLine) {
 					 if(entity.getStagesPassed().size()==layoutService.getStagesCount()) {
