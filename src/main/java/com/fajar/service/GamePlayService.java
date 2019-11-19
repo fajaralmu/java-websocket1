@@ -22,7 +22,7 @@ public class GamePlayService {
 
 	}
 
-	public static void main(String[] args) { 
+	public static void main(String[] args) {
 		GamePlayService.printArray(new GamePlayService().sortPlayer(players()));
 	}
 
@@ -68,12 +68,12 @@ public class GamePlayService {
 			System.out.println("-" + object);
 		}
 	}
-	
-	static <T> List<T> singletonList(T obj){
+
+	static <T> List<T> singletonList(T obj) {
 		List<T> list = new ArrayList<>();
 		list.add(obj);
 		return list;
-		
+
 	}
 
 	public List<Entity> sortPlayer(List<Entity> players) {
@@ -82,32 +82,45 @@ public class GamePlayService {
 		Map<Integer, List<Entity>> groupedPlayer = new HashMap<>();
 
 		int maxStage = getMaxStage(players);
-	
+
 		int minStage = getMinStage(players);
-		
-		System.out.println("Stage: "+minStage+"-"+maxStage);
+
+		System.out.println("Stage: " + minStage + "-" + maxStage);
 //		System.out.println("PLAYERS: "+players.size());
 		for (int i = maxStage; i >= minStage; i--) {
 			for (Entity player : players) {
 				if (player.getStageId().equals(i)) {
 					if (groupedPlayer.get(i) == null) {
-						groupedPlayer.put(i, singletonList(player)); 
+						groupedPlayer.put(i, singletonList(player));
 					} else {
 						groupedPlayer.get(i).add(player);
 					}
-					
+
 				}
 			}
 
 		}
 //		System.out.println("RESULT: "+resultPlayer.size());
-		for(int i = maxStage; i >= minStage; i--)  {
-			if(groupedPlayer.get(i)== null)
+		for (int i = maxStage; i >= minStage; i--) {
+			if (groupedPlayer.get(i) == null)
 				continue;
 			List<Entity> sorted = sortPlayerInSameStage(groupedPlayer.get(i), i);
-			//resultPlayer.addAll(sorted);
+			// resultPlayer.addAll(sorted);
 //			System.out.println(i+")will add: "+sorted.size());
 			for (Entity entity : sorted) {
+				Entity playerLayout = layoutService.getLayoutById(entity.getLayoutId());
+//				if(playerLayout !=null) {
+//					System.out.println("PLAYER LAYOUT: "+playerLayout.getName()+" IS FINISH: "+playerLayout.getPhysical().getRole().equals(EntityParameter.ROLE_FINISH_LINE));
+//				}
+				
+				boolean isFinishLine = playerLayout != null && playerLayout.getPhysical().getRole().equals(EntityParameter.ROLE_FINISH_LINE);
+				if(isFinishLine) {
+					 if(entity.getStagesPassed().size()==layoutService.getStagesCount()) {
+						 System.out.println("====================>"+entity.getName()+" HAS MORE LAP "+(entity.getLap()+1));
+						entity.setLap(entity.getLap()+1);
+						entity.setStagesPassed(new ArrayList<>());
+					}
+				}
 				resultPlayer.add(entity);
 			}
 		}
@@ -120,7 +133,7 @@ public class GamePlayService {
 
 	public List<Entity> sortPlayerInSameStage(List<Entity> players, Integer stageId) {
 		List<Entity> resultPlayer = new ArrayList<Entity>();
-		
+
 		int side = SIDE_HORIZONTAL;
 
 		final int stageRole = layoutService.getStageRole(stageId);
@@ -128,23 +141,20 @@ public class GamePlayService {
 		if (stageRole == EntityParameter.ROLE_ROAD_DOWN) {
 			// TODO: maxY
 			ROLE = EntityParameter.ROLE_ROAD_DOWN;
-			System.out.println(new Date()+"role down");
+			System.out.println(new Date() + "role down");
 			side = SIDE_VERTICAL;
-		}else
-		if (stageRole == EntityParameter.ROLE_ROAD_UP) {
+		} else if (stageRole == EntityParameter.ROLE_ROAD_UP) {
 			// TODO: minY
 			ROLE = EntityParameter.ROLE_ROAD_UP;
-			System.out.println(new Date()+"role up");
+			System.out.println(new Date() + "role up");
 			side = SIDE_VERTICAL;
-		}else
-		if (stageRole == EntityParameter.ROLE_ROAD_LEFT) {
+		} else if (stageRole == EntityParameter.ROLE_ROAD_LEFT) {
 			// TODO: minX
-			System.out.println(new Date()+"role L");
+			System.out.println(new Date() + "role L");
 			ROLE = EntityParameter.ROLE_ROAD_LEFT;
-		}else
-		if (stageRole == EntityParameter.ROLE_ROAD_RIGHT) {
+		} else if (stageRole == EntityParameter.ROLE_ROAD_RIGHT) {
 			// TODO: maxX
-			System.out.println(new Date()+"role R");
+			System.out.println(new Date() + "role R");
 			ROLE = EntityParameter.ROLE_ROAD_RIGHT;
 		}
 
@@ -163,8 +173,7 @@ public class GamePlayService {
 					}
 
 				}
-			}else
-			if (ROLE == EntityParameter.ROLE_ROAD_RIGHT) {
+			} else if (ROLE == EntityParameter.ROLE_ROAD_RIGHT) {
 				for (int i = maxX; i >= minX; i--) {
 					for (Entity player : players) {
 						if (player.getPhysical().getX().equals(i)) {
@@ -185,8 +194,7 @@ public class GamePlayService {
 					}
 
 				}
-			}else
-			if (ROLE == EntityParameter.ROLE_ROAD_DOWN) {
+			} else if (ROLE == EntityParameter.ROLE_ROAD_DOWN) {
 				for (int i = maxY; i >= minY; i--) {
 					for (Entity player : players) {
 						if (player.getPhysical().getY().equals(i)) {

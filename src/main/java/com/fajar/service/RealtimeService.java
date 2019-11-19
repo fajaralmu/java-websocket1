@@ -268,6 +268,7 @@ public class RealtimeService {
 						entity.setPhysical(request.getEntity().getPhysical());
 						entity.setMissiles(request.getEntity().getMissiles());
 						entity.setLife(request.getEntity().getLife());
+						entity.setLap(request.getEntity().getLap());
 						entity.setActive(request.getEntity().isActive());
 						entity.setStage();
 					}

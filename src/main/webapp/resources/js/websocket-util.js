@@ -25,6 +25,7 @@ function sendUpdate(entity) {
 				'life' : entity.life,
 				'active' : true,
 				'layoutId' : entity.layoutId,
+				'lap' : entity.lap,
 				'stagesPassed': entity.stagesPassed,
 				'physical' : {
 					'x' : entity.physical.x,

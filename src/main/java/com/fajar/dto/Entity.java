@@ -41,6 +41,7 @@ public class Entity implements Serializable {
 	private Integer layoutId;
 	private Integer stageId;
 	private Integer position;
+	private int lap;
 	
 	@Builder.Default
 	@Getter(value = AccessLevel.NONE)
@@ -62,6 +63,13 @@ public class Entity implements Serializable {
 	}
 	
 	public void setStage() {
+		
+		for (int i = 0; i < stagesPassed.size(); i++) {
+			int array_element =stagesPassed.get(i);
+			if(array_element == 0) {
+				stagesPassed.remove(i);
+			}
+		}
 		 
 		boolean stageIsInclude = false;
 		for(int stage:getStagesPassed()) {

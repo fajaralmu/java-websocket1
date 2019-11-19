@@ -191,6 +191,10 @@ public class LayoutService {
 		}
 	}
 	
+	public int getStagesCount() {
+		return this.groupedStages.keySet().size();
+	}
+	
 	public int getLayoutRole(int stageId) {
 		for(Integer key:groupedStages.keySet()) {
 			if(key.equals(stageId)) {
@@ -295,6 +299,21 @@ public class LayoutService {
 					entity.setRole(EntityParameter.ROLE_ROAD_UP);
 					layoutEntity.setPhysical(entity);
 					layouts.add(getStage(layoutEntity,EntityParameter.ROLE_ROAD_UP));
+				}
+				if (red == 111 && green == 111 && blue == 111) {
+					int xPos = x * 10  ;
+					int yPos = y * 10;
+					Entity layoutEntity = new Entity(new Random().nextInt(100100100) + 1,
+							"road_finish_" + xPos + "-" + yPos, new Date());
+					Physical entity = new Physical();
+					entity.setX(xPos);
+					entity.setLayout(true);
+					entity.setY(yPos);
+					entity.setW(10);
+					entity.setH(10);
+					entity.setRole(EntityParameter.ROLE_FINISH_LINE);
+					layoutEntity.setPhysical(entity);
+					layouts.add(getStage(layoutEntity,EntityParameter.ROLE_FINISH_LINE));
 				}
 				if (red == 255 && green == 100 && blue == 0) {
 					int xPos = x * 10  ;

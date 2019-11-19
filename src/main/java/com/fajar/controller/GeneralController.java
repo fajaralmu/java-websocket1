@@ -81,6 +81,7 @@ public class GeneralController {
 		model.addAttribute("roleUp", EntityParameter.ROLE_ROAD_UP);
 		System.out.println(9);
 		model.addAttribute("roleDown", EntityParameter.ROLE_ROAD_DOWN);
+		model.addAttribute("roleFinish", EntityParameter.ROLE_FINISH_LINE);
 		System.out.println(10);
 		model.addAttribute("roles", JSONUtil.listToJson(EntityParameter.roles()));
 		System.out.println(11);

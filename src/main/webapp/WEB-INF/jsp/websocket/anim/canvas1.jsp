@@ -34,10 +34,7 @@ canvas {
 	border: solid 1px black;
 	background-color: rgb(100, 200, 0);
 	height: 20px;
-	width: ${winW
-}
-px
-;
+	width: ${winW}px;
 
 
 	
@@ -103,6 +100,7 @@ px
 		var roleLeft = ${roleLeft};
 		var roleUp = ${roleUp};
 		var roleDown = ${roleDown};
+		var roleFinish = ${roleFinish};
 		
 		var playerPosition = 0;
 		
@@ -292,6 +290,9 @@ px
 			case this.roleDown:
 				return "DOWN";
 				break;
+			case this.roleFinish:
+				return "FINISH";
+				break;
 			default:
 				break;
 			}
@@ -303,6 +304,7 @@ px
 			if (isPlayer && this.entity != null) {
 				//	missiles = this.entity.missiles;
 				this.entity.stageId = currentEntity.stageId;
+				this.entity.lap = currentEntity.lap;
 				this.entity.stagesPassed = currentEntity.stagesPassed;
 				currentEntity = this.entity;
 			}
@@ -390,7 +392,7 @@ px
 						var layoutRole = layoutItem.physical.role;
 						this.currentLayoutId = layoutItem.id;
 						if(layoutRole != 102){
-							printCircuitInfo(layoutRole+":"+getLayoutRole(layoutRole));
+							printCircuitInfo(layoutRole+":"+getLayoutRole(layoutRole)+", name: "+layoutItem.name);
 						}else{
 							intersectLayout = true;
 						}	

@@ -18,6 +18,7 @@ public class EntityParameter {
 	public static final Integer ROLE_ROAD_RIGHT = 105;
 	public static final Integer ROLE_ROAD_UP = 106;
 	public static final Integer ROLE_ROAD_DOWN = 107;
+	public static final Integer ROLE_FINISH_LINE = 109;
 	public static final Integer ROLE_STAGE = 108;
 
 	public static List<Integer> roles() {
@@ -30,6 +31,7 @@ public class EntityParameter {
 		roles.add(ROLE_ROAD_RIGHT);
 		roles.add(ROLE_ROAD_UP);
 		roles.add(ROLE_ROAD_DOWN);
+		roles.add(ROLE_FINISH_LINE);
 		return roles;
 	}
 
