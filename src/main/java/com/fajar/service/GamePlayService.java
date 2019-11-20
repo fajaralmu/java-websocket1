@@ -116,14 +116,17 @@ public class GamePlayService {
 				/**
 				 * Update Lap
 				 */
-				boolean isFinishLine = playerLayout != null && playerLayout.getPhysical().getRole().equals(EntityParameter.ROLE_FINISH_LINE);
-				if(isFinishLine) {
+				//boolean isFinishLine = playerLayout != null && playerLayout.getPhysical().getRole().equals(EntityParameter.ROLE_FINISH_LINE);
+				boolean isFinishv2 = entity.getStagesPassed().size()==layoutService.getStagesCount() && entity.getStageId() == layoutService.getMinStage();
+				
+				if( isFinishv2) {
 					 if(entity.getStagesPassed().size()==layoutService.getStagesCount()) {
 						 System.out.println("====================>"+entity.getName()+" HAS MORE LAP "+(entity.getLap()+1));
 						entity.setLap(entity.getLap()+1);
 						entity.setStagesPassed(new ArrayList<>());
 					}
 				}
+				
 				resultPlayer.add(entity);
 			}
 		}
