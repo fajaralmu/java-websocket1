@@ -181,9 +181,17 @@ td{
 		var dirDown = "d";
 		var entityDirection = "r";
 		var firing = false;
+		var entityDirectionHistory = new Array();
 		
 		function printCircuitInfo(info){
 			document.getElementById("circuit-info").innerHTML = info;
+		}
+		
+		function getLatestDirection(){
+			if(entityDirectionHistory.length >0){
+				return entityDirectionHistory[entityDirectionHistory.length-1];
+			}
+			return null;
 		}
 		
  		function printInfo(text) {
@@ -214,6 +222,7 @@ td{
 		}
 
 		function join() {
+			entityDirectionHistory = new Array();
 			var name = document.getElementById("name").value;
 			entity.name = name;
 			postReq(
@@ -304,6 +313,8 @@ td{
 			//	stoppingDir = 123456;
 				break;
 			}
+		 	
+		 	entityDirectionHistory.push(stoppingDir);
 		}
 
 		function update(){
@@ -381,6 +392,7 @@ td{
 			this method returns the direction :D
 		*/
 		function stopStoppingModeIf(dir){
+		//	entityDirectionHistory.push(dir);
 		/* 	 console.debug("CHECK STOPPING MODE: ",dir);  
 			if(stoppingDir  == dir){
 				 stoppingMode= false;
@@ -424,6 +436,32 @@ td{
 				break;
 			}
 			return "Not Circuit Role";
+		}
+		
+		function getLatestStoppingDirH(){
+			if(entityDirectionHistory.length > 0){
+				for (var i = entityDirectionHistory.length-1; i >=0 ; i--) {
+					var dir = entityDirectionHistory[i];
+					if(dir == this.dirRight || dir == this.dirLeft){
+						return dir;
+					}
+					
+				} 
+			}
+			return null;
+		}
+		
+		function getLatestStoppingDirV(){
+			if(entityDirectionHistory.length > 0){
+				for (var i = entityDirectionHistory.length-1; i >=0 ; i--) {
+					var dir = entityDirectionHistory[i];
+					if(dir == this.dirUp || dir == this.dirDown){
+						return dir;
+					}
+					
+				} 
+			}
+			return null;
 		}
 
 		function renderEntity(currentEntity) {
@@ -545,8 +583,24 @@ td{
 				}
 				 				 
 				if(stoppingMode){
-					velX = decreaseVelX(velX, currentphysical.direction);
-					velY = decreaseVelY(velY, currentphysical.direction);
+					var latestDirectionV = getLatestStoppingDirV();
+					var latestDirectionH = getLatestStoppingDirH();
+					var theDirX = currentphysical.direction;
+					var theDirY = currentphysical.direction;
+					if(latestDirectionV != null){
+						if(latestDirectionV == dirUp || latestDirectionV == dirDown){
+							theDirY = latestDirectionV;
+						} 
+					}
+					if(latestDirectionH != null){
+						if(latestDirectionH == dirRight || latestDirectionH == dirLeft){
+							theDirX = latestDirectionH;
+						}
+					}
+					
+					velX = decreaseVelX(velX,theDirX );
+					 
+					velY = decreaseVelY(velY, theDirY);
 					if(velX == 0 && velY == 0){
 						console.debug("STOPPING MODE :FALSE");
 						stoppingMode = false;
