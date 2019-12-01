@@ -393,10 +393,10 @@ td{
 		*/
 		function stopStoppingModeIf(dir){
 		//	entityDirectionHistory.push(dir);
-		/* 	 console.debug("CHECK STOPPING MODE: ",dir);  
+		 //	 console.debug("CHECK STOPPING MODE: ",dir);  
 			if(stoppingDir  == dir){
 				 stoppingMode= false;
-			}	  */
+			}	   
 			
 			return dir;
 		}
