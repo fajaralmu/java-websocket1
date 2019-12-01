@@ -1,5 +1,5 @@
 var intersectionInfo = "";
-const speedDec = 0.3;
+const speedDec = 0.2;
 
 function getPixel(img, x, y) {
 	var canvas = document.createElement('canvas');
@@ -165,22 +165,22 @@ function isMoving(velX, velY, dir, stoppingSide) {
 		'y' : false
 	}
 	if (dir == dirUp) {
-		if (velY <= 0 ) {
+		if (velY <  0 ) {
 			movingProps.y = true;
 		}
 	}
 	if (dir == dirDown) {
-		if (velY >= 0) {
+		if (velY >  0) {
 			movingProps.y = true;
 		}
 	}
 	if (dir == dirLeft) {
-		if (velX <= 0) {
+		if (velX <  0) {
 			movingProps.x = true;
 		}
 	}
 	if (dir == dirRight){
-		if(velX >= 0)
+		if(velX >  0)
 		{
 			movingProps.x = true
 		}
@@ -192,19 +192,19 @@ function isMoving(velX, velY, dir, stoppingSide) {
 function decreaseVelX(velX, dir) {
 	if (dir == dirLeft){
 		 
-		return velX + speedDec;// > 0? 0 : velX + speedDec;
+		return velX + speedDec  > 0? 0 : velX + speedDec;
 	}
 	if (dir == dirRight)
-		return velX - speedDec;// < 0? 0 : velX - speedDec;;
-	return 0;
+		return velX - speedDec  < 0? 0 : velX - speedDec;;
+	return velX;
 }
 
 function decreaseVelY(velY, dir) {
 	if (dir == dirUp)
-		return velY + speedDec;// > 0? 0 : velY + speedDec ;
+		return velY + speedDec  > 0? 0 : velY + speedDec ;
 	if (dir == dirDown)
-		return velY - speedDec;// < 0? 0 : velY - speedDec;
-	return 0;
+		return velY - speedDec  < 0? 0 : velY - speedDec;
+	return velY;
 }
 
 function getVelocity(dir, vel) {

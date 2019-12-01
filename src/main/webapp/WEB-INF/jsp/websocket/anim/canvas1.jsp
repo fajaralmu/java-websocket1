@@ -191,11 +191,11 @@ td{
 		}
  		
  		function printEntityInfo(entity){
- 			var positionHTML = "<h2>POSITION:"+(this.playerPosition+1)+"/"+this.entities.length+"</h2>";
+ 			var positionHTML = "<h2>POSITION:"+(this.playerPosition+1)+"/"+this.entities.length+", LAP:"+entity.lap+"</h2>";
  			
- 			var velocityInfo = "<h3>velX: "+velX+"</h3><h3>velY: "+velY+"</h3>"+
- 			"<p>StoppingMode: "+stoppingMode+"</p>"+
- 			"<p>StoppingDirection: "+stoppingDir+"</p>";
+ 			var velocityInfo = "<h3>velX: "+velX+", velY: "+velY+"</h3>"+
+ 			"<p>StoppingMode: "+stoppingMode+","+
+ 			"StoppingDirection: "+stoppingDir+"</p>";
  			
  			document.getElementById("player-name").innerHTML = "<h2>Player: "+entity.name+"</h2>"+velocityInfo;
  			document.getElementById("player-position").innerHTML = positionHTML;
@@ -313,58 +313,80 @@ td{
 		function move(key) {
 			this.entity.physical.lastUpdated = new Date(); 
 			
-			if (stoppingMode && stoppingDir == dirUp) {
+			const pressW = key == 'w';
+			const pressS = key == 's';
+			const pressA = key == 'a';
+			const pressD = key == 'd';
+			const stoppingDec = speedDec;
+			
+			if (stoppingMode && stoppingDir == dirUp && !pressW) {
 				velY -= stoppingDec;
 			}
-			if (stoppingMode && stoppingDir  == dirDown) {
+			if (stoppingMode && stoppingDir  == dirDown && !pressS) {
 				velY += stoppingDec;
 			}
-			if (stoppingMode && stoppingDir  == dirLeft) {
+			if (stoppingMode && stoppingDir  == dirLeft && !pressA) {
 				velX -= stoppingDec;
 			}
-			if (stoppingMode && stoppingDir  == dirRight){
+			if (stoppingMode && stoppingDir  == dirRight && !pressD){
 				velX += stoppingDec;
 			} 
 			
-			if (key == "d") { 
-				if(stoppingMode && stoppingDir  == dirLeft){
-					velX += runIncrement;
+			if (pressD) { 
+				if(stoppingMode && stoppingDir  == dirLeft ){
+					/* console.debug("BRAKE=================",velX); */
+					velX += (runIncrement+1);
+					 
 				}else{
 					velX = 1 + run;
 					run += runIncrement;
-					entityDirection = (dirRight);
+					entityDirection = stopStoppingModeIf(dirRight);
 				}
 			}
-			if (key == "a") { 
+			if (pressA) { 
 				if(stoppingMode && stoppingDir  == dirRight){
-					velX -= runIncrement;
+					velX -= (runIncrement+1);
 				}else{
+					
 					velX = -1 - run;
 					run += runIncrement;
-					entityDirection = (dirLeft);
+					entityDirection = stopStoppingModeIf(dirLeft);
 				}
 				
 			}
-			if (key == "s") { 
+			if (pressS) { 
 				if(stoppingMode && stoppingDir == dirUp){
-					velY += runIncrement;
+					velY += (runIncrement+1);
+					
 				}else{
 					velY = 1 + run;
 					run += runIncrement;
-					entityDirection = (dirDown);
+					entityDirection = stopStoppingModeIf(dirDown);
 				}
 			}
-			if (key == "w" ) { 
+			if (pressW ) { 
 				if(stoppingMode && stoppingDir == dirDown){
-					velY -= runIncrement;
+					velY -= (runIncrement+1);
 				}else{
 					velY = -1 - run;
 					run += runIncrement;
-					entityDirection = (dirUp);
+					entityDirection = stopStoppingModeIf(dirUp);
 				}
 			}
 			if (key == "o") { fireMissile(); }
 			/* else{ stoppingMode = false; } */
+		}
+		
+		/**
+			this method returns the direction :D
+		*/
+		function stopStoppingModeIf(dir){
+		/* 	 console.debug("CHECK STOPPING MODE: ",dir);  
+			if(stoppingDir  == dir){
+				 stoppingMode= false;
+			}	  */
+			
+			return dir;
 		}
 
 		function initAnimation() {
@@ -521,20 +543,16 @@ td{
 
 					printInfo("NO INTERSECTION");
 				}
-				var moving = isMoving(velX, velY, currentphysical.direction, stoppingSide );
-				
-				if(!moving.x && !moving.y  ){
-					console.log("------------NOT MOVING AT ALL--------------",velX,velY)
-					stoppingMode = false;
-					stoppingDir = "0";
-					 velX =0;
-					velY =0; 
-				}else{
-					if(stoppingMode){
-						velX = decreaseVelX(velX, currentphysical.direction);
-						velY = decreaseVelY(velY, currentphysical.direction);
+				 				 
+				if(stoppingMode){
+					velX = decreaseVelX(velX, currentphysical.direction);
+					velY = decreaseVelY(velY, currentphysical.direction);
+					if(velX == 0 && velY == 0){
+						console.debug("STOPPING MODE :FALSE");
+						stoppingMode = false;
 					}
 				}
+				 
 				
 				let velXToDo = velX;
 				let velYToDo = velY;
