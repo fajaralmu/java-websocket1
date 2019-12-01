@@ -89,7 +89,7 @@ public class GamePlayService {
 //		System.out.println("PLAYERS: "+players.size());
 		for (int i = maxStage; i >= minStage; i--) {
 			for (Entity player : players) {
-				if (player.getStageId()==(i)) {
+				if (player.getStageId() == (i)) {
 					if (groupedPlayer.get(i) == null) {
 						groupedPlayer.put(i, singletonList(player));
 					} else {
@@ -112,21 +112,29 @@ public class GamePlayService {
 //				if(playerLayout !=null) {
 //					System.out.println("PLAYER LAYOUT: "+playerLayout.getName()+" IS FINISH: "+playerLayout.getPhysical().getRole().equals(EntityParameter.ROLE_FINISH_LINE));
 //				}
-				
+
 				/**
 				 * Update Lap
 				 */
-				//boolean isFinishLine = playerLayout != null && playerLayout.getPhysical().getRole().equals(EntityParameter.ROLE_FINISH_LINE);
-				boolean isFinishv2 = entity.getStagesPassed().size()==layoutService.getStagesCount() && entity.getStageId() == layoutService.getMinStage();
+				// boolean isFinishLine = playerLayout != null &&
+				// playerLayout.getPhysical().getRole().equals(EntityParameter.ROLE_FINISH_LINE);
+				boolean isFinishv2 = entity.getStagesPassed().size() == layoutService.getStagesCount()
+						&& entity.getStageId() == layoutService.getMinStage();
+
+//				System.out.println("---------------------------------");
+//				System.out.println("player stages: "+entity.getStagesPassed().size());
+//				System.out.println("stages count: "+layoutService.getStagesCount());
+//				System.out.println("layout min stage: "+layoutService.getMinStage());
 				
-				if( isFinishv2) {
-					 if(entity.getStagesPassed().size()==layoutService.getStagesCount()) {
-						 System.out.println("====================>"+entity.getName()+" HAS MORE LAP "+(entity.getLap()+1));
-						entity.setLap(entity.getLap()+1);
-						entity.setStagesPassed(new ArrayList<>());
-					}
+				if (isFinishv2) {
+
+//					System.out.println(
+//							"====================>" + entity.getName() + " HAS MORE LAP " + (entity.getLap() + 1));
+					entity.setLap(entity.getLap() + 1);
+					entity.setStagesPassed(new ArrayList<>());
+
 				}
-				
+
 				resultPlayer.add(entity);
 			}
 		}

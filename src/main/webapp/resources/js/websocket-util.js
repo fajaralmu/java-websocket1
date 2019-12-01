@@ -1,5 +1,5 @@
 var stompClient = null;
-var baseCount = 10;
+var baseCount = 3;
 var updateCount = baseCount;
 var contextPath = "";
 

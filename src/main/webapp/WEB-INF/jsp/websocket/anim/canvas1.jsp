@@ -14,6 +14,10 @@
 <script src="<c:url value="/res/js/websocket-util.js"></c:url >"></script>
 <title>Canvas Animation</title>
 <style type="text/css">
+button:hover{
+	cursor: pointer;
+}
+
 canvas {
 	border: 1px solid black;
 }
@@ -36,10 +40,42 @@ canvas {
 	height: 20px;
 	width: ${winW}px;
 
+}
 
-	
+td{
+	border: solid 1px blue;
+	word-wrap:break-all;
+}
 
+#layout-table{
+	 
+	table-layout: fixed;
+}
 
+.control-btn{
+	width:100%;
+	padding: 10px;
+	color: yellow;
+	background-color: maroon;
+	font-family: arial;
+	font-size: 2em; 
+	margin: auto;
+	text-align: center;
+	border-radius: 5px;
+}
+
+.control-btn:hover{
+	font-size: 2.5em;
+	background-color: gray;
+	 
+}
+
+#touchpad-control{
+	width: 500px;
+	height:500px;
+	border:solid 1px orange;
+	border-radius: 10px;
+	background-color: yellow;
 }
  
 </style>
@@ -49,33 +85,52 @@ canvas {
 	<p id="info" align="center"></p>
 	<h3 id="ws-info"></h3>
 
-	<table style="layout: fixed">
+	<table id="layout-table">
 		<tr>
-			<td><h3>Health</h3>
-				<div style="width:${winW}px; padding:5px; border:solid 1px blue;">
+			<td colspan="3"><h3 style="display: none">Health</h3>
+				<div  style="display:none; width:${winW}px; padding:5px; border:solid 1px blue;">
 					<div id="life-bar" class="life-bar"></div>
-				</div></td>
-			<td></td>
+				</div>
+				</td>
+			 <td></td>
 		</tr>
 
 		<tr valign="top">
-			<td>
-			<div style="background-image:url('<c:url value="/res/img/layout1.png" />')" >
+			<td colspan="3" style="width: ${winW}px">
+			<div style="background-image:url('<c:url value="/res/img/layout1.png" />'); background-repeat: no-repeat" >
 			<canvas id="tutorial" width="${winW}" height="${winH}">
 				</canvas></div>
 				</td>
 				
-			<td>
+			<td   style="width:300px">
 				<p id="circuit-info" ></p>
-				<p id="entity-info"></p>
+				<p  id="entity-info"></p>
 				<p id="realtime-info"></p>
 				<p id="msg-info"></p>
 			</td>
 		</tr>
+		<tr>
+			<td><p id="player-name"></p></td>
+			<td><button class="control-btn" move-role="w" id="btn-up">UP</button> </td>
+			<td><p id="player-position"></p></td>
+			
+		</tr>
+		<tr>
+			<td><button class="control-btn"  move-role="a" id="btn-left">LEFT</button> </td>
+			<td><button class="control-btn" style="background-color: red" onclick="releaseAll()" id="btn-stop">STOP</button> </td>
+			<td><button class="control-btn"  move-role="d" id="btn-right">RIGHT</button> </td>
+		</tr>
+		<tr>
+			<td></td>
+			<td><button class="control-btn"  move-role="s" id="btn-down">DOWN</button> </td>
+			<td></td>
+		</tr>
 
 	</table>
+	<p></p>
+	<p></p>
 	<label>Input Name: </label>
-	<input id="name" type="text" />
+	<input style="height: 50px; font-size:1.5em" id="name" type="text" />
 	<button class="btn-ok" id="join" onclick="join()">Join</button>
 	<button class="btn-ok" id="connect" onclick="connect()">Connect</button>
 	<button class="btn-danger" id="leave" onclick="leave()">Leave</button>
@@ -83,6 +138,9 @@ canvas {
 	<p>
 		Connected: <span id="connect-info" />
 	</p>
+	<h2>Touchpad-Control</h2>
+	<div id="touchpad-control" >
+	</div>
 </div>
 
 	<script type="text/javascript">
@@ -133,12 +191,17 @@ canvas {
 		}
  		
  		function printEntityInfo(entity){
+ 			var positionHTML = "<h2>POSITION:"+(this.playerPosition+1)+"/"+this.entities.length+"</h2>";
+ 			
+ 			document.getElementById("player-name").innerHTML = "<h2>Player: "+entity.name+"</h2>";
+ 			document.getElementById("player-position").innerHTML = positionHTML;
+ 			
  			document.getElementById("entity-info").innerHTML = JSON
 			.stringify(entity);
  			document.getElementById("entity-info").innerHTML+=
  				"<br> <b>STAGE</b>: "+entity.stageId
  				+"<br> <b>LAYOUT ID</b>: "+entity.layoutId
- 				+"<br> <b>POSITION</b>:"+(this.playerPosition+1)+"/"+this.entities.length
+ 				+"<br> "+positionHTML;
  				+"<br> <b>LAP</b>: "+entity.lap;
  		}
 
@@ -196,17 +259,25 @@ canvas {
 		}
 
 		window.onkeydown = function(e) {
-			this.entity.physical.lastUpdated = new Date();
+		
 			move(e.key);
 		}
 
 		window.onkeyup = function(e) {
-			this.entity.physical.lastUpdated = new Date();
-			run = 0;
+			
 			release(e.key);
+		}
+		
+		function releaseAll(){
+			release('w');
+			release('a');
+			release('s');
+			release('d');
 		}
 
 		function release(key) {
+			run = 0;
+			this.entity.physical.lastUpdated = new Date();
 			if (key == "a" || key == "d"){
 				stoppingMode = true;
 				velX = 0;
@@ -233,6 +304,7 @@ canvas {
 		}
 		
 		function move(key) {
+			this.entity.physical.lastUpdated = new Date(); 
 			if (key == "d") {
 				stoppingMode = false;
 				velX = 1 + run;
@@ -584,7 +656,34 @@ canvas {
 		function clearCanvas() {
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
 		}
+		
+		function setupControlBtn(){
+			let controlButtons = document.getElementsByClassName("control-btn");
+			for (let i = 0; i < controlButtons.length; i++) {
+				let button = controlButtons[i];
+				let moveRole = button.getAttribute("move-role");
+				button.onmousedown = function(){
+					move(moveRole);
+				};
+				
+				button.onclick = function(){
+					move(moveRole);
+				};
+				
+				button.onmouseup = function(){
+					release(moveRole);
+				};
+				
+				button.onmouseout = function(){
+					release(moveRole);
+				};
+				
+			}
+			
+		}
+		setupControlBtn();
 		draw();
 	</script>
 </body>
 </html>
+
