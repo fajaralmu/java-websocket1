@@ -193,7 +193,11 @@ td{
  		function printEntityInfo(entity){
  			var positionHTML = "<h2>POSITION:"+(this.playerPosition+1)+"/"+this.entities.length+"</h2>";
  			
- 			document.getElementById("player-name").innerHTML = "<h2>Player: "+entity.name+"</h2>";
+ 			var velocityInfo = "<h3>velX: "+velX+"</h3><h3>velY: "+velY+"</h3>"+
+ 			"<p>StoppingMode: "+stoppingMode+"</p>"+
+ 			"<p>StoppingDirection: "+stoppingDir+"</p>";
+ 			
+ 			document.getElementById("player-name").innerHTML = "<h2>Player: "+entity.name+"</h2>"+velocityInfo;
  			document.getElementById("player-position").innerHTML = positionHTML;
  			
  			document.getElementById("entity-info").innerHTML = JSON
@@ -248,25 +252,19 @@ td{
 		var entityImages = new Array();
 		var allMissiles = new Array();
 		var run = 0;
-		var runIncrement = 0.5;
-		var stoppingMode = false;
-		var stopIncrement = 0.5;
-		var stopVel  = 0;
+		const runIncrement = 0.3;
+		var stoppingDir = "0";
+		var stoppingSide = "0";
+		var stoppingMode = false;  
 
 		function updateEntityInfo() {
 			var amount = this.entity.life / baseHealth * WIN_W;
 			document.getElementById("life-bar").style.width = amount + "px";
 		}
 
-		window.onkeydown = function(e) {
-		
-			move(e.key);
-		}
+		window.onkeydown = function(e) { move(e.key); }
 
-		window.onkeyup = function(e) {
-			
-			release(e.key);
-		}
+		window.onkeyup = function(e) { release(e.key); }
 		
 		function releaseAll(){
 			release('w');
@@ -278,25 +276,34 @@ td{
 		function release(key) {
 			run = 0;
 			this.entity.physical.lastUpdated = new Date();
-			if (key == "a" || key == "d"){
-				stoppingMode = true;
-				velX = 0;
-				stopVel = stopIncrement;
-				if(key == "a"){
-					stopVel = -stopVel;
-				}
-			}
-				
-			if (key == "w" || key == "s"){
-				stoppingMode = true;
-				velY = 0;
-				stopVel = stopIncrement;
-				if(key == "w"){
-					stopVel = -stopVel;
-				}
-			}
-				
+		 	/**
+			* stopping object wil be handled in the loooooop
+			*/
+			stoppingMode = true; 
+		 	switch (key) {
+			case 'w':
+				stoppingDir = this.dirUp;
+				stoppingSide = "v";
+				break;
+			case 's':
+				stoppingDir = this.dirDown;	
+				stoppingSide = "v";
+				break;
+			case 'a':
+				stoppingDir = this.dirLeft;
+				stoppingSide = "h";
+				break;
+			case 'd':
+				stoppingDir = this.dirRight;
+				stoppingSide = "h";
+				break;
 
+			default:
+				//default value
+			//	stoppingSide = "0";
+			//	stoppingDir = 123456;
+				break;
+			}
 		}
 
 		function update(){
@@ -305,34 +312,46 @@ td{
 		
 		function move(key) {
 			this.entity.physical.lastUpdated = new Date(); 
-			if (key == "d") {
-				stoppingMode = false;
-				velX = 1 + run;
-				run += runIncrement;
-				entityDirection = (dirRight);
+			
+			if (key == "d") { 
+				if(stoppingMode && stoppingSide == "h"){
+					velX += runIncrement;
+				}else{
+					velX = 1 + run;
+					run += runIncrement;
+					entityDirection = (dirRight);
+				}
 			}
-			if (key == "a") {
-				stoppingMode = false;
-				velX = -1 - run;
-				run += runIncrement;
-				entityDirection = (dirLeft);
+			if (key == "a") { 
+				if(stoppingMode && stoppingSide == "h"){
+					velX -= runIncrement;
+				}else{
+					velX = -1 - run;
+					run += runIncrement;
+					entityDirection = (dirLeft);
+				}
+				
 			}
-			if (key == "s") {
-				stoppingMode = false;
-				velY = 1 + run;
-				run += runIncrement;
-				entityDirection = (dirDown);
+			if (key == "s") { 
+				if(stoppingMode && stoppingSide == "v"){
+					velY += runIncrement;
+				}else{
+					velY = 1 + run;
+					run += runIncrement;
+					entityDirection = (dirDown);
+				}
 			}
-			if (key == "w") {
-				stoppingMode = false;
-				velY = -1 - run;
-				run += runIncrement;
-				entityDirection = (dirUp);
+			if (key == "w" ) { 
+				if(stoppingMode && stoppingSide == "v"){
+					velY -= runIncrement;
+				}else{
+					velY = -1 - run;
+					run += runIncrement;
+					entityDirection = (dirUp);
+				}
 			}
-			if (key == "o") {
-				fireMissile();
-
-			}
+			if (key == "o") { fireMissile(); }
+			/* else{ stoppingMode = false; } */
 		}
 
 		function initAnimation() {
@@ -489,6 +508,20 @@ td{
 
 					printInfo("NO INTERSECTION");
 				}
+				var moving = isMoving(velX, velY, currentphysical.direction );
+				
+				if(!moving.x && !moving.y  ){
+					stoppingMode = false;
+					stoppingDir = "0";
+					velX =0;
+					velY =0;
+				}else{
+					if(stoppingMode){
+						velX = decreaseVelX(velX, currentphysical.direction);
+						velY = decreaseVelY(velY, currentphysical.direction);
+					}
+				}
+				
 				let velXToDo = velX;
 				let velYToDo = velY;
 				if (currentphysical.lastUpdate < this.entity.physical.lastUpdate) {
