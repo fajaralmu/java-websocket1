@@ -159,13 +159,13 @@ function isOutOfBounds(currentphysical, WIN_W, WIN_H, velX, velY) {
 	return false;
 }
 
-function isMoving(velX, velY, dir) {
+function isMoving(velX, velY, dir, stoppingSide) {
 	var movingProps = {
 		'x' : false,
 		'y' : false
 	}
 	if (dir == dirUp) {
-		if (velY <= 0) {
+		if (velY <= 0 ) {
 			movingProps.y = true;
 		}
 	}
@@ -190,18 +190,20 @@ function isMoving(velX, velY, dir) {
 }
 
 function decreaseVelX(velX, dir) {
-	if (dir == dirLeft)
-		return velX + speedDec;
+	if (dir == dirLeft){
+		 
+		return velX + speedDec;// > 0? 0 : velX + speedDec;
+	}
 	if (dir == dirRight)
-		return velX - speedDec;
+		return velX - speedDec;// < 0? 0 : velX - speedDec;;
 	return 0;
 }
 
 function decreaseVelY(velY, dir) {
 	if (dir == dirUp)
-		return velY + speedDec;
+		return velY + speedDec;// > 0? 0 : velY + speedDec ;
 	if (dir == dirDown)
-		return velY - speedDec;
+		return velY - speedDec;// < 0? 0 : velY - speedDec;
 	return 0;
 }
 

@@ -313,8 +313,21 @@ td{
 		function move(key) {
 			this.entity.physical.lastUpdated = new Date(); 
 			
+			if (stoppingMode && stoppingDir == dirUp) {
+				velY -= stoppingDec;
+			}
+			if (stoppingMode && stoppingDir  == dirDown) {
+				velY += stoppingDec;
+			}
+			if (stoppingMode && stoppingDir  == dirLeft) {
+				velX -= stoppingDec;
+			}
+			if (stoppingMode && stoppingDir  == dirRight){
+				velX += stoppingDec;
+			} 
+			
 			if (key == "d") { 
-				if(stoppingMode && stoppingSide == "h"){
+				if(stoppingMode && stoppingDir  == dirLeft){
 					velX += runIncrement;
 				}else{
 					velX = 1 + run;
@@ -323,7 +336,7 @@ td{
 				}
 			}
 			if (key == "a") { 
-				if(stoppingMode && stoppingSide == "h"){
+				if(stoppingMode && stoppingDir  == dirRight){
 					velX -= runIncrement;
 				}else{
 					velX = -1 - run;
@@ -333,7 +346,7 @@ td{
 				
 			}
 			if (key == "s") { 
-				if(stoppingMode && stoppingSide == "v"){
+				if(stoppingMode && stoppingDir == dirUp){
 					velY += runIncrement;
 				}else{
 					velY = 1 + run;
@@ -342,7 +355,7 @@ td{
 				}
 			}
 			if (key == "w" ) { 
-				if(stoppingMode && stoppingSide == "v"){
+				if(stoppingMode && stoppingDir == dirDown){
 					velY -= runIncrement;
 				}else{
 					velY = -1 - run;
@@ -508,13 +521,14 @@ td{
 
 					printInfo("NO INTERSECTION");
 				}
-				var moving = isMoving(velX, velY, currentphysical.direction );
+				var moving = isMoving(velX, velY, currentphysical.direction, stoppingSide );
 				
 				if(!moving.x && !moving.y  ){
+					console.log("------------NOT MOVING AT ALL--------------",velX,velY)
 					stoppingMode = false;
 					stoppingDir = "0";
-					velX =0;
-					velY =0;
+					 velX =0;
+					velY =0; 
 				}else{
 					if(stoppingMode){
 						velX = decreaseVelX(velX, currentphysical.direction);
