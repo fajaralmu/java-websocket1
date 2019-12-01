@@ -587,12 +587,12 @@ td{
 					var latestDirectionH = getLatestStoppingDirH();
 					var theDirX = currentphysical.direction;
 					var theDirY = currentphysical.direction;
-					if(latestDirectionV != null){
+					if(theDirY != dirUp && theDirY!=dirDown && latestDirectionV != null){
 						if(latestDirectionV == dirUp || latestDirectionV == dirDown){
 							theDirY = latestDirectionV;
 						} 
 					}
-					if(latestDirectionH != null){
+					if(theDirX != dirRight && theDirX!=dirLeft && latestDirectionH != null){
 						if(latestDirectionH == dirRight || latestDirectionH == dirLeft){
 							theDirX = latestDirectionH;
 						}
