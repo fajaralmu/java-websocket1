@@ -104,7 +104,7 @@ td{
 				
 			<td   style="width:300px">
 				<p id="circuit-info" ></p>
-				<p  id="entity-info"></p>
+				<p id="entity-info"></p>
 				<p id="realtime-info"></p>
 				<p id="msg-info"></p>
 			</td>
@@ -128,7 +128,7 @@ td{
 
 	</table>
 	<p></p>
-	<p></p>
+	<p id="velocity-info"></p>
 	<label>Input Name: </label>
 	<input style="height: 50px; font-size:1.5em" id="name" type="text" />
 	<button class="btn-ok" id="join" onclick="join()">Join</button>
@@ -202,10 +202,10 @@ td{
  			var positionHTML = "<h2>POSITION:"+(this.playerPosition+1)+"/"+this.entities.length+", LAP:"+entity.lap+"</h2>";
  			
  			var velocityInfo = "<h3>velX: "+velX+", velY: "+velY+"</h3>"+
- 			"<p>StoppingMode: "+stoppingMode+","+
- 			"StoppingDirection: "+stoppingDir+"</p>";
+ 			"<p>StoppingMode: "+stoppingMode+", StoppingDirection: "+stoppingDir+"</p>";
  			
- 			document.getElementById("player-name").innerHTML = "<h2>Player: "+entity.name+"</h2>"+velocityInfo;
+ 			document.getElementById("player-name").innerHTML = "<h2>Player: "+entity.name+"</h2>";
+ 			document.getElementById("velocity-info").innerHTML = velocityInfo;
  			document.getElementById("player-position").innerHTML = positionHTML;
  			
  			document.getElementById("entity-info").innerHTML = JSON
@@ -746,6 +746,8 @@ td{
 						&& currentEntity.id != this.entity.id) {
 					if (intersect(this.entity, currentEntity).status == true) {
 						let lifeEntity = currentEntity;
+						velX = 0;
+						velY = 0;
 						if (this.entity.life < baseHealth) {
 							this.entity.life += lifeEntity.life;
 							if (this.entity.life > baseHealth) {
