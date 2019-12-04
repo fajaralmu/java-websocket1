@@ -14,13 +14,9 @@
 <script src="<c:url value="/res/js/websocket-util.js"></c:url >"></script>
 <title>Canvas Animation</title>
 <style type="text/css">
-button:hover{
-	cursor: pointer;
-}
+button:hover{ cursor: pointer; }
 
-canvas {
-	border: 1px solid black;
-}
+canvas { border: 1px solid black; }
 
 .btn-ok {
 	background-color: green;
@@ -144,14 +140,14 @@ td{
 </div>
 
 	<script type="text/javascript">
-		var layouts = ${layouts};
-		/*declared in websocket-util.js*/ contextPath = "${contextPath}"
+	var layouts = ${layouts};
+		/*declared in websocket-util.js*/ contextPath = "${contextPath}";
 		var currentLayoutId = 0;
 
 		var WIN_W = "${winW}";
 		var WIN_H = "${winH}";
-		var rolePlayer = ${rolePlayer} ;
-		var roleBonusLife =  ${roleBonusLife} ;
+		var rolePlayer = ${rolePlayer};
+		var roleBonusLife =  ${roleBonusLife};
 		var roleBonusArmor =  ${roleBonusArmor} ;
 		//CIRCUIT
 		var roleRight = ${roleRight};
@@ -170,16 +166,18 @@ td{
 		var ctx = canvas.getContext('2d');
 		var textInput = document.getElementById("draw-text");
 		var initBtn = document.getElementById("animate");
+		var dirUp = "u";
+		var dirLeft = "l";
+		var dirRight = "r";
+		var dirDown = "d";
+		
+		var entityDirection = "r";		
 		var isAnimate = false;
 		var velX = 0, velY = 0;
 		var x = 10, y = 10;
 		var entities = new Array();
 		var entity = {};
-		var dirUp = "u";
-		var dirLeft = "l";
-		var dirRight = "r";
-		var dirDown = "d";
-		var entityDirection = "r";
+		
 		var firing = false;
 		var entityDirectionHistory = new Array();
 		
@@ -261,7 +259,7 @@ td{
 		var entityImages = new Array();
 		var allMissiles = new Array();
 		var run = 0;
-		const runIncrement = 0.3;
+		var runIncrement = 0.3;
 		var stoppingDir = "0";
 		var stoppingSide = "0";
 		var stoppingMode = false;  
@@ -306,7 +304,6 @@ td{
 				stoppingDir = this.dirRight;
 				stoppingSide = "h";
 				break;
-
 			default:
 				//default value
 			//	stoppingSide = "0";
@@ -417,23 +414,18 @@ td{
 		
 		function getLayoutRole(role){
 			switch (role) {
-			case this.roleRight:
-				return "RIGHT";
-				break;
-			case this.roleLeft:
-				return "LEFT";							
-				break;
-			case this.roleUp:
-				return "UP";
-				break;
-			case this.roleDown:
-				return "DOWN";
-				break;
-			case this.roleFinish:
-				return "FINISH";
-				break;
-			default:
-				break;
+				case this.roleRight:
+					return "RIGHT"; 
+				case this.roleLeft:
+					return "LEFT";	 
+				case this.roleUp:
+					return "UP"; 
+				case this.roleDown:
+					return "DOWN"; 
+				case this.roleFinish:
+					return "FINISH"; 
+				default:
+					break;
 			}
 			return "Not Circuit Role";
 		}
@@ -442,10 +434,7 @@ td{
 			if(entityDirectionHistory.length > 0){
 				for (var i = entityDirectionHistory.length-1; i >=0 ; i--) {
 					var dir = entityDirectionHistory[i];
-					if(dir == this.dirRight || dir == this.dirLeft){
-						return dir;
-					}
-					
+					if(dir == this.dirRight || dir == this.dirLeft){ 	return dir; 	}
 				} 
 			}
 			return null;
@@ -455,11 +444,8 @@ td{
 			if(entityDirectionHistory.length > 0){
 				for (var i = entityDirectionHistory.length-1; i >=0 ; i--) {
 					var dir = entityDirectionHistory[i];
-					if(dir == this.dirUp || dir == this.dirDown){
-						return dir;
-					}
-					
-				} 
+					if(dir == this.dirUp || dir == this.dirDown){ 	return dir; }
+				 } 
 			}
 			return null;
 		}
@@ -482,15 +468,7 @@ td{
 
 					currentEntity.missiles[i].physical.x += velocity.x;
 					currentEntity.missiles[i].physical.y += velocity.y;
-
-					/* for(let j=0;j<entities.length;j++){
-						var u = entities[i];
-						if(u.id != missile.entityId){
-							if(intersect(u, missile)){
-								entities[i].life--;
-							}
-						}
-					}  */
+ 
 					let missileIntersects = false;
 					if (!isPlayer) {
 						if (intersect(this.entity, missile).status == true) {
@@ -537,9 +515,7 @@ td{
 				}
 
 			if (isPlayer) {
-				//	this.entity.missiles = currentEntity.missiles;
-				//	currentEntity = this.entity;
-				//console.log("CURRENT ENTITY :",currentEntity)
+				 
 				let currentphysical = currentEntity.physical;
 				let outOfBounds = isOutOfBounds(currentphysical, WIN_W, WIN_H,
 						velX, velY);
@@ -574,13 +550,8 @@ td{
 					velY = 0;
 					run = 0;
 				}
-				if (intersectLayout) {
-					printInfo("WILL intersect layout :" + intersectionInfo
-							+ JSON.stringify(layoutItemIntersects));
-				} else {
-
-					printInfo("NO INTERSECTION");
-				}
+				if (intersectLayout) { printInfo("WILL intersect layout :" + intersectionInfo + JSON.stringify(layoutItemIntersects)); } 
+				else { printInfo("NO INTERSECTION"); }
 				 				 
 				if(stoppingMode){
 					var latestDirectionV = getLatestStoppingDirV();
@@ -647,10 +618,8 @@ td{
 			ctx.font = "15px Arial";
 
 			if (!currentEntity.physical.layout) {
-				ctx
-						.fillText(currentEntity.name + "." + physical.direction
-								+ "." + currentEntity.active + ".("
-								+ currentEntity.life + ")", physical.x,
+				ctx .fillText(currentEntity.name + "." + physical.direction
+								+ "." + currentEntity.active + ".(" + currentEntity.life + ")", physical.x,
 								physical.y - 10);
 			} else {
 				ctx.fillText(currentEntity.id, physical.x, physical.y - 10);
@@ -672,7 +641,7 @@ td{
 			firing = true;
 			fireCount = 0;
 			var missile = createMissile(this.entity);
-			console.log("000000000000000000000000000000Fire Missile", missile);
+			console.debug("==>Fire Missile", missile);
 			this.entity.missiles.push(missile);
 			entity.layoutId = currentLayoutId;
 			updateMovement(entity);
@@ -697,18 +666,10 @@ td{
 			let urls = new Array();
 			for (let i = 0; i < roles.length; i++) {
 				let role = roles[i];
-				urls
-						.push("<c:url value="/res/img/player/"/>" + role
-								+ "_u.png");
-				urls
-						.push("<c:url value="/res/img/player/"/>" + role
-								+ "_d.png");
-				urls
-						.push("<c:url value="/res/img/player/"/>" + role
-								+ "_r.png");
-				urls
-						.push("<c:url value="/res/img/player/"/>" + role
-								+ "_l.png");
+				urls .push("<c:url value="/res/img/player/"/>" + role + "_u.png");
+				urls .push("<c:url value="/res/img/player/"/>" + role + "_d.png");
+				urls .push("<c:url value="/res/img/player/"/>" + role + "_r.png");
+				urls .push("<c:url value="/res/img/player/"/>" + role + "_l.png");
 			}
 			for (let i = 0; i < staticImages.length; i++) {
 				let staticImage = staticImages[i];
@@ -719,8 +680,7 @@ td{
 				var image = new Image();
 
 				image.onload = function() {
-					console.log("Image loaded: ", urls[i], image);
-					ctx.drawImage(image, i * 50, 0, 50, 38);
+					console.log("Image loaded: ", urls[i], image); ctx.drawImage(image, i * 50, 0, 50, 38);
 				}
 				image.src = urls[i];
 				entityImages.push(image);
@@ -728,11 +688,7 @@ td{
 		}
 
 		function render() {
-			for (let i = 0; i < layouts.length; i++) {
-				let currentLayout = layouts[i];
-				//renderEntity(currentLayout);
-			}
-
+			//layout not rendered because it is the background image
 			for (let i = 0; i < entities.length; i++) {
 				let currentEntity = entities[i];
 				
@@ -765,13 +721,8 @@ td{
 		}
 
 		function draw() {
-			if (canvas.getContext) {
-				ctx.beginPath();
-				ctx.arc(70, 80, 10, 0, 2 * Math.PI, false);
-				ctx.fill();
-			} else {
-				alert("Not Supported");
-			}
+			if (canvas.getContext) { ctx.beginPath(); ctx.arc(70, 80, 10, 0, 2 * Math.PI, false); ctx.fill(); } 
+			else { alert("Not Supported"); }
 		}
 
 		function clearCanvas() {
@@ -783,21 +734,13 @@ td{
 			for (let i = 0; i < controlButtons.length; i++) {
 				let button = controlButtons[i];
 				let moveRole = button.getAttribute("move-role");
-				button.onmousedown = function(){
-					move(moveRole);
-				};
+				button.onmousedown = function(){ 	move(moveRole); };
 				
-				button.onclick = function(){
-					move(moveRole);
-				};
+				button.onclick = function(){ 	move(moveRole); };
 				
-				button.onmouseup = function(){
-					release(moveRole);
-				};
+				button.onmouseup = function(){ release(moveRole); };
 				
-				button.onmouseout = function(){
-					release(moveRole);
-				};
+				button.onmouseout = function(){ release(moveRole); };
 				
 			}
 			

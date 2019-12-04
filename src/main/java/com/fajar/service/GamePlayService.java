@@ -76,8 +76,9 @@ public class GamePlayService {
 
 	public List<Entity> sortPlayer(List<Entity> players) {
 		List<Entity> playerSortedByStage = new ArrayList<Entity>();
+		List<Entity> finalSortedPlayer = new ArrayList<>();
 		List<Entity> playerCalculate = players;
-		Map<Integer, List<Entity>> groupedPlayer = new HashMap<>();
+		Map<Integer, List<Entity>> groupedPlayerByStage = new HashMap<>();
 
 		int maxStage = getMaxStage(players);
 
@@ -87,10 +88,10 @@ public class GamePlayService {
 		for (int i = maxStage; i >= minStage; i--) {
 			for (Entity player : players) {
 				if (player.getStageId() == (i)) {
-					if (groupedPlayer.get(i) == null) {
-						groupedPlayer.put(i, singletonList(player));
+					if (groupedPlayerByStage.get(i) == null) {
+						groupedPlayerByStage.put(i, singletonList(player));
 					} else {
-						groupedPlayer.get(i).add(player);
+						groupedPlayerByStage.get(i).add(player);
 					}
 
 				}
@@ -98,9 +99,9 @@ public class GamePlayService {
 
 		}
 		for (int i = maxStage; i >= minStage; i--) {
-			if (groupedPlayer.get(i) == null)
+			if (groupedPlayerByStage.get(i) == null)
 				continue;
-			List<Entity> sorted = sortPlayerInSameStage(groupedPlayer.get(i), i);
+			List<Entity> sorted = sortPlayerInSameStage(groupedPlayerByStage.get(i), i);
 
 			for (Entity entity : sorted) {
 				Entity playerLayout = layoutService.getLayoutById(entity.getLayoutId());
@@ -119,7 +120,7 @@ public class GamePlayService {
 			}
 		}
 
-		List<Entity> finalSortedPlayer = new ArrayList<>();
+		
 		int minLap = getMinLap(playerSortedByStage);
 		int maxLap = getMaxLap(playerSortedByStage);
 
