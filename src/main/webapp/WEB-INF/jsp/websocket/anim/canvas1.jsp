@@ -494,6 +494,38 @@ td{
 				let intersectLayout = false;
 				let intersection = {};
 				let intersectionReverse = {};
+				
+				let playerIntersects = {};
+				let intersectPlayer  = false;
+				let intersectionPlayer = {};
+				let intersectionPlayerReverse = {};
+				
+				//check intersecting other player
+				for (var i = 0; i < entities.length; i++) {
+					var theEntity = entities[i];
+					var isPlayer2 = (theEntity.id == this.entity.id);
+					if(!isPlayer2){ 
+						if (  !intersectPlayer
+								&& intersect(currentEntity, theEntity).status == true) {
+							intersectionPlayer = intersect(currentEntity, theEntity);
+							intersectionPlayerReverse = intersectReverse(currentEntity,
+									theEntity);
+							intersectPlayer = true;
+							 
+							layoutItemIntersects = theEntity;
+						}
+					}
+				} 
+				
+				if (intersectPlayer
+						&& (intersectionPlayer.direction == currentphysical.direction || intersectionPlayerReverse.direction == currentphysical.direction)) {
+					printInfo("intersect player :" 							+ JSON.stringify(playerIntersects));
+					velX = 0;
+					velY = 0;
+					run = 0;
+				}
+				
+				/*************CHECK INTERSECT LAYOUT****************/
 				for (let i = 0; i < layouts.length; i++) {
 					let layoutItem = layouts[i];
 					if (  !intersectLayout
