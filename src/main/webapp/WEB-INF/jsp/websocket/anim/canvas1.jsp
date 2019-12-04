@@ -453,6 +453,7 @@ td{
 							alert("GAME OVER....");
 							leave();
 						}
+						//check if missile intersects player
 						for (let x = 0; x < entities.length; x++) {
 							if (entities[x].id != this.entity.id) {
 								if (intersect(missile, entities[x]).status == true) {
@@ -462,6 +463,7 @@ td{
 								}
 							}
 						}
+						//check if missile intersects layout
 						for (let x = 0; x < layouts.length; x++) {
 							if (layouts[x].physical.role == 102  && intersect(missile, layouts[x]).status == true) {
 								firing = true;
