@@ -222,3 +222,30 @@ function getVelocity(dir, vel) {
 
 	return velocity;
 }
+
+
+function join() {
+	entityDirectionHistory = new Array();
+	var name = document.getElementById("name").value;
+	entity.name = name;
+	postReq(
+			urlJoinPath,
+			"name=" + name,
+			"join",
+			function(response) {
+				var responseObject = JSON.parse(response);
+				console.log("RESPONSE", responseObject);
+				if (responseObject.responseCode == "00") {
+					entity = responseObject.entity;
+					//	console.log("USER",entity);
+					printEntityInfo(entity);
+					window.document.title = "PLAYER: " + entity.name;
+					document.getElementById("name").disabled = true;
+					initAnimation();
+					loadImages();
+
+				} else {
+					alert("FAILED :" + responseObject.responseMessage);
+				}
+			});
+}

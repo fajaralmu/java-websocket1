@@ -10,8 +10,49 @@
 <script src="<c:url value="/res/js/stomp.js"></c:url >"></script>
 <script src="<c:url value="/res/js/ajax.js"></c:url >"></script>
 <script src="<c:url value="/res/js/util.js"></c:url >"></script>
-<script src="<c:url value="/res/js/player.js"></c:url >"></script>
 <script src="<c:url value="/res/js/websocket-util.js"></c:url >"></script>
+
+<script type="text/javascript">
+/** GLOBAL VARIABLES **/
+		var layouts = ${layouts};
+		/*declared in websocket-util.js*/ contextPath = "${contextPath}";
+		var currentLayoutId = 0;
+		var playerImagePath = "<c:url value="/res/img/player/"/>";
+		var urlJoinPath = "<spring:url value="/game-app-simple/join" />";
+		var imgPath = "<c:url value="/res/img/"/>" ;
+		var WIN_W = "${winW}";
+		var WIN_H = "${winH}";
+		var rolePlayer = ${rolePlayer};
+		var roleBonusLife =  ${roleBonusLife};
+		var roleBonusArmor =  ${roleBonusArmor} ;
+		//CIRCUIT
+		var roleRight = ${roleRight};
+		var roleLeft = ${roleLeft};
+		var roleUp = ${roleUp};
+		var roleDown = ${roleDown};
+		var roleFinish = ${roleFinish};			
+		
+		var roles = ${roles};
+		var staticImages = ${staticImages};
+		var baseHealth =  ${baseHealth} ;
+		var dirUp = "u";
+		var dirLeft = "l";
+		var dirRight = "r";
+		var dirDown = "d";
+		
+		var playerPosition = 0;
+		var entityDirection = "r";		
+		var isAnimate = false;
+		var velX = 0, velY = 0;
+		var x = 10, y = 10;
+		var entities = new Array();
+		var entity = {};
+		
+		var firing = false;
+		var entityDirectionHistory = new Array();
+</script>
+<script src="<c:url value="/res/js/player.js"></c:url >"></script>
+
 <title>Canvas Animation</title>
 <style type="text/css">
 button:hover{ cursor: pointer; }
@@ -139,47 +180,15 @@ td{
 	</div>
 </div>
 
-	<script type="text/javascript">
-	var layouts = ${layouts};
-		/*declared in websocket-util.js*/ contextPath = "${contextPath}";
-		var currentLayoutId = 0;
-
-		var WIN_W = "${winW}";
-		var WIN_H = "${winH}";
-		var rolePlayer = ${rolePlayer};
-		var roleBonusLife =  ${roleBonusLife};
-		var roleBonusArmor =  ${roleBonusArmor} ;
-		//CIRCUIT
-		var roleRight = ${roleRight};
-		var roleLeft = ${roleLeft};
-		var roleUp = ${roleUp};
-		var roleDown = ${roleDown};
-		var roleFinish = ${roleFinish};
+<script type="text/javascript">
 		
-		var playerPosition = 0;
-		
-		var roles = ${roles};
-		var staticImages = ${staticImages};
-		var baseHealth =  ${baseHealth} ;
 		var connectBtn = document.getElementById('connect');
 		var canvas = document.getElementById('tutorial');
 		var ctx = canvas.getContext('2d');
 		var textInput = document.getElementById("draw-text");
 		var initBtn = document.getElementById("animate");
-		var dirUp = "u";
-		var dirLeft = "l";
-		var dirRight = "r";
-		var dirDown = "d";
 		
-		var entityDirection = "r";		
-		var isAnimate = false;
-		var velX = 0, velY = 0;
-		var x = 10, y = 10;
-		var entities = new Array();
-		var entity = {};
-		
-		var firing = false;
-		var entityDirectionHistory = new Array();
+	
 		
 		function printCircuitInfo(info){
 			document.getElementById("circuit-info").innerHTML = info;
@@ -215,44 +224,11 @@ td{
  				+"<br> <b>LAP</b>: "+entity.lap;
  		}
 
-		function connect() {
-			doConnect(entity);
-		}
+		function connect() { doConnect(entity); }
 
-		function join() {
-			entityDirectionHistory = new Array();
-			var name = document.getElementById("name").value;
-			entity.name = name;
-			postReq(
-					"<spring:url value="/game-app-simple/join" />",
-					"name=" + name,
-					"join",
-					function(response) {
-						var responseObject = JSON.parse(response);
-						console.log("RESPONSE", responseObject);
-						if (responseObject.responseCode == "00") {
-							entity = responseObject.entity;
-							//	console.log("USER",entity);
-							printEntityInfo(entity);
-							window.document.title = "PLAYER: " + entity.name;
-							document.getElementById("name").disabled = true;
-							initAnimation();
-							loadImages();
+		function setConnected(connected) { document.getElementById('connect-info').innerHTML = connected; }
 
-						} else {
-							alert("FAILED :" + responseObject.responseMessage);
-						}
-					});
-		}
-
-		function setConnected(connected) {
-			document.getElementById('connect-info').innerHTML = connected;
-		}
-
-		function leave() {
-			window.document.title = "0FF-PLAYER: " + entity.name;
-			leaveApp(entity.id);
-		}
+		function leave() { window.document.title = "0FF-PLAYER: " + entity.name; leaveApp(entity.id); }
 	</script>
 	<script type="text/javascript">
 		var fireCount = 0;
@@ -314,9 +290,7 @@ td{
 		 	entityDirectionHistory.push(stoppingDir);
 		}
 
-		function update(){
-			 
-		}
+		function update(){ }
 		
 		function move(key) {
 			this.entity.physical.lastUpdated = new Date(); 
@@ -389,12 +363,9 @@ td{
 			this method returns the direction :D
 		*/
 		function stopStoppingModeIf(dir){
-		//	entityDirectionHistory.push(dir);
-		 //	 console.debug("CHECK STOPPING MODE: ",dir);  
 			if(stoppingDir  == dir){
 				 stoppingMode= false;
-			}	   
-			
+			}	   			
 			return dir;
 		}
 
@@ -651,7 +622,7 @@ td{
 			var fullAddress = window.location.protocol + '//'
 					+ window.location.hostname
 					+ (window.location.port ? ':' + window.location.port : '');
-			let url = fullAddress + "<c:url value="/res/img/player/"/>"
+			let url = fullAddress + playerImagePath
 					+ getDirImage(role, dir);
 			for (var i = 0; i < entityImages.length; i++) {
 				if (entityImages[i].src == url) {
@@ -666,14 +637,14 @@ td{
 			let urls = new Array();
 			for (let i = 0; i < roles.length; i++) {
 				let role = roles[i];
-				urls .push("<c:url value="/res/img/player/"/>" + role + "_u.png");
-				urls .push("<c:url value="/res/img/player/"/>" + role + "_d.png");
-				urls .push("<c:url value="/res/img/player/"/>" + role + "_r.png");
-				urls .push("<c:url value="/res/img/player/"/>" + role + "_l.png");
+				urls .push(playerImagePath + role + "_u.png");
+				urls .push(playerImagePath + role + "_d.png");
+				urls .push(playerImagePath + role + "_r.png");
+				urls .push(playerImagePath + role + "_l.png");
 			}
 			for (let i = 0; i < staticImages.length; i++) {
 				let staticImage = staticImages[i];
-				urls.push("<c:url value="/res/img/"/>" + staticImage);
+				urls.push(imgPath+ staticImage);
 			}
 
 			for (let i = 0; i < urls.length; i++) {
