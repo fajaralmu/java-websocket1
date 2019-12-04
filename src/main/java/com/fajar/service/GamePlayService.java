@@ -52,14 +52,12 @@ public class GamePlayService {
 	}
 
 	private static int getMinStage(List<Entity> players) {
-		int stage = getMaxStage(players);
-//		System.out.println("MAX STAGE: "+stage);
+		int stage = getMaxStage(players); 
 		for (Entity entity : players) {
 			if (entity.getStageId() <= stage) {
 				stage = entity.getStageId();
 			}
-		}
-//		System.out.println("MIN STAGE: "+stage);
+		} 
 		return stage;
 	}
 
@@ -77,7 +75,7 @@ public class GamePlayService {
 	}
 
 	public List<Entity> sortPlayer(List<Entity> players) {
-		List<Entity> resultPlayer = new ArrayList<Entity>();
+		List<Entity> playerSortedByStage = new ArrayList<Entity>();
 		List<Entity> playerCalculate = players;
 		Map<Integer, List<Entity>> groupedPlayer = new HashMap<>();
 
@@ -86,7 +84,6 @@ public class GamePlayService {
 		int minStage = getMinStage(players);
 
 		System.out.println("Stage: " + minStage + "-" + maxStage);
-//		System.out.println("PLAYERS: "+players.size());
 		for (int i = maxStage; i >= minStage; i--) {
 			for (Entity player : players) {
 				if (player.getStageId() == (i)) {
@@ -100,47 +97,62 @@ public class GamePlayService {
 			}
 
 		}
-//		System.out.println("RESULT: "+resultPlayer.size());
 		for (int i = maxStage; i >= minStage; i--) {
 			if (groupedPlayer.get(i) == null)
 				continue;
 			List<Entity> sorted = sortPlayerInSameStage(groupedPlayer.get(i), i);
-			// resultPlayer.addAll(sorted);
-//			System.out.println(i+")will add: "+sorted.size());
+
 			for (Entity entity : sorted) {
 				Entity playerLayout = layoutService.getLayoutById(entity.getLayoutId());
-//				if(playerLayout !=null) {
-//					System.out.println("PLAYER LAYOUT: "+playerLayout.getName()+" IS FINISH: "+playerLayout.getPhysical().getRole().equals(EntityParameter.ROLE_FINISH_LINE));
-//				}
 
 				/**
 				 * Update Lap
 				 */
-				// boolean isFinishLine = playerLayout != null &&
-				// playerLayout.getPhysical().getRole().equals(EntityParameter.ROLE_FINISH_LINE);
 				boolean isFinishv2 = entity.getStagesPassed().size() == layoutService.getStagesCount()
 						&& entity.getStageId() == layoutService.getMinStage();
 
-//				System.out.println("---------------------------------");
-//				System.out.println("player stages: "+entity.getStagesPassed().size());
-//				System.out.println("stages count: "+layoutService.getStagesCount());
-//				System.out.println("layout min stage: "+layoutService.getMinStage());
-				
 				if (isFinishv2) {
-
-//					System.out.println(
-//							"====================>" + entity.getName() + " HAS MORE LAP " + (entity.getLap() + 1));
 					entity.setLap(entity.getLap() + 1);
 					entity.setStagesPassed(new ArrayList<>());
-
 				}
-
-				resultPlayer.add(entity);
+				playerSortedByStage.add(entity);
 			}
 		}
 
-		return resultPlayer;
+		List<Entity> finalSortedPlayer = new ArrayList<>();
+		int minLap = getMinLap(playerSortedByStage);
+		int maxLap = getMaxLap(playerSortedByStage);
 
+		for (int i = maxLap; i >= minLap; i--) {
+			for (Entity player : playerSortedByStage) {
+				if (player.getLap() == i) {
+					finalSortedPlayer.add(player);
+				}
+			}
+		}
+
+		return finalSortedPlayer;
+
+	}
+
+	public int getMinLap(List<Entity> players) {
+		int minLap = getMaxLap(players);
+		for (Entity entity : players) {
+			if (entity.getLap() < minLap) {
+				minLap = entity.getLap();
+			}
+		}
+		return minLap;
+	}
+
+	public int getMaxLap(List<Entity> players) {
+		int maxLap = 0;
+		for (Entity entity : players) {
+			if (entity.getLap() > maxLap) {
+				maxLap = entity.getLap();
+			}
+		}
+		return maxLap;
 	}
 
 	static final int SIDE_HORIZONTAL = 0x22, SIDE_VERTICAL = 0x33;
