@@ -231,7 +231,7 @@ td{
 		function leave() { window.document.title = "0FF-PLAYER: " + entity.name; leaveApp(entity.id); }
 	</script>
 	<script type="text/javascript">
-		var fireCount = 0;
+		var fireTiming = 0;
 		var entityImages = new Array();
 		var allMissiles = new Array();
 		var run = 0;
@@ -500,18 +500,15 @@ td{
 				let intersectionPlayer = {};
 				let intersectionPlayerReverse = {};
 				
-				//check intersecting other player
+				/*************CHECK INTERSECT PLAYER****************/
 				for (var i = 0; i < entities.length; i++) {
 					var theEntity = entities[i];
 					var isPlayer2 = (theEntity.id == this.entity.id);
 					if(!isPlayer2){ 
-						if (  !intersectPlayer
-								&& intersect(currentEntity, theEntity).status == true) {
+						if (  !intersectPlayer && intersect(currentEntity, theEntity).status == true) {
 							intersectionPlayer = intersect(currentEntity, theEntity);
-							intersectionPlayerReverse = intersectReverse(currentEntity,
-									theEntity);
-							intersectPlayer = true;
-							 
+							intersectionPlayerReverse = intersectReverse(currentEntity, theEntity);
+							intersectPlayer = true;							 
 							layoutItemIntersects = theEntity;
 						}
 					}
@@ -519,7 +516,7 @@ td{
 				
 				if (intersectPlayer
 						&& (intersectionPlayer.direction == currentphysical.direction || intersectionPlayerReverse.direction == currentphysical.direction)) {
-					printInfo("intersect player :" 							+ JSON.stringify(playerIntersects));
+				 
 					velX = 0;
 					velY = 0;
 					run = 0;
@@ -528,11 +525,10 @@ td{
 				/*************CHECK INTERSECT LAYOUT****************/
 				for (let i = 0; i < layouts.length; i++) {
 					let layoutItem = layouts[i];
-					if (  !intersectLayout
-							&& intersect(currentEntity, layoutItem).status == true) {
+					if ( !intersectLayout && intersect(currentEntity, layoutItem).status == true) {
 						intersection = intersect(currentEntity, layoutItem);
-						intersectionReverse = intersectReverse(currentEntity,
-								layoutItem);
+						intersectionReverse = intersectReverse(currentEntity, layoutItem);
+						
 						var layoutRole = layoutItem.physical.role;
 						this.currentLayoutId = layoutItem.id;
 						if(layoutRole != 102){
@@ -605,8 +601,7 @@ td{
 				printEntityInfo(this.entity);
 				updateEntityInfo();
 			}
-			if (velX != 0 || velY != 0 || currentEntity.missiles.length > 0
-					|| firing) {
+			if (velX != 0 || velY != 0 || currentEntity.missiles.length > 0 || firing) {
 				//console.log("=================",currentEntity.physical);
 				if (firing)
 					firing = false;
@@ -620,29 +615,28 @@ td{
 			ctx.fillStyle = physical.color;
 			ctx.font = "15px Arial";
 
+			//TEXT on top of the player
 			if (!currentEntity.physical.layout) {
 				ctx .fillText(currentEntity.name + "." + physical.direction
 								+ "." + currentEntity.active + ".(" + currentEntity.life + ")", physical.x,
 								physical.y - 10);
-			} else {
-				ctx.fillText(currentEntity.id, physical.x, physical.y - 10);
-
-			}//ctx.strokeRect(physical.x, physical.y, currentEntity.physical.w, currentEntity.physical.h);
+			} else { ctx.fillText(currentEntity.id, physical.x, physical.y - 10); }
+			//ctx.strokeRect(physical.x, physical.y, currentEntity.physical.w, currentEntity.physical.h);
 			//ctx.fillRect(physical.x, physical.y, currentEntity.physical.w, currentEntity.physical.h);
 			ctx.drawImage(getEntityImage(currentEntity.physical.role,
 					currentEntity.physical.direction), physical.x, physical.y,
 					currentEntity.physical.w, currentEntity.physical.h);
-			fireCount++;
+			fireTiming++;
 			ctx.restore();
 
 		}
 
 		function fireMissile() {
-			if (fireCount < 20) {
+			if (fireTiming < 20) {
 				return;
 			}
 			firing = true;
-			fireCount = 0;
+			fireTiming = 0;
 			var missile = createMissile(this.entity);
 			console.debug("==>Fire Missile", missile);
 			this.entity.missiles.push(missile);
@@ -680,8 +674,7 @@ td{
 			}
 
 			for (let i = 0; i < urls.length; i++) {
-				var image = new Image();
-
+				var image = new Image(); 
 				image.onload = function() {
 					console.log("Image loaded: ", urls[i], image); ctx.drawImage(image, i * 50, 0, 50, 38);
 				}
