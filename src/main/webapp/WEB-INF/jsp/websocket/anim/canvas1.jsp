@@ -50,6 +50,15 @@
 		
 		var firing = false;
 		var entityDirectionHistory = new Array();
+		
+		var fireTiming = 0;
+		var entityImages = new Array();
+		var allMissiles = new Array();
+		var run = 0;
+		var runIncrement = 0.3;
+		var stoppingDir = "0";
+		var stoppingSide = "0";
+		var stoppingMode = false;  
 </script>
 <script src="<c:url value="/res/js/player.js"></c:url >"></script>
 
@@ -195,8 +204,8 @@ td{
 		}
 		
 		function getLatestDirection(){
-			if(entityDirectionHistory.length >0){
-				return entityDirectionHistory[entityDirectionHistory.length-1];
+			if(this.entityDirectionHistory.length >0){
+				return this.entityDirectionHistory[this.entityDirectionHistory.length-1];
 			}
 			return null;
 		}
@@ -231,17 +240,10 @@ td{
 		function leave() { window.document.title = "0FF-PLAYER: " + entity.name; leaveApp(entity.id); }
 	</script>
 	<script type="text/javascript">
-		var fireTiming = 0;
-		var entityImages = new Array();
-		var allMissiles = new Array();
-		var run = 0;
-		var runIncrement = 0.3;
-		var stoppingDir = "0";
-		var stoppingSide = "0";
-		var stoppingMode = false;  
+		
 
 		function updateEntityInfo() {
-			var amount = this.entity.life / baseHealth * WIN_W;
+			var amount = this.entity.life / this.baseHealth * this.WIN_W;
 			document.getElementById("life-bar").style.width = amount + "px";
 		}
 
@@ -262,23 +264,23 @@ td{
 		 	/**
 			* stopping object wil be handled in the loooooop
 			*/
-			stoppingMode = true; 
+			this.stoppingMode = true; 
 		 	switch (key) {
 			case 'w':
-				stoppingDir = this.dirUp;
-				stoppingSide = "v";
+				this.stoppingDir = this.dirUp;
+				this.stoppingSide = "v";
 				break;
 			case 's':
-				stoppingDir = this.dirDown;	
-				stoppingSide = "v";
+				this.stoppingDir = this.dirDown;	
+				this.stoppingSide = "v";
 				break;
 			case 'a':
-				stoppingDir = this.dirLeft;
-				stoppingSide = "h";
+				this.stoppingDir = this.dirLeft;
+				this.stoppingSide = "h";
 				break;
 			case 'd':
-				stoppingDir = this.dirRight;
-				stoppingSide = "h";
+				this.stoppingDir = this.dirRight;
+				this.stoppingSide = "h";
 				break;
 			default:
 				//default value
@@ -287,7 +289,7 @@ td{
 				break;
 			}
 		 	
-		 	entityDirectionHistory.push(stoppingDir);
+		 	this.entityDirectionHistory.push(this.stoppingDir);
 		}
 
 		function update(){ }
@@ -301,58 +303,58 @@ td{
 			const pressD = key == 'd';
 			const stoppingDec = speedDec;
 			
-			if (stoppingMode && stoppingDir == dirUp && !pressW) {
-				velY -= stoppingDec;
+			if (this.stoppingMode && this.stoppingDir == this.dirUp && !pressW) {
+				this.velY -= stoppingDec;
 			}
-			if (stoppingMode && stoppingDir  == dirDown && !pressS) {
-				velY += stoppingDec;
+			if (this.stoppingMode && this.stoppingDir  == this.dirDown && !pressS) {
+				this.velY += stoppingDec;
 			}
-			if (stoppingMode && stoppingDir  == dirLeft && !pressA) {
-				velX -= stoppingDec;
+			if (this.stoppingMode && this.stoppingDir  == this.dirLeft && !pressA) {
+				this.velX -= stoppingDec;
 			}
-			if (stoppingMode && stoppingDir  == dirRight && !pressD){
-				velX += stoppingDec;
+			if (this.stoppingMode && this.stoppingDir  == this.dirRight && !pressD){
+				this.velX += stoppingDec;
 			} 
 			
 			if (pressD) { 
-				if(stoppingMode && stoppingDir  == dirLeft ){
+				if(this.stoppingMode && this.stoppingDir  == this.dirLeft ){
 					/* console.debug("BRAKE=================",velX); */
-					velX += (runIncrement+1);
+					this.velX += (this.runIncrement+1);
 					 
 				}else{
-					velX = 1 + run;
-					run += runIncrement;
-					entityDirection = stopStoppingModeIf(dirRight);
+					this.velX = 1 + this.run;
+					this.run += this.runIncrement;
+					this.entityDirection = stopStoppingModeIf(this.dirRight);
 				}
 			}
 			if (pressA) { 
-				if(stoppingMode && stoppingDir  == dirRight){
-					velX -= (runIncrement+1);
+				if(this.stoppingMode && this.stoppingDir  == this.dirRight){
+					this.velX -= (this.runIncrement+1);
 				}else{
 					
-					velX = -1 - run;
-					run += runIncrement;
-					entityDirection = stopStoppingModeIf(dirLeft);
+					this.velX = -1 - this.run;
+					this.run += this.runIncrement;
+					this.entityDirection = stopStoppingModeIf(this.dirLeft);
 				}
 				
 			}
 			if (pressS) { 
-				if(stoppingMode && stoppingDir == dirUp){
-					velY += (runIncrement+1);
+				if(this.stoppingMode && this.stoppingDir == this.dirUp){
+					this.velY += (this.runIncrement+1);
 					
 				}else{
-					velY = 1 + run;
-					run += runIncrement;
-					entityDirection = stopStoppingModeIf(dirDown);
+					this.velY = 1 + this.run;
+					this.run += this.runIncrement;
+					this.entityDirection = stopStoppingModeIf(this.dirDown);
 				}
 			}
 			if (pressW ) { 
-				if(stoppingMode && stoppingDir == dirDown){
-					velY -= (runIncrement+1);
+				if(this.stoppingMode && this.stoppingDir == this.dirDown){
+					this.velY -= (this.runIncrement+1);
 				}else{
-					velY = -1 - run;
-					run += runIncrement;
-					entityDirection = stopStoppingModeIf(dirUp);
+					this.velY = -1 - this.run;
+					this.run += this.runIncrement;
+					this.entityDirection = stopStoppingModeIf(this.dirUp);
 				}
 			}
 			if (key == "o") { fireMissile(); }
@@ -363,14 +365,14 @@ td{
 			this method returns the direction :D
 		*/
 		function stopStoppingModeIf(dir){
-			if(stoppingDir  == dir){
-				 stoppingMode= false;
+			if(this.stoppingDir  == dir){
+				this.stoppingMode= false;
 			}	   			
 			return dir;
 		}
 
 		function initAnimation() {
-			isAnimate = !isAnimate;
+			this.isAnimate = !this.isAnimate;
 			window.requestAnimationFrame(animate);
 		}
 
@@ -378,7 +380,7 @@ td{
 			clearCanvas();
 			update();
 			render();
-			if (isAnimate) {
+			if (this.isAnimate) {
 				window.requestAnimationFrame(animate);
 			}
 		}
@@ -402,9 +404,9 @@ td{
 		}
 		
 		function getLatestStoppingDirH(){
-			if(entityDirectionHistory.length > 0){
-				for (var i = entityDirectionHistory.length-1; i >=0 ; i--) {
-					var dir = entityDirectionHistory[i];
+			if(this.entityDirectionHistory.length > 0){
+				for (var i = this.entityDirectionHistory.length-1; i >=0 ; i--) {
+					var dir = this.entityDirectionHistory[i];
 					if(dir == this.dirRight || dir == this.dirLeft){ 	return dir; 	}
 				} 
 			}
@@ -412,9 +414,9 @@ td{
 		}
 		
 		function getLatestStoppingDirV(){
-			if(entityDirectionHistory.length > 0){
-				for (var i = entityDirectionHistory.length-1; i >=0 ; i--) {
-					var dir = entityDirectionHistory[i];
+			if(this.entityDirectionHistory.length > 0){
+				for (var i = this.entityDirectionHistory.length-1; i >=0 ; i--) {
+					var dir = this.entityDirectionHistory[i];
 					if(dir == this.dirUp || dir == this.dirDown){ 	return dir; }
 				 } 
 			}
@@ -454,18 +456,18 @@ td{
 							leave();
 						}
 						//check if missile intersects player
-						for (let x = 0; x < entities.length; x++) {
-							if (entities[x].id != this.entity.id) {
-								if (intersect(missile, entities[x]).status == true) {
-									firing = true;
+						for (let x = 0; x < this.entities.length; x++) {
+							if (this.entities[x].id != this.entity.id) {
+								if (intersect(missile, this.entities[x]).status == true) {
+									this.firing = true;
 									//		console.log("===============intersects",this.entity.id,entities[i].id );
 									missileIntersects = true;
 								}
 							}
 						}
 						//check if missile intersects layout
-						for (let x = 0; x < layouts.length; x++) {
-							if (layouts[x].physical.role == 102  && intersect(missile, layouts[x]).status == true) {
+						for (let x = 0; x < this.layouts.length; x++) {
+							if (this.layouts[x].physical.role == 102  && intersect(missile, this.layouts[x]).status == true) {
 								firing = true;
 								//		console.log("===============intersects",this.entity.id,entities[i].id );
 								missileIntersects = true;
@@ -490,8 +492,7 @@ td{
 			if (isPlayer) {
 				 
 				let currentphysical = currentEntity.physical;
-				let outOfBounds = isOutOfBounds(currentphysical, WIN_W, WIN_H,
-						velX, velY);
+				let outOfBounds = isOutOfBounds(currentphysical, this.WIN_W, this.WIN_H, this.velX, this.velY);
 				let layoutItemIntersects = {};
 				let intersectLayout = false;
 				let intersection = {};
@@ -503,8 +504,8 @@ td{
 				let intersectionPlayerReverse = {};
 				
 				/*************CHECK INTERSECT PLAYER****************/
-				for (var i = 0; i < entities.length; i++) {
-					var theEntity = entities[i];
+				for (var i = 0; i < this.entities.length; i++) {
+					var theEntity = this.entities[i];
 					var isPlayer2 = (theEntity.id == this.entity.id);
 					if(!isPlayer2){ 
 						if (  !intersectPlayer && intersect(currentEntity, theEntity).status == true) {
@@ -519,14 +520,14 @@ td{
 				if (intersectPlayer
 						&& (intersectionPlayer.direction == currentphysical.direction || intersectionPlayerReverse.direction == currentphysical.direction)) {
 				 
-					velX = 0;
-					velY = 0;
-					run = 0;
+					this.velX = 0;
+					this.velY = 0;
+					this.run = 0;
 				}
 				
 				/*************CHECK INTERSECT LAYOUT****************/
-				for (let i = 0; i < layouts.length; i++) {
-					let layoutItem = layouts[i];
+				for (let i = 0; i < this.layouts.length; i++) {
+					let layoutItem = this.layouts[i];
 					if ( !intersectLayout && intersect(currentEntity, layoutItem).status == true) {
 						intersection = intersect(currentEntity, layoutItem);
 						intersectionReverse = intersectReverse(currentEntity, layoutItem);
@@ -547,41 +548,41 @@ td{
 						&& (intersection.direction == currentphysical.direction || intersectionReverse.direction == currentphysical.direction)) {
 					printInfo("intersect layout :" + intersectionInfo
 							+ JSON.stringify(layoutItemIntersects));
-					velX = 0;
-					velY = 0;
-					run = 0;
+					this.velX = 0;
+					this.velY = 0;
+					this.run = 0;
 				}
 				if (intersectLayout) { printInfo("WILL intersect layout :" + intersectionInfo + JSON.stringify(layoutItemIntersects)); } 
 				else { printInfo("NO INTERSECTION"); }
 				 				 
-				if(stoppingMode){
+				if(this.stoppingMode){
 					var latestDirectionV = getLatestStoppingDirV();
 					var latestDirectionH = getLatestStoppingDirH();
 					var theDirX = currentphysical.direction;
 					var theDirY = currentphysical.direction;
-					if(theDirY != dirUp && theDirY!=dirDown && latestDirectionV != null){
-						if(latestDirectionV == dirUp || latestDirectionV == dirDown){
+					if(theDirY != this.dirUp && theDirY!= this.dirDown && latestDirectionV != null){
+						if(latestDirectionV == this.dirUp || latestDirectionV == this.dirDown){
 							theDirY = latestDirectionV;
 						} 
 					}
-					if(theDirX != dirRight && theDirX!=dirLeft && latestDirectionH != null){
-						if(latestDirectionH == dirRight || latestDirectionH == dirLeft){
+					if(theDirX != this.dirRight && theDirX!= this.dirLeft && latestDirectionH != null){
+						if(latestDirectionH == this.dirRight || latestDirectionH == this.dirLeft){
 							theDirX = latestDirectionH;
 						}
 					}
 					
-					velX = decreaseVelX(velX,theDirX );
+					this.velX = decreaseVelX(this.velX,theDirX );
 					 
-					velY = decreaseVelY(velY, theDirY);
-					if(velX == 0 && velY == 0){
+					this.velY = decreaseVelY(this.velY, theDirY);
+					if(this.velX == 0 && this.velY == 0){
 						console.debug("STOPPING MODE :FALSE");
-						stoppingMode = false;
+						this.stoppingMode = false;
 					}
 				}
 				 
 				
-				let velXToDo = velX;
-				let velYToDo = velY;
+				let velXToDo = this.velX;
+				let velYToDo = this.velY;
 				if (currentphysical.lastUpdate < this.entity.physical.lastUpdate) {
 					currentEntity.physical.x = this.entity.physical.x;
 					currentEntity.physical.y = this.entity.physical.y;
@@ -603,13 +604,13 @@ td{
 				printEntityInfo(this.entity);
 				updateEntityInfo();
 			}
-			if (velX != 0 || velY != 0 || currentEntity.missiles.length > 0 || firing) {
+			if (this.velX != 0 || this.velY != 0 || currentEntity.missiles.length > 0 || this.firing) {
 				//console.log("=================",currentEntity.physical);
-				if (firing)
-					firing = false;
+				if (this.firing)
+					this.firing = false;
 				entity.stageId = currentEntity.stageId;
 				entity.layoutId = this.currentLayoutId;
-				updateMovement(entity);
+				updateMovement(this.entity);
 			}
 
 			let physical = currentEntity.physical;
@@ -628,33 +629,33 @@ td{
 			ctx.drawImage(getEntityImage(currentEntity.physical.role,
 					currentEntity.physical.direction), physical.x, physical.y,
 					currentEntity.physical.w, currentEntity.physical.h);
-			fireTiming++;
+			this.fireTiming++;
 			ctx.restore();
 
 		}
 
 		function fireMissile() {
-			if (fireTiming < 20) {
+			if (this.fireTiming < 20) {
 				return;
 			}
-			firing = true;
-			fireTiming = 0;
+			this.firing = true;
+			this.fireTiming = 0;
 			var missile = createMissile(this.entity);
 			console.debug("==>Fire Missile", missile);
 			this.entity.missiles.push(missile);
-			entity.layoutId = currentLayoutId;
-			updateMovement(entity);
+			this.entity.layoutId = currentLayoutId;
+			updateMovement(this.entity);
 		}
 
 		function getEntityImage(role, dir) {
 			var fullAddress = window.location.protocol + '//'
 					+ window.location.hostname
 					+ (window.location.port ? ':' + window.location.port : '');
-			let url = fullAddress + playerImagePath
+			let url = fullAddress + this.playerImagePath
 					+ getDirImage(role, dir);
-			for (var i = 0; i < entityImages.length; i++) {
-				if (entityImages[i].src == url) {
-					return entityImages[i];
+			for (var i = 0; i <this. entityImages.length; i++) {
+				if (this.entityImages[i].src == url) {
+					return this.entityImages[i];
 				}
 			}
 			return new Image();
@@ -663,15 +664,15 @@ td{
 
 		function loadImages() {
 			let urls = new Array();
-			for (let i = 0; i < roles.length; i++) {
-				let role = roles[i];
+			for (let i = 0; i < this.roles.length; i++) {
+				let role = this.roles[i];
 				urls .push(playerImagePath + role + "_u.png");
 				urls .push(playerImagePath + role + "_d.png");
 				urls .push(playerImagePath + role + "_r.png");
 				urls .push(playerImagePath + role + "_l.png");
 			}
-			for (let i = 0; i < staticImages.length; i++) {
-				let staticImage = staticImages[i];
+			for (let i = 0; i < this.staticImages.length; i++) {
+				let staticImage = this.staticImages[i];
 				urls.push(imgPath+ staticImage);
 			}
 
@@ -687,8 +688,8 @@ td{
 
 		function render() {
 			//layout not rendered because it is the background image
-			for (let i = 0; i < entities.length; i++) {
-				let currentEntity = entities[i];
+			for (let i = 0; i < this.entities.length; i++) {
+				let currentEntity =this. entities[i];
 				
 				if(currentEntity.id == this.entity.id){
 					this.playerPosition = i;
@@ -700,19 +701,19 @@ td{
 						&& currentEntity.id != this.entity.id) {
 					if (intersect(this.entity, currentEntity).status == true) {
 						let lifeEntity = currentEntity;
-						velX = 0;
-						velY = 0;
+						this.velX = 0;
+						this.velY = 0;
 						if (this.entity.life < baseHealth) {
 							this.entity.life += lifeEntity.life;
 							if (this.entity.life > baseHealth) {
 								this.entity.life = baseHealth
 							}
 							
-							updateMovement(entity);
+							updateMovement(this.entity);
 						}
 						console.log("-------ADD BONUS", this.entity, lifeEntity);
 						leaveApp(lifeEntity.id);
-						entities.splice(i,1);
+						this.entities.splice(i,1);
 					}
 				}
 			}
