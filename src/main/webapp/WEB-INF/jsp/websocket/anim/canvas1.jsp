@@ -264,7 +264,9 @@ td{
 		 	/**
 			* stopping object wil be handled in the loooooop
 			*/
-			this.stoppingMode = true; 
+			
+		 	let willStop = true;
+		 	
 		 	switch (key) {
 			case 'w':
 				this.stoppingDir = this.dirUp;
@@ -284,12 +286,16 @@ td{
 				break;
 			default:
 				//default value
-			//	stoppingSide = "0";
-			//	stoppingDir = 123456;
+				willStop = false;
 				break;
 			}
 		 	
-		 	this.entityDirectionHistory.push(this.stoppingDir);
+		 	if(willStop){
+		 		this.stoppingMode = true; 
+		 		this.entityDirectionHistory.push(this.stoppingDir);
+		 	}
+		 	
+		 	
 		}
 
 		function update(){ }
@@ -666,10 +672,10 @@ td{
 			let urls = new Array();
 			for (let i = 0; i < this.roles.length; i++) {
 				let role = this.roles[i];
-				urls .push(playerImagePath + role + "_u.png");
-				urls .push(playerImagePath + role + "_d.png");
-				urls .push(playerImagePath + role + "_r.png");
-				urls .push(playerImagePath + role + "_l.png");
+				urls .push(this.playerImagePath + role + "_u.png");
+				urls .push(this.playerImagePath + role + "_d.png");
+				urls .push(this.playerImagePath + role + "_r.png");
+				urls .push(this.playerImagePath + role + "_l.png");
 			}
 			for (let i = 0; i < this.staticImages.length; i++) {
 				let staticImage = this.staticImages[i];
@@ -682,7 +688,7 @@ td{
 					console.log("Image loaded: ", urls[i], image); ctx.drawImage(image, i * 50, 0, 50, 38);
 				}
 				image.src = urls[i];
-				entityImages.push(image);
+				this.entityImages.push(image);
 			}
 		}
 
