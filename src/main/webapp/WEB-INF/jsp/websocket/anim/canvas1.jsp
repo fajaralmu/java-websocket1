@@ -10,58 +10,17 @@
 <script src="<c:url value="/res/js/stomp.js"></c:url >"></script>
 <script src="<c:url value="/res/js/ajax.js"></c:url >"></script>
 <script src="<c:url value="/res/js/util.js"></c:url >"></script>
-<script src="<c:url value="/res/js/websocket-util.js"></c:url >"></script>
+<%-- <script src="<c:url value="/res/js/websocket-util.js"></c:url >"></script> --%>
 
 <script type="text/javascript">
-/** GLOBAL VARIABLES **/
-		var layouts = ${layouts};
-		/*declared in websocket-util.js*/ contextPath = "${contextPath}";
-		var currentLayoutId = 0;
-		var playerImagePath = "<c:url value="/res/img/player/"/>";
-		var urlJoinPath = "<spring:url value="/game-app-simple/join" />";
-		var imgPath = "<c:url value="/res/img/"/>" ;
-		var WIN_W = "${winW}";
-		var WIN_H = "${winH}";
-		var rolePlayer = ${rolePlayer};
-		var roleBonusLife =  ${roleBonusLife};
-		var roleBonusArmor =  ${roleBonusArmor} ;
-		//CIRCUIT
-		var roleRight = ${roleRight};
-		var roleLeft = ${roleLeft};
-		var roleUp = ${roleUp};
-		var roleDown = ${roleDown};
-		var roleFinish = ${roleFinish};			
-		
-		var roles = ${roles};
-		var staticImages = ${staticImages};
-		var baseHealth =  ${baseHealth} ;
-		var dirUp = "u";
-		var dirLeft = "l";
-		var dirRight = "r";
-		var dirDown = "d";
-		
-		var playerPosition = 0;
-		var entityDirection = "r";		
-		var isAnimate = false;
-		var velX = 0, velY = 0;
-		var x = 10, y = 10;
-		var entities = new Array();
-		var entity = {};
-		
-		var firing = false;
-		var entityDirectionHistory = new Array();
-		
-		var fireTiming = 0;
-		var entityImages = new Array();
-		var allMissiles = new Array();
-		var run = 0;
-		var runIncrement = 0.3;
-		var stoppingDir = "0";
-		var stoppingSide = "0";
-		var stoppingMode = false;  
+	var game;
 </script>
 <script src="<c:url value="/res/js/player.js"></c:url >"></script>
+<script type="module">
+	import {Game} from "<c:url value="/res/js/game.js"></c:url >";
 
+	game = new Game();
+</script>
 <title>Canvas Animation</title>
 <style type="text/css">
 button:hover{ cursor: pointer; }
@@ -177,7 +136,7 @@ td{
 	<p id="velocity-info"></p>
 	<label>Input Name: </label>
 	<input style="height: 50px; font-size:1.5em" id="name" type="text" />
-	<button class="btn-ok" id="join" onclick="join()">Join</button>
+	<button class="btn-ok" id="join" onclick="joinGame()">Join</button>
 	<button class="btn-ok" id="connect" onclick="connect()">Connect</button>
 	<button class="btn-danger" id="leave" onclick="leave()">Leave</button>
 	<hr />
@@ -198,27 +157,61 @@ td{
 		var initBtn = document.getElementById("animate");
 		
 	
+		/**init game**/
+		function initGame(){
+			game.canvas = canvas;
+			game.ctx = ctx;
+			game.layouts = ${layouts};
+			/*declared in websocket-util.js*/ game.contextPath = "${contextPath}";
+			game.playerImagePath = "<c:url value="/res/img/player/"/>";
+			game. urlJoinPath = "<spring:url value="/game-app-simple/join" />";
+			game.imgPath = "<c:url value="/res/img/"/>" ;
+			game.WIN_W = "${winW}";
+			game.WIN_H = "${winH}";
+			game.rolePlayer = ${rolePlayer};
+			game.roleBonusLife =  ${roleBonusLife};
+			game.roleBonusArmor =  ${roleBonusArmor} ;
+			//CIRCUIT
+			game.roleRight = ${roleRight};
+			game.roleLeft = ${roleLeft};
+			game.roleUp = ${roleUp};
+			game.roleDown = ${roleDown};
+			game.roleFinish = ${roleFinish};			
+			
+			game.roles = ${roles};
+			game.staticImages = ${staticImages};
+			game.baseHealth =  ${baseHealth} ;
+			game.window = window;
+			game.document = document;
+			game.fullAddress = window.location.protocol + '//'
+            + window.location.hostname
+            + (window.location.port ? ':' + window.location.port : '');
+			
+			console.log("GAME",game);
+			
+		}
+		
+		function joinGame(){
+			initGame();
+			var name = document.getElementById("name").value;
+			game.join(name);
+			setupControlBtn();
+		}
 		
 		function printCircuitInfo(info){
 			document.getElementById("circuit-info").innerHTML = info;
 		}
 		
-		function getLatestDirection(){
-			if(this.entityDirectionHistory.length >0){
-				return this.entityDirectionHistory[this.entityDirectionHistory.length-1];
-			}
-			return null;
-		}
 		
  		function printInfo(text) {
 			document.getElementById("realtime-info").innerHTML = text;
 		}
  		
- 		function printEntityInfo(entity){
- 			var positionHTML = "<h2>POSITION:"+(this.playerPosition+1)+"/"+this.entities.length+", LAP:"+entity.lap+"</h2>";
+ 		function printEntityInfo(entity, entities, playerPosition, game){
+ 			var positionHTML = "<h2>POSITION:"+( playerPosition+1)+"/"+ entities.length+", LAP:"+entity.lap+"</h2>";
  			
- 			var velocityInfo = "<h3>velX: "+velX+", velY: "+velY+"</h3>"+
- 			"<p>StoppingMode: "+stoppingMode+", StoppingDirection: "+stoppingDir+"</p>";
+ 			var velocityInfo = "<h3>velX: "+game.velX+", velY: "+game.velY+"</h3>"+
+ 			"<p>StoppingMode: "+game.stoppingMode+", StoppingDirection: "+game.stoppingDir+"</p>";
  			
  			document.getElementById("player-name").innerHTML = "<h2>Player: "+entity.name+"</h2>";
  			document.getElementById("velocity-info").innerHTML = velocityInfo;
@@ -232,38 +225,54 @@ td{
  				+"<br> "+positionHTML;
  				+"<br> <b>LAP</b>: "+entity.lap;
  		}
-
-		function connect() { doConnect(entity); }
+ 		 
+		function connect() { 
+		  	var socket = new SockJS(game.contextPath+'/game-app');
+	       	var stompClient = Stomp.over(socket);
+			game.doConnect(stompClient); 
+		}
+		
+		function disconnect() {
+			if (game!=null && game.stompClient != null) {
+				game.stompClient.disconnect();
+			}
+			/* setConnected(false);
+			console.log("Disconnected"); */
+		}
 
 		function setConnected(connected) { document.getElementById('connect-info').innerHTML = connected; }
 
 		function leave() { window.document.title = "0FF-PLAYER: " + entity.name; leaveApp(entity.id); }
-	</script>
-	<script type="text/javascript">
-		
 
 		function updateEntityInfo() {
-			var amount = this.entity.life / this.baseHealth * this.WIN_W;
-			document.getElementById("life-bar").style.width = amount + "px";
+			//var amount = this.entity.life / this.baseHealth * this.WIN_W;
+		//	document.getElementById("life-bar").style.width = amount + "px";
 		}
+	</script>
+	<script type="text/javascript">
+		function getLatestDirection(){
+			if(this.entityDirectionHistory.length >0){
+				return this.entityDirectionHistory[this.entityDirectionHistory.length-1];
+			}
+			return null;
+		}	
 
-		window.onkeydown = function(e) { move(e.key); }
+		window.onkeydown = function(e) { game.move(e.key); }
 
-		window.onkeyup = function(e) { release(e.key); }
+		window.onkeyup = function(e) { game.release(e.key); }
 		
-		function releaseAll(){
-			release('w');
-			release('a');
-			release('s');
-			release('d');
+		/* function releaseAll(){
+			game.release('w');
+			game.release('a');
+			game.release('s');
+			game.release('d');
 		}
 
 		function release(key) {
 			run = 0;
 			this.entity.physical.lastUpdated = new Date();
-		 	/**
-			* stopping object wil be handled in the loooooop
-			*/
+		 	// stopping object wil be handled in the loooooop
+			 
 			
 		 	let willStop = true;
 		 	
@@ -296,9 +305,9 @@ td{
 		 	}
 		 	
 		 	
-		}
+		} */
 
-		function update(){ }
+		/* function update(){ }
 		
 		function move(key) {
 			this.entity.physical.lastUpdated = new Date(); 
@@ -324,7 +333,7 @@ td{
 			
 			if (pressD) { 
 				if(this.stoppingMode && this.stoppingDir  == this.dirLeft ){
-					/* console.debug("BRAKE=================",velX); */
+					// console.debug("BRAKE=================",velX);  
 					this.velX += (this.runIncrement+1);
 					 
 				}else{
@@ -364,25 +373,25 @@ td{
 				}
 			}
 			if (key == "o") { fireMissile(); }
-			/* else{ stoppingMode = false; } */
+			// else{ stoppingMode = false; } 
 		}
 		
-		/**
-			this method returns the direction :D
-		*/
+		///this method returns the direction :D
+		 
 		function stopStoppingModeIf(dir){
 			if(this.stoppingDir  == dir){
 				this.stoppingMode= false;
 			}	   			
 			return dir;
-		}
+		} */
 
 		function initAnimation() {
-			this.isAnimate = !this.isAnimate;
-			window.requestAnimationFrame(animate);
+			game.initAnimation();
+			/* this.isAnimate = !this.isAnimate;
+			window.requestAnimationFrame(animate); */
 		}
 
-		function animate() {
+		/* function animate() {
 			clearCanvas();
 			update();
 			render();
@@ -509,7 +518,7 @@ td{
 				let intersectionPlayer = {};
 				let intersectionPlayerReverse = {};
 				
-				/*************CHECK INTERSECT PLAYER****************/
+				////CHECK INTERSECT PLAYER///
 				for (var i = 0; i < this.entities.length; i++) {
 					var theEntity = this.entities[i];
 					var isPlayer2 = (theEntity.id == this.entity.id);
@@ -531,7 +540,7 @@ td{
 					this.run = 0;
 				}
 				
-				/*************CHECK INTERSECT LAYOUT****************/
+				////CHECK INTERSECT LAYOUT/////
 				for (let i = 0; i < this.layouts.length; i++) {
 					let layoutItem = this.layouts[i];
 					if ( !intersectLayout && intersect(currentEntity, layoutItem).status == true) {
@@ -592,9 +601,9 @@ td{
 				if (currentphysical.lastUpdate < this.entity.physical.lastUpdate) {
 					currentEntity.physical.x = this.entity.physical.x;
 					currentEntity.physical.y = this.entity.physical.y;
-					/* velXToDo = 0;
-					velYToDo = 0;
-					run = 0; */
+					 // velXToDo = 0;
+					//velYToDo = 0;
+					//run = 0;  
 				}
 
 				if (!outOfBounds) {
@@ -732,26 +741,26 @@ td{
 
 		function clearCanvas() {
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
-		}
+		} */
 		
 		function setupControlBtn(){
 			let controlButtons = document.getElementsByClassName("control-btn");
 			for (let i = 0; i < controlButtons.length; i++) {
 				let button = controlButtons[i];
 				let moveRole = button.getAttribute("move-role");
-				button.onmousedown = function(){ 	move(moveRole); };
+				button.onmousedown = function(){ 	game.move(moveRole); };
 				
-				button.onclick = function(){ 	move(moveRole); };
+				button.onclick = function(){ 	game.move(moveRole); };
 				
-				button.onmouseup = function(){ release(moveRole); };
+				button.onmouseup = function(){ game.release(moveRole); };
 				
-				button.onmouseout = function(){ release(moveRole); };
+				button.onmouseout = function(){ game.release(moveRole); };
 				
 			}
 			
 		}
-		setupControlBtn();
-		draw();
+		
+		 
 	</script>
 </body>
 </html>

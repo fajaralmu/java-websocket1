@@ -1,4 +1,4 @@
-function postReq(url, param, process, callback,object){
+export function postReq(url, param, process, callback, object){
 	var request = new XMLHttpRequest();
 	var param_to_send = "process="+process;
 	if(param!=""){
@@ -7,8 +7,7 @@ function postReq(url, param, process, callback,object){
 	
 	//if (!confirm("Lanjutkan Operasi " + param_to_send + "  ?"))
 	//	return;
-	
-	infoLoading();
+	 
 	request.open("POST", url, true);
 	request.setRequestHeader("Content-type",
 			"application/x-www-form-urlencoded");
@@ -16,8 +15,8 @@ function postReq(url, param, process, callback,object){
 		if (this.readyState == this.DONE && this.status == 200) {
 			console.log(this.responseText);
 			if (this.responseText != null) {
-				callback(this.responseText,object);
-				infoDone();
+				callback(this.responseText, object);
+				 
 			}
 			
 		}

@@ -1,9 +1,9 @@
-var intersectionInfo = "";
-const speedDec = 0.2;
-
+export var intersectionInfo = "";
+export const speedDec = 0.2;
+import * as global from './globals.js'
  
 
-function intersect(mainentity, entity) {
+export function intersect(mainentity, entity) {
 	var intersection = {};
 	intersection.status = false;
 	var mainPos = mainentity.physical;
@@ -62,7 +62,7 @@ function intersect(mainentity, entity) {
 	return intersection;
 }
 
-function intersectReverse(mainentity, entity) {
+export function intersectReverse(mainentity, entity) {
 	var intersection = {};
 	intersection.status = false;
 	var mainPos = mainentity.physical;
@@ -121,11 +121,11 @@ function intersectReverse(mainentity, entity) {
 	return intersection;
 }
 
-function getDirImage(role, dir) {
+export function getDirImage(role, dir) {
 	return role + "_" + dir + ".png";
 }
 
-function createMissile(entity) {
+export function createMissile(entity) {
 	var missile = {
 		'id' : Math.floor(Math.random() * 10000),
 		'entityId' : entity.id,
@@ -141,7 +141,7 @@ function createMissile(entity) {
 	return missile;
 }
 
-function isOutOfBounds(currentphysical, WIN_W, WIN_H, velX, velY) {
+export function isOutOfBounds(currentphysical, WIN_W, WIN_H, velX, velY) {
 	if (currentphysical.x + currentphysical.w + velX > WIN_W) {
 		
 		return true;
@@ -155,27 +155,27 @@ function isOutOfBounds(currentphysical, WIN_W, WIN_H, velX, velY) {
 	return false;
 }
 
-function isMoving(velX, velY, dir, stoppingSide) {
+export function isMoving(velX, velY, dir, stoppingSide) {
 	var movingProps = {
 		'x' : false,
 		'y' : false
 	}
-	if (dir == dirUp) {
+	if (dir == global.dirUp) {
 		if (velY <  0 ) {
 			movingProps.y = true;
 		}
 	}
-	if (dir == dirDown) {
+	if (dir == global.dirDown) {
 		if (velY >  0) {
 			movingProps.y = true;
 		}
 	}
-	if (dir == dirLeft) {
+	if (dir == global.dirLeft) {
 		if (velX <  0) {
 			movingProps.x = true;
 		}
 	}
-	if (dir == dirRight){
+	if (dir == global.dirRight){
 		if(velX >  0)
 		{
 			movingProps.x = true
@@ -185,63 +185,38 @@ function isMoving(velX, velY, dir, stoppingSide) {
 
 }
 
-function decreaseVelX(velX, dir) {
-	if (dir == dirLeft){
+export function decreaseVelX(velX, dir) {
+	if (dir == global.dirLeft){
 		 
 		return velX + speedDec  > 0? 0 : velX + speedDec;
 	}
-	if (dir == dirRight)
+	if (dir == global.dirRight)
 		return velX - speedDec  < 0? 0 : velX - speedDec;;
 	return velX;
 }
 
-function decreaseVelY(velY, dir) {
-	if (dir == dirUp)
+export function decreaseVelY(velY, dir) {
+	if (dir == global.dirUp)
 		return velY + speedDec  > 0? 0 : velY + speedDec ;
-	if (dir == dirDown)
+	if (dir == global.dirDown)
 		return velY - speedDec  < 0? 0 : velY - speedDec;
 	return velY;
 }
 
-function getVelocity(dir, vel) {
+export function getVelocity(dir, vel) {
 	var velocity = {};
 	velocity.x = 0;
 	velocity.y = 0;
-	if (dir == dirUp)
+	if (dir == global.dirUp)
 		velocity.y = -vel;
-	if (dir == dirDown)
+	if (dir == global.dirDown)
 		velocity.y = vel;
-	if (dir == dirLeft)
+	if (dir == global.dirLeft)
 		velocity.x = -vel;
-	if (dir == dirRight)
+	if (dir == global.dirRight)
 		velocity.x = vel;
 
 	return velocity;
 }
 
 
-function join() {
-	entityDirectionHistory = new Array();
-	var name = document.getElementById("name").value;
-	entity.name = name;
-	postReq(
-			urlJoinPath,
-			"name=" + name,
-			"join",
-			function(response) {
-				var responseObject = JSON.parse(response);
-				console.log("RESPONSE", responseObject);
-				if (responseObject.responseCode == "00") {
-					entity = responseObject.entity;
-					//	console.log("USER",entity);
-					printEntityInfo(entity);
-					window.document.title = "PLAYER: " + entity.name;
-					document.getElementById("name").disabled = true;
-					initAnimation();
-					loadImages();
-
-				} else {
-					alert("FAILED :" + responseObject.responseMessage);
-				}
-			});
-}
