@@ -138,7 +138,7 @@ export class Game{
     }
 
     leaveApp(entityId){
-        stompClient.send("/app/leave", {}, JSON.stringify({
+        this.stompClient.send("/app/leave", {}, JSON.stringify({
             'entity' : {
                 'id':entityId*1
             }
