@@ -134,6 +134,10 @@ export function getDirImage(role, dir) {
 	return role + "_" + dir + ".png";
 }
 
+/**
+ * create missile when firing
+ * @param {Object} entity 
+ */
 export function createMissile(entity) {
 	var missile = {
 		'id' : Math.floor(Math.random() * 10000),

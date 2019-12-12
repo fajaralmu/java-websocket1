@@ -31,7 +31,7 @@ export function getLayoutRole(role, obj) {
  * @param {Array} layouts 
  */
 export function intersectLayout(currentEntity, obj, layouts) {
-	/*************CHECK INTERSECT LAYOUT****************/
+	 
 	let layoutItemIntersects = {};
 	let intersectLayout = false;
 	let intersection = {};
@@ -72,8 +72,7 @@ export function intersectPlayer(mainEntity, entities) {
 	let isIntersectEntity = false;
 	let intersectionObject = {};
 	let intersectionObjectReverse = {};
-
-	/*************CHECK INTERSECT PLAYER****************/
+ 
 	for (let i = 0; i < entities.length; i++) {
 		const theEntity = entities[i];
 		const isPlayer2 = (theEntity.id == mainEntity.id);
@@ -140,7 +139,7 @@ export function missileIntersectsPlayer(missile, entity, entities){
 }
 
 /**
- * 
+ * create missile object when firing
  * @param {object} missile 
  * @param {Array} layouts 
  */

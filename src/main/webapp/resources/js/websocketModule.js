@@ -1,3 +1,9 @@
+import { Game } from "./game";
+
+/**
+ * connect to server
+ * @param {Game} obj 
+ */
 export function  doConnect(obj) { 
     obj.stompClient.connect({}, function (frame) {
         //    obj.setConnected(true);
@@ -12,6 +18,11 @@ export function  doConnect(obj) {
     }); 
 }
 
+/**
+ * leave game and remove from server
+ * @param {Game} obj 
+ * @param {Number} entityId 
+ */
 export function doLeave(obj, entityId){
     obj.stompClient.send("/app/leave", {}, JSON.stringify({
         'entity': {
@@ -20,6 +31,11 @@ export function doLeave(obj, entityId){
     }));
 }
 
+/**
+ * send player update to server
+ * @param {Game} obj 
+ * @param {Object} entity 
+ */
 export function doSendUpdate(obj, entity){
     return new Promise((resolve, reject) => {
         //	console.log("===============Update Entity, ",entity);

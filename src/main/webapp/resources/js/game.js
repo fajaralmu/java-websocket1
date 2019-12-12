@@ -78,13 +78,13 @@ export class Game {
     sendUpdate(entity) {
         this.updateCount++;
         if (entity == null) {
-            return null;
-        }
-        if (this.updateCount < this.baseCount) {
+            console.error("Entity is NULL");
             return;
         }
-        this.updateCount = 0;
-        // const obj = this; 
+        if (this.updateCount < this.baseCount) { 
+            return;
+        }
+        this.updateCount = 0; 
         return websocketModule.doSendUpdate(this, entity);
     }
 
@@ -129,6 +129,10 @@ export class Game {
         release('d');
     }
 
+    /**
+     * handles key release
+     * @param {String} key 
+     */
     release(key) {
         this.run = 0;
         this.entity.physical.lastUpdated = new Date();
@@ -169,6 +173,10 @@ export class Game {
 
     update() { }
 
+    /**
+     * handle entity movement
+     * @param {String} key 
+     */
     move(key) {
         this.entity.physical.lastUpdated = new Date();
 
@@ -234,8 +242,9 @@ export class Game {
     }
 
     /**
-        this method returns the direction :D
-    */
+     * check entity direction if == current stopping direction
+     * @param {String} dir 
+     */
     stopStoppingModeIf(dir) {
         if (this.stoppingDir == dir) {
             this.stoppingMode = false;
@@ -266,9 +275,7 @@ export class Game {
             });
         }
     }
-
-    
-
+ 
     getLatestStoppingDirH() {
         if (this.entityDirectionHistory.length > 0) {
             for (let i = this.entityDirectionHistory.length - 1; i >= 0; i--) {
@@ -463,6 +470,9 @@ export class Game {
 
     }
 
+    /**
+     * do fire missile
+     */
     fireMissile() {
         if (this.fireTiming < 20) {
             return;
@@ -486,6 +496,9 @@ export class Game {
         return new Image(); 
     }
 
+    /**
+     * load textures for entities
+     */
     loadImages() {
         let urls = new Array();
         for (let i = 0; i < this.roles.length; i++) {
