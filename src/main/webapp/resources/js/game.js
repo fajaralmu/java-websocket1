@@ -1,18 +1,19 @@
 import * as global from './globals.js'
 import * as playerModule from './playerModule.js'
 import * as ajax from './ajaxModule.js'
+import * as websocketModule from './websocketModule.js'
 
 
-export class Game{
+export class Game {
 
     layouts;
-    /*declared in websocket-util.js*/ contextPath ;
+    /*declared in websocket-util.js*/ contextPath;
     currentLayoutId = 0;
-    playerImagePath ;
+    playerImagePath;
     urlJoinPath;
     imgPath;
     WIN_W;
-    WIN_H ;
+    WIN_H;
     rolePlayer;
     roleBonusLife;
     roleBonusArmor;
@@ -21,8 +22,8 @@ export class Game{
     roleLeft;
     roleUp;
     roleDown;
-    roleFinish;		
-    
+    roleFinish;
+
     roles;
     staticImages;
     baseHealth;
@@ -31,20 +32,20 @@ export class Game{
     dirLeft = "l";
     dirRight = "r";
     dirDown = "d";
-    
+
     playerPosition = 0;
-    entityDirection = "r";		
+    entityDirection = "r";
     isAnimate = false;
     velX = 0;
-        velY = 0;
+    velY = 0;
     x = 10;
-        y = 10;
+    y = 10;
     entities = new Array();
     entity = {};
-    
+
     firing = false;
     entityDirectionHistory = new Array();
-    
+
     fireTiming = 0;
     entityImages = new Array();
     allMissiles = new Array();
@@ -52,7 +53,7 @@ export class Game{
     runIncrement = 0.3;
     stoppingDir = "0";
     stoppingSide = "0";
-    stoppingMode = false;  
+    stoppingMode = false;
     canvas;
     ctx;
     window;
@@ -64,69 +65,31 @@ export class Game{
     baseCount = 3;
     updateCount = this.baseCount;
 
-    constructor(){
+    constructor() {
         console.log("NEW GAME");
     }
 
-    /***WEB SERVICE***/
-    
-
-    async updateMovement(entity){
+    /***WEB SERVICE***/ 
+    async updateMovement(entity) {
         await this.sendUpdate(entity);
     }
 
     sendUpdate(entity) {
         this.updateCount++;
-        if(entity == null){
+        if (entity == null) {
             return null;
         }
-        if(this.updateCount<this.baseCount){
+        if (this.updateCount < this.baseCount) {
             return;
         }
         this.updateCount = 0;
-        const obj = this;
-        
-        return new Promise((resolve, reject) => {
-        //	console.log("===============Update Entity, ",entity);
-            obj.stompClient.send("/app/move", {}, JSON.stringify({
-                'entity' : {
-                    'id' : entity.id * 1,
-                    'life' : entity.life,
-                    'active' : true,
-                    'layoutId' : entity.layoutId,
-                    'lap' : entity.lap,
-                    'stagesPassed': entity.stagesPassed,
-                    'physical' : {
-                        'x' : entity.physical.x,
-                        'y' : entity.physical.y,
-                        'direction' : entity.physical.direction,
-                        'color' : entity.physical.color,
-                        'lastUpdated': new Date()
-                    },
-                    'missiles' : entity.missiles
-                }
-            }));
-        
-        });
+        // const obj = this; 
+        return websocketModule.doSendUpdate(this, entity);
     }
 
-    doConnect(stompClient ) {
-        const obj = this;
-        this.stompClient = stompClient;
-        this.stompClient.connect({}, function(frame) {
-        //    obj.setConnected(true);
-            console.log('Connected -> ' + frame);
-            console.log('stomp client',obj.stompClient);
-            obj.document.getElementById("ws-info").innerHTML = stompClient.ws._transport.ws.url;
-            obj.stompClient.subscribe('/wsResp/players', function(response) {
-                var respObject = JSON.parse(response.body);
-                obj.entities = respObject.entities;
-    //		 	console.log("************REALTIME: ",entities);
-    //		 	document.getElementById("realtime-info").innerHTML = response.body;
-            });
-            obj.updateMovement(obj.entity);
-        });
-        
+    doConnect(stompClient) { 
+        this.stompClient = stompClient;  
+        websocketModule.doConnect(this);  
     }
 
     disconnect() {
@@ -137,138 +100,129 @@ export class Game{
         console.log("Disconnected");
     }
 
-    leaveApp(entityId){
-        this.stompClient.send("/app/leave", {}, JSON.stringify({
-            'entity' : {
-                'id':entityId*1
-            }
-        }));
+    leaveApp(entityId) {
+        websocketModule.doLeave(this, entityId);
     }
 
-    init(canvas, ctx){
+    init(canvas, ctx) {
         this.canvas = canvas;
         this.ctx = ctx;
     }
 
-    print(){
+    print() {
         console.log("Hello from game");
     }
 
-     getLatestDirection(){
-        if(this.entityDirectionHistory.length >0){
-            return this.entityDirectionHistory[this.entityDirectionHistory.length-1];
+    getLatestDirection() {
+        if (this.entityDirectionHistory.length > 0) {
+            return this.entityDirectionHistory[this.entityDirectionHistory.length - 1];
         }
         return null;
-    }	
+    }
 
-     
-     releaseAll(){
+
+    releaseAll() {
         release('w');
         release('a');
         release('s');
         release('d');
     }
 
-     release(key) {
+    release(key) {
         this.run = 0;
         this.entity.physical.lastUpdated = new Date();
-         /**
-        * stopping object wil be handled in the loooooop
-        */
-        
-         let willStop = true;
-         
-         switch (key) {
-        case 'w':
-            this.stoppingDir = this.dirUp;
-            this.stoppingSide = "v";
-            break;
-        case 's':
-            this.stoppingDir = this.dirDown;	
-            this.stoppingSide = "v";
-            break;
-        case 'a':
-            this.stoppingDir = this.dirLeft;
-            this.stoppingSide = "h";
-            break;
-        case 'd':
-            this.stoppingDir = this.dirRight;
-            this.stoppingSide = "h";
-            break;
-        default:
-            //default value
-            willStop = false;
-            break;
+        /**
+       * stopping object wil be handled in the loooooop
+       */
+
+        let willStop = true;
+
+        switch (key) {
+            case 'w':
+                this.stoppingDir = this.dirUp;
+                this.stoppingSide = "v";
+                break;
+            case 's':
+                this.stoppingDir = this.dirDown;
+                this.stoppingSide = "v";
+                break;
+            case 'a':
+                this.stoppingDir = this.dirLeft;
+                this.stoppingSide = "h";
+                break;
+            case 'd':
+                this.stoppingDir = this.dirRight;
+                this.stoppingSide = "h";
+                break;
+            default:
+                //default value
+                willStop = false;
+                break;
         }
-         
-         if(willStop){
-             this.stoppingMode = true; 
-             this.entityDirectionHistory.push(this.stoppingDir);
-         }
-         
-         
+
+        if (willStop) {
+            this.stoppingMode = true;
+            this.entityDirectionHistory.push(this.stoppingDir);
+        } 
     }
 
-     update (){ }
-    
-     move(key) {
-        this.entity.physical.lastUpdated = new Date(); 
-        
+    update() { }
+
+    move(key) {
+        this.entity.physical.lastUpdated = new Date();
+
         const pressW = key == 'w';
         const pressS = key == 's';
         const pressA = key == 'a';
         const pressD = key == 'd';
         const stoppingDec = playerModule.speedDec;
-        
+
         if (this.stoppingMode && this.stoppingDir == this.dirUp && !pressW) {
             this.velY -= stoppingDec;
         }
-        if (this.stoppingMode && this.stoppingDir  == this.dirDown && !pressS) {
+        if (this.stoppingMode && this.stoppingDir == this.dirDown && !pressS) {
             this.velY += stoppingDec;
         }
-        if (this.stoppingMode && this.stoppingDir  == this.dirLeft && !pressA) {
+        if (this.stoppingMode && this.stoppingDir == this.dirLeft && !pressA) {
             this.velX -= stoppingDec;
         }
-        if (this.stoppingMode && this.stoppingDir  == this.dirRight && !pressD){
+        if (this.stoppingMode && this.stoppingDir == this.dirRight && !pressD) {
             this.velX += stoppingDec;
-        } 
-        
-        if (pressD) { 
-            if(this.stoppingMode && this.stoppingDir  == this.dirLeft ){
+        }
+
+        if (pressD) {
+            if (this.stoppingMode && this.stoppingDir == this.dirLeft) {
                 /* console.debug("BRAKE=================",velX); */
-                this.velX += (this.runIncrement+1);
-                 
-            }else{
+                this.velX += (this.runIncrement + 1); 
+            } else {
                 this.velX = 1 + this.run;
                 this.run += this.runIncrement;
                 this.entityDirection = this.stopStoppingModeIf(this.dirRight);
             }
         }
-        if (pressA) { 
-            if(this.stoppingMode && this.stoppingDir  == this.dirRight){
-                this.velX -= (this.runIncrement+1);
-            }else{
-                
+        if (pressA) {
+            if (this.stoppingMode && this.stoppingDir == this.dirRight) {
+                this.velX -= (this.runIncrement + 1);
+            } else { 
                 this.velX = -1 - this.run;
                 this.run += this.runIncrement;
                 this.entityDirection = this.stopStoppingModeIf(this.dirLeft);
             }
-            
+
         }
-        if (pressS) { 
-            if(this.stoppingMode && this.stoppingDir == this.dirUp){
-                this.velY += (this.runIncrement+1);
-                
-            }else{
+        if (pressS) {
+            if (this.stoppingMode && this.stoppingDir == this.dirUp) {
+                this.velY += (this.runIncrement + 1); 
+            } else {
                 this.velY = 1 + this.run;
                 this.run += this.runIncrement;
                 this.entityDirection = this.stopStoppingModeIf(this.dirDown);
             }
         }
-        if (pressW ) { 
-            if(this.stoppingMode && this.stoppingDir == this.dirDown){
-                this.velY -= (this.runIncrement+1);
-            }else{
+        if (pressW) {
+            if (this.stoppingMode && this.stoppingDir == this.dirDown) {
+                this.velY -= (this.runIncrement + 1);
+            } else {
                 this.velY = -1 - this.run;
                 this.run += this.runIncrement;
                 this.entityDirection = this.stopStoppingModeIf(this.dirUp);
@@ -277,21 +231,21 @@ export class Game{
         if (key == "o") { fireMissile(); }
         /* else{ stoppingMode = false; } */
     }
-    
+
     /**
         this method returns the direction :D
     */
-     stopStoppingModeIf (dir){
-        if(this.stoppingDir  == dir){
-            this.stoppingMode= false;
-        }	   			
+    stopStoppingModeIf(dir) {
+        if (this.stoppingDir == dir) {
+            this.stoppingMode = false;
+        }
         return dir;
     }
 
-     initAnimation(obj) {
+    initAnimation(obj) {
         this.isAnimate = !this.isAnimate;
-        console.log("Init Anim",this);
-        this.window.requestAnimationFrame(function(){ 
+        console.log("Init Anim", this);
+        this.window.requestAnimationFrame(function () {
             obj.animate(obj)
         });
     }
@@ -300,57 +254,57 @@ export class Game{
         this.ctx.clearRect(0, 0, canvas.width, canvas.height);
     }
 
-     animate(obj) {
-          
+    animate(obj) {
+
         obj.clearCanvas();
-       obj.update();
-       obj.render(obj);
+        obj.update();
+        obj.render(obj);
         if (obj.isAnimate) {
-        	obj.window.requestAnimationFrame(function(){ 
-        		obj.animate(obj)
+            obj.window.requestAnimationFrame(function () {
+                obj.animate(obj)
             });
         }
     }
-    
-     getLayoutRole(role){
+
+    getLayoutRole(role) {
         switch (role) {
             case this.roleRight:
-                return "RIGHT"; 
+                return "RIGHT";
             case this.roleLeft:
-                return "LEFT";	 
+                return "LEFT";
             case this.roleUp:
-                return "UP"; 
+                return "UP";
             case this.roleDown:
-                return "DOWN"; 
+                return "DOWN";
             case this.roleFinish:
-                return "FINISH"; 
+                return "FINISH";
             default:
                 break;
         }
         return "Not Circuit Role";
     }
-    
-     getLatestStoppingDirH(){
-        if(this.entityDirectionHistory.length > 0){
-            for (let i = this.entityDirectionHistory.length-1; i >=0 ; i--) {
-            	const dir = this.entityDirectionHistory[i];
-                if(dir == this.dirRight || dir == this.dirLeft){ 	return dir; 	}
-            } 
-        }
-        return null;
-    }
-    
-     getLatestStoppingDirV(){
-        if(this.entityDirectionHistory.length > 0){
-            for (let i = this.entityDirectionHistory.length-1; i >=0 ; i--) {
-            	const dir = this.entityDirectionHistory[i];
-                if(dir == this.dirUp || dir == this.dirDown){ 	return dir; }
-             } 
+
+    getLatestStoppingDirH() {
+        if (this.entityDirectionHistory.length > 0) {
+            for (let i = this.entityDirectionHistory.length - 1; i >= 0; i--) {
+                const dir = this.entityDirectionHistory[i];
+                if (dir == this.dirRight || dir == this.dirLeft) { return dir; }
+            }
         }
         return null;
     }
 
-     renderEntity(currentEntity) {
+    getLatestStoppingDirV() {
+        if (this.entityDirectionHistory.length > 0) {
+            for (let i = this.entityDirectionHistory.length - 1; i >= 0; i--) {
+                const dir = this.entityDirectionHistory[i];
+                if (dir == this.dirUp || dir == this.dirDown) { return dir; }
+            }
+        }
+        return null;
+    }
+
+    renderEntity(currentEntity) {
         const isPlayer = (currentEntity.id == this.entity.id);
         if (isPlayer && this.entity != null) {
             //	missiles = this.entity.missiles;
@@ -359,7 +313,7 @@ export class Game{
             this.entity.stagesPassed = currentEntity.stagesPassed;
             currentEntity = this.entity;
         }
-        
+
         if (currentEntity.missiles != null)
             for (let i = 0; i < currentEntity.missiles.length; i++) {
                 let missile = currentEntity.missiles[i];
@@ -394,7 +348,7 @@ export class Game{
                     }
                     //check if missile intersects layout
                     for (let x = 0; x < this.layouts.length; x++) {
-                        if (this.layouts[x].physical.role == 102  && playerModule.intersect(missile, this.layouts[x]).status == true) {
+                        if (this.layouts[x].physical.role == 102 && playerModule.intersect(missile, this.layouts[x]).status == true) {
                             firing = true;
                             //		console.log("===============intersects",this.entity.id,entities[i].id );
                             missileIntersects = true;
@@ -404,109 +358,109 @@ export class Game{
 
                 //this works
                 if (missileIntersects
-                        || currentEntity.missiles[i].physical.x<0 || currentEntity.missiles[i].physical.x>WIN_W
-                        || currentEntity.missiles[i].physical.y<0 || currentEntity.missiles[i].physical.y>WIN_H) {
+                    || currentEntity.missiles[i].physical.x < 0 || currentEntity.missiles[i].physical.x > WIN_W
+                    || currentEntity.missiles[i].physical.y < 0 || currentEntity.missiles[i].physical.y > WIN_H) {
                     currentEntity.missiles.splice(i, 1);
                 }
                 let missilephysical = missile.physical;
                 ctx.save();
                 ctx.fillStyle = missilephysical.color;
                 ctx.fillRect(missilephysical.x, missilephysical.y,
-                        missilephysical.w, missilephysical.h);
+                    missilephysical.w, missilephysical.h);
                 ctx.restore();
             }
 
         if (isPlayer) {
-             
+
             let currentphysical = currentEntity.physical;
             let outOfBounds = playerModule.isOutOfBounds(currentphysical, this.WIN_W, this.WIN_H, this.velX, this.velY);
             let layoutItemIntersects = {};
             let intersectLayout = false;
             let intersection = {};
             let intersectionReverse = {};
-            
+
             let playerIntersects = {};
-            let intersectPlayer  = false;
+            let intersectPlayer = false;
             let intersectionPlayer = {};
             let intersectionPlayerReverse = {};
-            
+
             /*************CHECK INTERSECT PLAYER****************/
             for (let i = 0; i < this.entities.length; i++) {
                 const theEntity = this.entities[i];
                 const isPlayer2 = (theEntity.id == this.entity.id);
-                if(!isPlayer2){ 
-                    if (  !intersectPlayer && playerModule.intersect(currentEntity, theEntity).status == true) {
+                if (!isPlayer2) {
+                    if (!intersectPlayer && playerModule.intersect(currentEntity, theEntity).status == true) {
                         intersectionPlayer = playerModule.intersect(currentEntity, theEntity);
                         intersectionPlayerReverse = playerModule.intersectReverse(currentEntity, theEntity);
-                        intersectPlayer = true;							 
+                        intersectPlayer = true;
                         layoutItemIntersects = theEntity;
                     }
                 }
-            } 
-            
+            }
+
             if (intersectPlayer
-                    && (intersectionPlayer.direction == currentphysical.direction || intersectionPlayerReverse.direction == currentphysical.direction)) {
-             
+                && (intersectionPlayer.direction == currentphysical.direction || intersectionPlayerReverse.direction == currentphysical.direction)) {
+
                 this.velX = 0;
                 this.velY = 0;
                 this.run = 0;
             }
-            
+
             /*************CHECK INTERSECT LAYOUT****************/
             for (let i = 0; i < this.layouts.length; i++) {
                 let layoutItem = this.layouts[i];
-                if ( !intersectLayout && playerModule.intersect(currentEntity, layoutItem).status == true) {
+                if (!intersectLayout && playerModule.intersect(currentEntity, layoutItem).status == true) {
                     intersection = playerModule.intersect(currentEntity, layoutItem);
                     intersectionReverse = playerModule.intersectReverse(currentEntity, layoutItem);
-                    
+
                     const layoutRole = layoutItem.physical.role;
                     this.currentLayoutId = layoutItem.id;
-                    if(layoutRole != 102){
-                       printCircuitInfo(layoutRole+":"+this.getLayoutRole(layoutRole)+", name: "+layoutItem.name);
-                    }else{
+                    if (layoutRole != 102) {
+                        printCircuitInfo(layoutRole + ":" + this.getLayoutRole(layoutRole) + ", name: " + layoutItem.name);
+                    } else {
                         intersectLayout = true;
-                    }	
-                    
+                    }
+
                     layoutItemIntersects = layoutItem;
                 }
             }
 
             if (intersectLayout
-                    && (intersection.direction == currentphysical.direction || intersectionReverse.direction == currentphysical.direction)) {
-                printInfo("intersect layout :" + playerModule.intersectionInfo   + JSON.stringify(layoutItemIntersects));
+                && (intersection.direction == currentphysical.direction || intersectionReverse.direction == currentphysical.direction)) {
+                printInfo("intersect layout :" + playerModule.intersectionInfo + JSON.stringify(layoutItemIntersects));
                 this.velX = 0;
                 this.velY = 0;
                 this.run = 0;
             }
-            if (intersectLayout) { printInfo("WILL intersect layout :" + playerModule.intersectionInfo + JSON.stringify(layoutItemIntersects)); } 
+            if (intersectLayout) { printInfo("WILL intersect layout :" + playerModule.intersectionInfo + JSON.stringify(layoutItemIntersects)); }
             else { printInfo("NO INTERSECTION"); }
-                              
-            if(this.stoppingMode){
-                let latestDirectionV =this.getLatestStoppingDirV();
-                let latestDirectionH =this.getLatestStoppingDirH();
+
+            if (this.stoppingMode) {
+                let latestDirectionV = this.getLatestStoppingDirV();
+                let latestDirectionH = this.getLatestStoppingDirH();
                 let theDirX = currentphysical.direction;
                 let theDirY = currentphysical.direction;
-                if(theDirY != this.dirUp && theDirY!= this.dirDown && latestDirectionV != null){
-                    if(latestDirectionV == this.dirUp || latestDirectionV == this.dirDown){
+                if (theDirY != this.dirUp && theDirY != this.dirDown && latestDirectionV != null) {
+                    if (latestDirectionV == this.dirUp || latestDirectionV == this.dirDown) {
                         theDirY = latestDirectionV;
-                    } 
+                    }
                 }
-                if(theDirX != this.dirRight && theDirX!= this.dirLeft && latestDirectionH != null){
-                    if(latestDirectionH == this.dirRight || latestDirectionH == this.dirLeft){
+                if (theDirX != this.dirRight && theDirX != this.dirLeft && latestDirectionH != null) {
+                    if (latestDirectionH == this.dirRight || latestDirectionH == this.dirLeft) {
                         theDirX = latestDirectionH;
                     }
                 }
-                
-                this.velX = playerModule.decreaseVelX(this.velX,theDirX );
-                 
+
+                this.velX = playerModule.decreaseVelX(this.velX, theDirX);
+
                 this.velY = playerModule.decreaseVelY(this.velY, theDirY);
-                if(this.velX == 0 && this.velY == 0){
+                if (this.velX == 0 && this.velY == 0) {
                     console.debug("STOPPING MODE :FALSE");
                     this.stoppingMode = false;
                 }
             }
-             
-            
+
+
             let velXToDo = this.velX;
             let velYToDo = this.velY;
             if (currentphysical.lastUpdate < this.entity.physical.lastUpdate) {
@@ -546,22 +500,22 @@ export class Game{
 
         //TEXT on top of the player
         if (!currentEntity.physical.layout) {
-            ctx .fillText(currentEntity.name + "." + physical.direction
-                            + "." + currentEntity.active + ".(" + currentEntity.life + ")", physical.x,
-                            physical.y - 10);
+            ctx.fillText(currentEntity.name + "." + physical.direction
+                + "." + currentEntity.active + ".(" + currentEntity.life + ")", physical.x,
+                physical.y - 10);
         } else { ctx.fillText(currentEntity.id, physical.x, physical.y - 10); }
         //ctx.strokeRect(physical.x, physical.y, currentEntity.physical.w, currentEntity.physical.h);
         //ctx.fillRect(physical.x, physical.y, currentEntity.physical.w, currentEntity.physical.h);
         const image = this.getEntityImage(currentEntity.physical.role,
             currentEntity.physical.direction);
         ctx.drawImage(image, physical.x, physical.y,
-                currentEntity.physical.w, currentEntity.physical.h);
+            currentEntity.physical.w, currentEntity.physical.h);
         this.fireTiming++;
         ctx.restore();
 
     }
 
-     fireMissile() {
+    fireMissile() {
         if (this.fireTiming < 20) {
             return;
         }
@@ -574,11 +528,10 @@ export class Game{
         this.updateMovement(this.entity);
     }
 
-     getEntityImage(role, dir) {
-       
+    getEntityImage(role, dir) { 
         let url = this.fullAddress + this.playerImagePath
-                + playerModule.getDirImage(role, dir);
-        for (let i = 0; i <this. entityImages.length; i++) {
+            + playerModule.getDirImage(role, dir);
+        for (let i = 0; i < this.entityImages.length; i++) {
             if (this.entityImages[i].src == url) {
                 return this.entityImages[i];
             }
@@ -587,23 +540,23 @@ export class Game{
 
     }
 
-     loadImages () {
+    loadImages() {
         let urls = new Array();
         for (let i = 0; i < this.roles.length; i++) {
             let role = this.roles[i];
-            urls .push(this.playerImagePath + role + "_u.png");
-            urls .push(this.playerImagePath + role + "_d.png");
-            urls .push(this.playerImagePath + role + "_r.png");
-            urls .push(this.playerImagePath + role + "_l.png");
+            urls.push(this.playerImagePath + role + "_u.png");
+            urls.push(this.playerImagePath + role + "_d.png");
+            urls.push(this.playerImagePath + role + "_r.png");
+            urls.push(this.playerImagePath + role + "_l.png");
         }
         for (let i = 0; i < this.staticImages.length; i++) {
             let staticImage = this.staticImages[i];
-            urls.push(imgPath+ staticImage);
+            urls.push(imgPath + staticImage);
         }
 
         for (let i = 0; i < urls.length; i++) {
-            let image = new Image(); 
-            image.onload = function() {
+            let image = new Image();
+            image.onload = function () {
                 console.log("Image loaded: ", urls[i], image); ctx.drawImage(image, i * 50, 0, 50, 38);
             }
             image.src = urls[i];
@@ -611,19 +564,19 @@ export class Game{
         }
     }
 
-     render(obj) {
+    render(obj) {
         //layout not rendered because it is the background image
         for (let i = 0; i < obj.entities.length; i++) {
-            let currentEntity =obj. entities[i];
-            
-            if(currentEntity.id == obj.entity.id){
+            let currentEntity = obj.entities[i];
+
+            if (currentEntity.id == obj.entity.id) {
                 obj.playerPosition = i;
             }
-            
+
             obj.renderEntity(currentEntity);
 
             if (currentEntity.physical.role == 101
-                    && currentEntity.id != obj.entity.id) {
+                && currentEntity.id != obj.entity.id) {
                 if (playerModule.intersect(obj.entity, currentEntity).status == true) {
                     let lifeEntity = currentEntity;
                     obj.velX = 0;
@@ -633,53 +586,49 @@ export class Game{
                         if (obj.entity.life > obj.baseHealth) {
                             obj.entity.life = obj.baseHealth
                         }
-                        
+
                         obj.updateMovement(obj.entity);
                     }
                     console.log("-------ADD BONUS", obj.entity, lifeEntity);
                     obj.leaveApp(lifeEntity.id);
-                    obj.entities.splice(i,1);
+                    obj.entities.splice(i, 1);
                 }
             }
         }
     }
 
-     draw() {
-        if (canvas.getContext) { ctx.beginPath(); ctx.arc(70, 80, 10, 0, 2 * Math.PI, false); ctx.fill(); } 
+    draw() {
+        if (canvas.getContext) { ctx.beginPath(); ctx.arc(70, 80, 10, 0, 2 * Math.PI, false); ctx.fill(); }
         else { alert("Not Supported"); }
     }
-
-   
-    
-
+ 
     join(name) {
-        this.entityDirectionHistory = new Array();
-        
+        this.entityDirectionHistory = new Array(); 
         this.entity.name = name;
         ajax.postReq(
-                this.urlJoinPath,
-                "name=" + name,
-                "join",
-                function(response,object) {
-                    let responseObject = JSON.parse(response);
-                    console.log("RESPONSE", responseObject);
-                    if (responseObject.responseCode == "00") {
-                        object. entity = responseObject.entity;
-                        //	console.log("USER",entity);
-    					printEntityInfo(object.entity, object.entities, object.playerPosition, object);
-    					object.window.document.title = "PLAYER: " + object.entity.name;
-    					object.document.getElementById("name").disabled = true;
-                        object.initAnimation(object);
-                        object.loadImages();
-    
-                    } else {
-                        alert("FAILED :" + responseObject.responseMessage);
-                    }
-                }, this);
+            this.urlJoinPath,
+            "name=" + name,
+            "join",
+            function (response, object) {
+                let responseObject = JSON.parse(response);
+                console.log("RESPONSE", responseObject);
+                if (responseObject.responseCode == "00") {
+                    object.entity = responseObject.entity;
+                    //	console.log("USER",entity);
+                    printEntityInfo(object.entity, object.entities, object.playerPosition, object);
+                    object.window.document.title = "PLAYER: " + object.entity.name;
+                    object.document.getElementById("name").disabled = true;
+                    object.initAnimation(object);
+                    object.loadImages();
+
+                } else {
+                    alert("FAILED :" + responseObject.responseMessage);
+                }
+            }, this);
     }
-     
-    start(){
+
+    start() {
         draw();
     }
-    
+
 }

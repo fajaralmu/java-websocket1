@@ -7,15 +7,12 @@
 <html>
 <head>
 <script src="<c:url value="/res/js/sockjs-0.3.2.min.js"></c:url >"></script>
-<script src="<c:url value="/res/js/stomp.js"></c:url >"></script>
-<script src="<c:url value="/res/js/ajax.js"></c:url >"></script>
-<script src="<c:url value="/res/js/util.js"></c:url >"></script>
-<%-- <script src="<c:url value="/res/js/websocket-util.js"></c:url >"></script> --%>
+<script src="<c:url value="/res/js/stomp.js"></c:url >"></script> 
+<script src="<c:url value="/res/js/util.js"></c:url >"></script> 
 
 <script type="text/javascript">
 	var game;
-</script>
-<script src="<c:url value="/res/js/player.js"></c:url >"></script>
+</script> 
 <script type="module">
 	import {Game} from "<c:url value="/res/js/game.js"></c:url >";
 
@@ -159,8 +156,8 @@ td{
 	
 		/**init game**/
 		function initGame(){
-			game.canvas = canvas;
-			game.ctx = ctx;
+			game.canvas = this.canvas;
+			game.ctx = this.ctx;
 			game.layouts = ${layouts};
 			/*declared in websocket-util.js*/ game.contextPath = "${contextPath}";
 			game.playerImagePath = "<c:url value="/res/img/player/"/>";
@@ -183,11 +180,9 @@ td{
 			game.baseHealth =  ${baseHealth} ;
 			game.window = window;
 			game.document = document;
-			game.fullAddress = window.location.protocol + '//'
-            + window.location.hostname
-            + (window.location.port ? ':' + window.location.port : '');
+			game.fullAddress = window.location.protocol + '//'  + window.location.hostname + (window.location.port ? ':' + window.location.port : '');
 			
-			console.log("GAME",game);
+			console.log("INIT - GAME",game);
 			
 		}
 		
@@ -245,17 +240,13 @@ td{
 		function leave() { window.document.title = "0FF-PLAYER: " + game.entity.name; game.leaveApp(game.entity.id); }
 
 		function updateEntityInfo() {
-			 var amount = game.entity.life / game.baseHealth * game.WIN_W;
-		 	document.getElementById("life-bar").style.width = amount + "px";
+			var amount = game.entity.life / game.baseHealth * game.WIN_W;
+	 		document.getElementById("life-bar").style.width = amount + "px";
 		}
-	</script>
-	<script type="text/javascript">
-		 
-
+	 
 		window.onkeydown = function(e) { game.move(e.key); }
 
 		window.onkeyup = function(e) { game.release(e.key); }
-		
 		 
 		
 		function setupControlBtn(){
@@ -263,16 +254,11 @@ td{
 			for (let i = 0; i < controlButtons.length; i++) {
 				let button = controlButtons[i];
 				let moveRole = button.getAttribute("move-role");
-				button.onmousedown = function(){ 	game.move(moveRole); };
-				
-				button.onclick = function(){ 	game.move(moveRole); };
-				
-				button.onmouseup = function(){ game.release(moveRole); };
-				
-				button.onmouseout = function(){ game.release(moveRole); };
-				
-			}
-			
+				button.onmousedown = function(){ 	game.move(moveRole); }; 
+				button.onclick = function(){ 	game.move(moveRole); }; 
+				button.onmouseup = function(){ game.release(moveRole); }; 
+				button.onmouseout = function(){ game.release(moveRole); }; 
+			} 
 		}
 		
 		 
