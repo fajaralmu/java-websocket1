@@ -2,7 +2,11 @@ export var intersectionInfo = "";
 export const speedDec = 0.2;
 import * as global from './globals.js'
  
-
+/**
+ * calculate if main entity intersect given entity
+ * @param {object} mainentity 
+ * @param {object} entity 
+ */
 export function intersect(mainentity, entity) {
 	var intersection = {};
 	intersection.status = false;
@@ -62,6 +66,11 @@ export function intersect(mainentity, entity) {
 	return intersection;
 }
 
+/**
+ * calculate if main entity intersects given entity in reverse direction
+ * @param {object} mainentity 
+ * @param {object} entity 
+ */
 export function intersectReverse(mainentity, entity) {
 	var intersection = {};
 	intersection.status = false;
@@ -120,7 +129,7 @@ export function intersectReverse(mainentity, entity) {
 
 	return intersection;
 }
-
+ 
 export function getDirImage(role, dir) {
 	return role + "_" + dir + ".png";
 }
@@ -141,6 +150,14 @@ export function createMissile(entity) {
 	return missile;
 }
 
+/**
+ * check if current position is out of bounds
+ * @param {object} currentphysical 
+ * @param {Number} WIN_W 
+ * @param {Number} WIN_H 
+ * @param {Number} velX 
+ * @param {Number} velY 
+ */
 export function isOutOfBounds(currentphysical, WIN_W, WIN_H, velX, velY) {
 	if (currentphysical.x + currentphysical.w + velX > WIN_W) {
 		
@@ -154,37 +171,12 @@ export function isOutOfBounds(currentphysical, WIN_W, WIN_H, velX, velY) {
 	}
 	return false;
 }
-
-export function isMoving(velX, velY, dir, stoppingSide) {
-	var movingProps = {
-		'x' : false,
-		'y' : false
-	}
-	if (dir == global.dirUp) {
-		if (velY <  0 ) {
-			movingProps.y = true;
-		}
-	}
-	if (dir == global.dirDown) {
-		if (velY >  0) {
-			movingProps.y = true;
-		}
-	}
-	if (dir == global.dirLeft) {
-		if (velX <  0) {
-			movingProps.x = true;
-		}
-	}
-	if (dir == global.dirRight){
-		if(velX >  0)
-		{
-			movingProps.x = true
-		}
-	} 
-	return movingProps;
-
-}
-
+ 
+/**
+ * 
+ * @param {Number} velX 
+ * @param {String} dir 
+ */
 export function decreaseVelX(velX, dir) {
 	if (dir == global.dirLeft){
 		 
@@ -195,6 +187,11 @@ export function decreaseVelX(velX, dir) {
 	return velX;
 }
 
+/**
+ * 
+ * @param {Number} velY 
+ * @param {String} dir 
+ */
 export function decreaseVelY(velY, dir) {
 	if (dir == global.dirUp)
 		return velY + speedDec  > 0? 0 : velY + speedDec ;
@@ -203,6 +200,11 @@ export function decreaseVelY(velY, dir) {
 	return velY;
 }
 
+/**
+ * get velocity object
+ * @param {String} dir 
+ * @param {Number} vel 
+ */
 export function getVelocity(dir, vel) {
 	var velocity = {};
 	velocity.x = 0;

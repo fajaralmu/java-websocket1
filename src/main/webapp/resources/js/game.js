@@ -8,7 +8,7 @@ import * as movementModule from './movementModule.js'
 export class Game {
 
     layouts;
-    /*declared in websocket-util.js*/ contextPath;
+    contextPath;
     currentLayoutId = 0;
     playerImagePath;
     urlJoinPath;
@@ -229,7 +229,7 @@ export class Game {
                 this.entityDirection = this.stopStoppingModeIf(this.dirUp);
             }
         }
-        if (key == "o") { fireMissile(); }
+        if (key == "o") { this.fireMissile(); }
         /* else{ stoppingMode = false; } */
     }
 
@@ -289,6 +289,11 @@ export class Game {
         return null;
     }
 
+     
+    /**
+     * render entity
+     * @param {*} currentEntity 
+     */
     renderEntity(currentEntity) {
         const isPlayer = (currentEntity.id == this.entity.id);
         if (isPlayer && this.entity != null) {
@@ -299,9 +304,15 @@ export class Game {
             currentEntity = this.entity;
         }
 
-        if (currentEntity.missiles != null)
+        /**
+         * ===============================================
+         * ======== HANDLE IF ENTITY HAS MISSILES ========
+         * ===============================================
+         */
+
+        if (currentEntity.missiles != null){
             for (let i = 0; i < currentEntity.missiles.length; i++) {
-                let missile = currentEntity.missiles[i];
+                const missile = currentEntity.missiles[i];
 
                 let velocity = playerModule.getVelocity(missile.physical.direction, 10);
 
@@ -309,57 +320,61 @@ export class Game {
                 currentEntity.missiles[i].physical.y += velocity.y;
 
                 let missileIntersects = false;
+                /**
+                 * OTHER player missile
+                 */
                 if (!isPlayer) {
-                    if (playerModule.intersect(this.entity, missile).status == true) {
-                        firing = true;
-                        this.entity.life--;
-
+                    const missileIntersection  = playerModule.intersect(this.entity, missile);
+                    if (missileIntersection.status == true) {
+                        console.debug("ATTACKED BY MISSILE: ",missileIntersection);
+                        this.firing = true;
+                        this.entity.life--; 
+                        missileIntersects = true;
                     }
                 }
+                /**
+                 * MAIN player missile
+                 */
                 if (isPlayer) {
-                    if (this.entity.life <= 0) {
-                        alert("GAME OVER....");
-                        leave();
-                    }
-                    //check if missile intersects player
-                    for (let x = 0; x < this.entities.length; x++) {
-                        if (this.entities[x].id != this.entity.id) {
-                            if (playerModule.intersect(missile, this.entities[x]).status == true) {
-                                this.firing = true;
-                                //		console.log("===============intersects",this.entity.id,entities[i].id );
-                                missileIntersects = true;
-                            }
-                        }
-                    }
-                    //check if missile intersects layout
-                    for (let x = 0; x < this.layouts.length; x++) {
-                        if (this.layouts[x].physical.role == 102 && playerModule.intersect(missile, this.layouts[x]).status == true) {
-                            firing = true;
-                            //		console.log("===============intersects",this.entity.id,entities[i].id );
-                            missileIntersects = true;
-                        }
-                    }
+                    
+                    const missileIntersectsPlayer = movementModule.missileIntersectsPlayer(missile,this.entity,this.entities);
+                    const missileIntersectsLayout = movementModule.missileIntersectsLayout(missile, this.layouts);
+
+                    missileIntersects = missileIntersectsPlayer||missileIntersectsLayout;
+                    if(missileIntersects){
+                        this.firing = true;
+                    } 
                 }
 
                 //this works
                 if (missileIntersects
-                    || currentEntity.missiles[i].physical.x < 0 || currentEntity.missiles[i].physical.x > WIN_W
-                    || currentEntity.missiles[i].physical.y < 0 || currentEntity.missiles[i].physical.y > WIN_H) {
+                    || currentEntity.missiles[i].physical.x < 0 || currentEntity.missiles[i].physical.x > this.WIN_W
+                    || currentEntity.missiles[i].physical.y < 0 || currentEntity.missiles[i].physical.y > this.WIN_H) {
                     currentEntity.missiles.splice(i, 1);
                 }
                 let missilephysical = missile.physical;
                 ctx.save();
                 ctx.fillStyle = missilephysical.color;
-                ctx.fillRect(missilephysical.x, missilephysical.y,
-                    missilephysical.w, missilephysical.h);
+                ctx.fillRect(missilephysical.x, missilephysical.y, missilephysical.w, missilephysical.h);
                 ctx.restore();
             }
+        }
 
+        /**
+            ========================================================
+            ============= HANDLE ENTITY IF MAIN PLAYER =============
+            ========================================================
+        */
+        
         if (isPlayer) {
+            //check life
+            if (this.entity.life <= 0) {
+                alert("GAME OVER....");
+                leave();
+            }
 
-            let currentphysical = currentEntity.physical;
-            let outOfBounds = playerModule.isOutOfBounds(currentphysical, this.WIN_W, this.WIN_H, this.velX, this.velY);
-           
+            const currentphysical = currentEntity.physical;
+            const outOfBounds = playerModule.isOutOfBounds(currentphysical, this.WIN_W, this.WIN_H, this.velX, this.velY);
             const intersectPlayer = movementModule.intersectPlayer(currentEntity, this.entities);
             const intersectLayout = movementModule.intersectLayout(currentEntity, this, this.layouts);
 
@@ -369,24 +384,10 @@ export class Game {
                 this.run = 0;
             }
             
-            if (this.stoppingMode) {
-                let latestDirectionV = this.getLatestStoppingDirV();
-                let latestDirectionH = this.getLatestStoppingDirH();
-                let theDirX = currentphysical.direction;
-                let theDirY = currentphysical.direction;
-                if (theDirY != this.dirUp && theDirY != this.dirDown && latestDirectionV != null) {
-                    if (latestDirectionV == this.dirUp || latestDirectionV == this.dirDown) {
-                        theDirY = latestDirectionV;
-                    }
-                }
-                if (theDirX != this.dirRight && theDirX != this.dirLeft && latestDirectionH != null) {
-                    if (latestDirectionH == this.dirRight || latestDirectionH == this.dirLeft) {
-                        theDirX = latestDirectionH;
-                    }
-                }
-
-                this.velX = playerModule.decreaseVelX(this.velX, theDirX);
-
+            if (this.stoppingMode) { 
+                let theDirX = movementModule.getCurrentDirectionX(this, currentphysical);
+                let theDirY = movementModule.getCurrentDirectionY(this, currentphysical);
+                this.velX = playerModule.decreaseVelX(this.velX, theDirX); 
                 this.velY = playerModule.decreaseVelY(this.velY, theDirY);
                 if (this.velX == 0 && this.velY == 0) {
                     console.debug("STOPPING MODE :FALSE");
@@ -394,15 +395,11 @@ export class Game {
                 }
             }
 
-
             let velXToDo = this.velX;
             let velYToDo = this.velY;
             if (currentphysical.lastUpdate < this.entity.physical.lastUpdate) {
                 currentEntity.physical.x = this.entity.physical.x;
                 currentEntity.physical.y = this.entity.physical.y;
-                /* velXToDo = 0;
-                velYToDo = 0;
-                run = 0; */
             }
 
             if (!outOfBounds) {
@@ -412,12 +409,15 @@ export class Game {
             this.entity.stageId = currentEntity.stageId;
             this.entity.physical.direction = this.entityDirection;
             currentEntity.physical.direction = this.entity.physical.direction;
-            currentEntity.life = this.entity.life;
-            //currentEntity.missiles = this.entity.missiles;
+            currentEntity.life = this.entity.life; 
+
             this.entity = currentEntity;
             printEntityInfo(this.entity, this.entities, this.playerPosition, this);
             updateEntityInfo();
         }
+
+        /*===========END HANDLE IF MAIN PLAYER===================*/
+
         if (this.velX != 0 || this.velY != 0 || currentEntity.missiles.length > 0 || this.firing) {
             //console.log("=================",currentEntity.physical);
             if (this.firing)
@@ -426,25 +426,39 @@ export class Game {
             this.entity.layoutId = this.currentLayoutId;
             this.updateMovement(this.entity);
         }
+        
+        this.fireTiming++;
 
-        let physical = currentEntity.physical;
+        /**================================
+         * ===== BEGIN RENDER CANVAS ======
+         * ================================
+         */
+
+        const physical = currentEntity.physical;
+
         this.ctx.save();
         this.ctx.fillStyle = physical.color;
         this.ctx.font = "15px Arial";
 
-        //TEXT on top of the player
-        if (!currentEntity.physical.layout) {
-            ctx.fillText(currentEntity.name + "." + physical.direction
-                + "." + currentEntity.active + ".(" + currentEntity.life + ")", physical.x,
-                physical.y - 10);
-        } else { ctx.fillText(currentEntity.id, physical.x, physical.y - 10); }
+        /**
+         * TEXT ON TOP OF PLAYERS
+         */
+        if (! physical.layout) {
+            const INFO = currentEntity.name + "." + physical.direction + "." + currentEntity.active + ".(" + currentEntity.life + ")";
+
+            ctx.fillText(INFO, physical.x, physical.y - 10);
+        } else { 
+            ctx.fillText(currentEntity.id, physical.x, physical.y - 10); 
+        }
+
+        /**
+         * RENDER PLAYER
+         */
+
         //ctx.strokeRect(physical.x, physical.y, currentEntity.physical.w, currentEntity.physical.h);
         //ctx.fillRect(physical.x, physical.y, currentEntity.physical.w, currentEntity.physical.h);
-        const image = this.getEntityImage(currentEntity.physical.role,
-            currentEntity.physical.direction);
-        ctx.drawImage(image, physical.x, physical.y,
-            currentEntity.physical.w, currentEntity.physical.h);
-        this.fireTiming++;
+        const image = this.getEntityImage( physical.role,  physical.direction);
+        ctx.drawImage(image, physical.x, physical.y,  physical.w,  physical.h);        
         ctx.restore();
 
     }
@@ -455,23 +469,21 @@ export class Game {
         }
         this.firing = true;
         this.fireTiming = 0;
-        missile = playerModule.createMissile(this.entity);
+        const missile = playerModule.createMissile(this.entity);
         console.debug("==>Fire Missile", missile);
         this.entity.missiles.push(missile);
-        this.entity.layoutId = currentLayoutId;
+        this.entity.layoutId = this.currentLayoutId;
         this.updateMovement(this.entity);
     }
 
     getEntityImage(role, dir) { 
-        let url = this.fullAddress + this.playerImagePath
-            + playerModule.getDirImage(role, dir);
+        const url = this.fullAddress + this.playerImagePath  + playerModule.getDirImage(role, dir);
         for (let i = 0; i < this.entityImages.length; i++) {
             if (this.entityImages[i].src == url) {
                 return this.entityImages[i];
             }
         }
-        return new Image();
-
+        return new Image(); 
     }
 
     loadImages() {
@@ -498,6 +510,10 @@ export class Game {
         }
     }
 
+    /**
+     * main render method
+     * @param {Game} obj 
+     */
     render(obj) {
         //layout not rendered because it is the background image
         for (let i = 0; i < obj.entities.length; i++) {
@@ -539,10 +555,7 @@ export class Game {
     join(name) {
         this.entityDirectionHistory = new Array(); 
         this.entity.name = name;
-        ajax.postReq(
-            this.urlJoinPath,
-            "name=" + name,
-            "join",
+        ajax.postReq(  this.urlJoinPath,  "name=" + name, "join",
             function (response, object) {
                 let responseObject = JSON.parse(response);
                 console.log("RESPONSE", responseObject);
