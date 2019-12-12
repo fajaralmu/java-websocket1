@@ -2,6 +2,7 @@ import * as global from './globals.js'
 import * as playerModule from './playerModule.js'
 import * as ajax from './ajaxModule.js'
 import * as websocketModule from './websocketModule.js'
+import * as movementModule from './movementModule.js'
 
 
 export class Game {
@@ -251,7 +252,7 @@ export class Game {
     }
 
     clearCanvas() {
-        this.ctx.clearRect(0, 0, canvas.width, canvas.height);
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     }
 
     animate(obj) {
@@ -266,23 +267,7 @@ export class Game {
         }
     }
 
-    getLayoutRole(role) {
-        switch (role) {
-            case this.roleRight:
-                return "RIGHT";
-            case this.roleLeft:
-                return "LEFT";
-            case this.roleUp:
-                return "UP";
-            case this.roleDown:
-                return "DOWN";
-            case this.roleFinish:
-                return "FINISH";
-            default:
-                break;
-        }
-        return "Not Circuit Role";
-    }
+    
 
     getLatestStoppingDirH() {
         if (this.entityDirectionHistory.length > 0) {
@@ -374,67 +359,16 @@ export class Game {
 
             let currentphysical = currentEntity.physical;
             let outOfBounds = playerModule.isOutOfBounds(currentphysical, this.WIN_W, this.WIN_H, this.velX, this.velY);
-            let layoutItemIntersects = {};
-            let intersectLayout = false;
-            let intersection = {};
-            let intersectionReverse = {};
+           
+            const intersectPlayer = movementModule.intersectPlayer(currentEntity, this.entities);
+            const intersectLayout = movementModule.intersectLayout(currentEntity, this, this.layouts);
 
-            let playerIntersects = {};
-            let intersectPlayer = false;
-            let intersectionPlayer = {};
-            let intersectionPlayerReverse = {};
-
-            /*************CHECK INTERSECT PLAYER****************/
-            for (let i = 0; i < this.entities.length; i++) {
-                const theEntity = this.entities[i];
-                const isPlayer2 = (theEntity.id == this.entity.id);
-                if (!isPlayer2) {
-                    if (!intersectPlayer && playerModule.intersect(currentEntity, theEntity).status == true) {
-                        intersectionPlayer = playerModule.intersect(currentEntity, theEntity);
-                        intersectionPlayerReverse = playerModule.intersectReverse(currentEntity, theEntity);
-                        intersectPlayer = true;
-                        layoutItemIntersects = theEntity;
-                    }
-                }
-            }
-
-            if (intersectPlayer
-                && (intersectionPlayer.direction == currentphysical.direction || intersectionPlayerReverse.direction == currentphysical.direction)) {
-
+            if (intersectLayout || intersectPlayer){
                 this.velX = 0;
                 this.velY = 0;
                 this.run = 0;
             }
-
-            /*************CHECK INTERSECT LAYOUT****************/
-            for (let i = 0; i < this.layouts.length; i++) {
-                let layoutItem = this.layouts[i];
-                if (!intersectLayout && playerModule.intersect(currentEntity, layoutItem).status == true) {
-                    intersection = playerModule.intersect(currentEntity, layoutItem);
-                    intersectionReverse = playerModule.intersectReverse(currentEntity, layoutItem);
-
-                    const layoutRole = layoutItem.physical.role;
-                    this.currentLayoutId = layoutItem.id;
-                    if (layoutRole != 102) {
-                        printCircuitInfo(layoutRole + ":" + this.getLayoutRole(layoutRole) + ", name: " + layoutItem.name);
-                    } else {
-                        intersectLayout = true;
-                    }
-
-                    layoutItemIntersects = layoutItem;
-                }
-            }
-
-            if (intersectLayout
-                && (intersection.direction == currentphysical.direction || intersectionReverse.direction == currentphysical.direction)) {
-                printInfo("intersect layout :" + playerModule.intersectionInfo + JSON.stringify(layoutItemIntersects));
-                this.velX = 0;
-                this.velY = 0;
-                this.run = 0;
-            }
-            if (intersectLayout) { printInfo("WILL intersect layout :" + playerModule.intersectionInfo + JSON.stringify(layoutItemIntersects)); }
-            else { printInfo("NO INTERSECTION"); }
-
+            
             if (this.stoppingMode) {
                 let latestDirectionV = this.getLatestStoppingDirV();
                 let latestDirectionH = this.getLatestStoppingDirH();
