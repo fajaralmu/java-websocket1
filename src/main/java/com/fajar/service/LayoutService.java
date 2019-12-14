@@ -23,8 +23,7 @@ import com.fajar.util.JSONUtil;
 
 import lombok.AllArgsConstructor;
 
-@Service
- 
+@Service 
 @AllArgsConstructor 
 public class LayoutService {
 	Logger log = LoggerFactory.getLogger(LayoutService.class);

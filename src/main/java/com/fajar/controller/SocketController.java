@@ -25,6 +25,7 @@ import com.fajar.dto.Message;
 import com.fajar.dto.OutputMessage;
 import com.fajar.dto.RealtimeRequest;
 import com.fajar.dto.RealtimeResponse;
+import com.fajar.service.GameSettingService;
 import com.fajar.service.RealtimeService;
 
 @CrossOrigin
@@ -34,71 +35,70 @@ public class SocketController {
 	@Autowired
 	private SimpMessagingTemplate webSocket;
 	@Autowired
-	RealtimeService realtimeUserService;
-	
+	private RealtimeService realtimeUserService;
+	@Autowired
+	private GameSettingService gameSettingService;
+
 	public SocketController() {
 		log.info("------------------SOCKET CONTROLLER #1-----------------");
 	}
-	
-	@PostMapping(value="/game-app-simple/join", consumes=MediaType.APPLICATION_FORM_URLENCODED_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
-	public RealtimeResponse register( HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+	@PostMapping(value = "/game-app-simple/join", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public RealtimeResponse register(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		response.setContentType(APPLICATION_JSON);
 		response.setCharacterEncoding(UTF_8);
 		RealtimeResponse responseObject = realtimeUserService.registerUser(request);
-		responseObject.setEntities(realtimeUserService.getUsers());
+		responseObject.setEntities(realtimeUserService.getPlayers(request.getParameter("server")));
 		join2(responseObject);
 		return responseObject;
 	}
-	
-	//@MessageMapping("/move")
-	//@SendTo("/wsResp/players")
-	public RealtimeResponse join2( RealtimeResponse response) throws IOException {
+
+	@PostMapping(value = "/game-app-simple/server", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public RealtimeResponse serverlist(HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+		RealtimeResponse responseObject = new RealtimeResponse();
+		responseObject.setAvailableServers(gameSettingService.getServerList());
+		return responseObject;
+	}
+
+	// @MessageMapping("/move")
+	// @SendTo("/wsResp/players")
+	public RealtimeResponse join2(RealtimeResponse response) throws IOException {
 		webSocket.convertAndSend("/wsResp/players", response);
 		return response;
 	}
-	
+
 	@MessageMapping("/addUser")
 	@SendTo("/wsResp/players")
-	public RealtimeResponse join( RealtimeRequest request) throws IOException {
-		
+	public RealtimeResponse join(RealtimeRequest request) throws IOException {
+
 		return realtimeUserService.connectUser(request);
 	}
-	
-	@MessageMapping("/addEntity")
-	@SendTo("/wsResp/players")
-	public RealtimeResponse addEntity( RealtimeRequest request) throws IOException {
-		
-		return realtimeUserService.addEntity(request);
-	}
-	
+
 	@MessageMapping("/move")
-	//@SendTo("/wsResp/players")
-	public void move( RealtimeRequest request) throws IOException {
+	// @SendTo("/wsResp/players")
+	public void move(RealtimeRequest request) throws IOException {
 //		log.info("MOVE: {},",request);
-		 realtimeUserService.move(request);
+		realtimeUserService.move(request);
 	}
-	
+
 	@MessageMapping("/leave")
 	@SendTo("/wsResp/players")
-	public RealtimeResponse leave( RealtimeRequest request) throws IOException {
-		
+	public RealtimeResponse leave(RealtimeRequest request) throws IOException {
+
 		return realtimeUserService.disconnectUser(request);
 	}
-	
-	
-	
+
 	@MessageMapping("/chat")
 	@SendTo("/wsResp/players")
-	public RealtimeResponse send(Message message){
+	public RealtimeResponse send(Message message) {
 		RealtimeResponse response = new RealtimeResponse();
-		System.out.println("Message > "+message);
-	    String time = new SimpleDateFormat("HH:mm:ss").format(new Date());
-	    OutputMessage msg =new  OutputMessage(message.getFrom(), message.getText(), time);
-	    System.out.println("Output > "+msg);
-	    response.setMessage(msg);
-	    return response;
+		System.out.println("Message > " + message);
+		String time = new SimpleDateFormat("HH:mm:ss").format(new Date());
+		OutputMessage msg = new OutputMessage(message.getFrom(), message.getText(), time);
+		System.out.println("Output > " + msg);
+		response.setMessage(msg);
+		return response;
 	}
-	
-	
-	
+
 }

@@ -1,13 +1,5 @@
-export function postReq(url, param, process, callback, object){
-	var request = new XMLHttpRequest();
-	var param_to_send = "process="+process;
-	if(param!=""){
-		param_to_send=param+"&"+param_to_send;
-	}
-	
-	//if (!confirm("Lanjutkan Operasi " + param_to_send + "  ?"))
-	//	return;
-	 
+export function postReq(url, param,   callback, object){
+	var request = new XMLHttpRequest(); 
 	request.open("POST", url, true);
 	request.setRequestHeader("Content-type",
 			"application/x-www-form-urlencoded");
@@ -15,11 +7,9 @@ export function postReq(url, param, process, callback, object){
 		if (this.readyState == this.DONE && this.status == 200) {
 			console.log(this.responseText);
 			if (this.responseText != null) {
-				callback(this.responseText, object);
-				 
-			}
-			
+				callback(this.responseText, object); 
+			} 
 		}
 	}
-	request.send(param_to_send);
+	request.send(param);
 }

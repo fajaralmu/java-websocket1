@@ -32,6 +32,8 @@ public class RealtimeResponse implements Serializable{
 	private List<Entity> entities = new ArrayList<Entity>();
 	@Builder.Default
 	private List<String> infos = new ArrayList<>();
+	private List<String> availableServers;
+	private String serverName;
 
 	 
 	public RealtimeResponse(String rc,String rm) {

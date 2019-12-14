@@ -24,6 +24,7 @@ public class RealtimeRequest implements Serializable{
 	 */
 	private static final long serialVersionUID = 6891178168583718796L;
 	private Entity entity;
+	private String serverName;
 	
 	
 }

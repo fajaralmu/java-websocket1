@@ -6,7 +6,7 @@ import * as movementModule from './movementModule.js'
 
 
 export class Game {
-
+    serverName;
     layouts;
     contextPath;
     currentLayoutId = 0;
@@ -565,10 +565,11 @@ export class Game {
         else { alert("Not Supported"); }
     }
  
-    join(name) {
+    join(name,serverName) {
         this.entityDirectionHistory = new Array(); 
         this.entity.name = name;
-        ajax.postReq(  this.urlJoinPath,  "name=" + name, "join",
+        this.serverName = serverName;
+        ajax.postReq( this.urlJoinPath,  "name=" + name +"&server="+serverName,  
             function (response, object) {
                 let responseObject = JSON.parse(response);
                 console.log("RESPONSE", responseObject);

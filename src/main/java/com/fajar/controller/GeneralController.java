@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.fajar.parameter.EntityParameter;
+import com.fajar.service.GameSettingService;
 import com.fajar.service.RealtimeService;
 import com.fajar.util.JSONUtil;
 
@@ -29,6 +30,8 @@ public class GeneralController {
 	Logger log = LoggerFactory.getLogger(GeneralController.class);
 	@Autowired
 	private RealtimeService realtimeService;
+	@Autowired
+	private GameSettingService gameSettingService;
 
 	public GeneralController() {
 		log.info("-----------------GENERAL CONTROLLER------------------");
@@ -90,6 +93,7 @@ public class GeneralController {
 		model.addAttribute("staticImages", JSONUtil.listToJson(EntityParameter.assets()));
 		System.out.println(13);
 		model.addAttribute("contextPath", request.getContextPath());
+		model.addAttribute("serverNames", gameSettingService.getServerList());
 		System.out.println("----------------END REQUESTING GAME PAGE-----------------");
 		return "websocket/anim/canvas1";
 	}

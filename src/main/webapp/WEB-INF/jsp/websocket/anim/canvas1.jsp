@@ -131,6 +131,12 @@ td{
 	</table>
 	<p></p>
 	<p id="velocity-info"></p>
+	<p>Select Server</p>
+	<select id="server-list">
+		<c:forEach var="serverName" items="${serverNames }">
+			<option value="${serverName }">${serverName }</option>
+		</c:forEach>
+	</select>
 	<label>Input Name: </label>
 	<input style="height: 50px; font-size:1.5em" id="name" type="text" />
 	<button class="btn-ok" id="join" onclick="joinGame()">Join</button>
@@ -140,9 +146,9 @@ td{
 	<p>
 		Connected: <span id="connect-info" />
 	</p>
-	<h2>Touchpad-Control</h2>
-	<div id="touchpad-control" >
-	</div>
+	<!-- <h2>Touchpad-Control</h2> -->
+	<!-- <div id="touchpad-control" >
+	</div> -->
 </div>
 
 <script type="text/javascript">
@@ -189,7 +195,8 @@ td{
 		function joinGame(){
 			initGame();
 			var name = document.getElementById("name").value;
-			game.join(name);
+			var serverName = document.getElementById("server-list").value;
+			game.join(name,serverName);
 			setupControlBtn();
 		}
 		

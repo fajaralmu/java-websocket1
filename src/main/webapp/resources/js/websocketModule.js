@@ -1,4 +1,4 @@
-import { Game } from "./game";
+import { Game } from "./game.js";
 
 /**
  * connect to server
@@ -11,7 +11,12 @@ export function  doConnect(obj) {
         console.log('stomp client', obj.stompClient);
         obj.document.getElementById("ws-info").innerHTML = obj.stompClient.ws._transport.ws.url;
         obj.stompClient.subscribe('/wsResp/players', function (response) {
+            
             var respObject = JSON.parse(response.body);
+            if(obj.serverName != respObject.serverName){
+                return;
+            }
+            obj.document.getElementById("ws-info").innerHTML = "<b>["+respObject.serverName+"]</b> url: "+ obj.stompClient.ws._transport.ws.url;
             obj.entities = respObject.entities; 
         });
         obj.updateMovement(obj.entity);
@@ -27,7 +32,8 @@ export function doLeave(obj, entityId){
     obj.stompClient.send("/app/leave", {}, JSON.stringify({
         'entity': {
             'id': entityId * 1
-        }
+        },
+        'serverName':obj.serverName
     }));
 }
 
@@ -40,6 +46,7 @@ export function doSendUpdate(obj, entity){
     return new Promise((resolve, reject) => {
         //	console.log("===============Update Entity, ",entity);
         obj.stompClient.send("/app/move", {}, JSON.stringify({
+            'serverName':obj.serverName,
             'entity': {
                 'id': entity.id * 1,
                 'life': entity.life,
