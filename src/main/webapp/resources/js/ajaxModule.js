@@ -10,6 +10,9 @@ export function postReq(url, param,   callback, object){
 				callback(this.responseText, object); 
 			} 
 		}
+		if(this.status == 500){
+			alert("Server Error")
+		}
 	}
 	request.send(param);
 }

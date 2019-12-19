@@ -79,7 +79,7 @@ public class SocketController {
 	// @SendTo("/wsResp/players")
 	public void move(RealtimeRequest request) throws IOException {
 //		log.info("MOVE: {},",request);
-		realtimeUserService.move(request);
+		realtimeUserService.update(request);
 	}
 
 	@MessageMapping("/leave")

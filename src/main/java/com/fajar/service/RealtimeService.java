@@ -30,21 +30,24 @@ public class RealtimeService {
 	private Long currentTime = new Date().getTime();
 	private Boolean isRegistering = false;
 	private Long deltaTime = 8000L;
+ 
+	private final GamePlayService gamePlayService; 
+	private final SimpMessagingTemplate webSocket; 
+	private final LayoutService layoutService; 
+	private final EntityRepository entityRepository;
 
 	@Autowired
-	private GamePlayService gamePlayService;
-	@Autowired
-	private SimpMessagingTemplate webSocket;
-	@Autowired
-	private LayoutService layoutService;
-	@Autowired
-	private EntityRepository entityRepository;
-
-	public RealtimeService() {
-		log.info("-----------------REALTIME SERVICE-------------------");
-		// startThread();
-
+	public RealtimeService(GamePlayService gamePlayService, SimpMessagingTemplate webSocket,
+			LayoutService layoutService, EntityRepository entityRepository) {
+		super();
+		this.gamePlayService = gamePlayService;
+		this.webSocket = webSocket;
+		this.layoutService = layoutService;
+		this.entityRepository = entityRepository;
+		System.out.println(":: CONSTRUCTOR ::");
 	}
+
+	 
 
 	@PostConstruct
 	private void loadLayout() {
@@ -185,7 +188,7 @@ public class RealtimeService {
 		return response;
 	} 
 
-	public void move(RealtimeRequest request) {
+	public synchronized void update(RealtimeRequest request) {
 		final List<Entity> entities = entityRepository.getPlayers(request.getServerName());
 		Thread thread = new Thread(new Runnable() {
 

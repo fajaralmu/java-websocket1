@@ -45,7 +45,7 @@ canvas { border: 1px solid black; }
 }
 
 td{
-	border: solid 1px blue;
+/* 	border: solid 1px blue; */
 	word-wrap:break-all;
 }
 
@@ -79,18 +79,23 @@ td{
 	border-radius: 10px;
 	background-color: yellow;
 }
+
+.input{
+	font-size: 1.5em;
+}
  
 </style>
 </head>
 <body onload="disconnect()">
 <div id="content" >
-	<p id="info" align="center"></p>
+		<h1 align="center">BALAP BEBEK <small>online</small></h1>
+		<p id="info" align="center"></p>
 	<h3 id="ws-info"></h3>
 
 	<table id="layout-table">
 		<tr>
-			<td colspan="3"><h3 style="display: none">Health</h3>
-				<div  style="display:none; width:${winW}px; padding:5px; border:solid 1px blue;">
+			<td colspan="3"><h3 >Health</h3>
+				<div  style="  width:${winW}px; padding:5px; border:solid 1px blue;">
 					<div id="life-bar" class="life-bar"></div>
 				</div>
 				</td>
@@ -131,18 +136,31 @@ td{
 	</table>
 	<p></p>
 	<p id="velocity-info"></p>
-	<p>Select Server</p>
-	<select id="server-list">
-		<c:forEach var="serverName" items="${serverNames }">
-			<option value="${serverName }">${serverName }</option>
-		</c:forEach>
-	</select>
-	<label>Input Name: </label>
-	<input style="height: 50px; font-size:1.5em" id="name" type="text" />
-	<button class="btn-ok" id="join" onclick="joinGame()">Join</button>
-	<button class="btn-ok" id="connect" onclick="connect()">Connect</button>
-	<button class="btn-danger" id="leave" onclick="leave()">Leave</button>
-	<hr />
+	<table>
+	<tr>
+	<td>Select Server </td>
+	<td>Input Name </td>
+	</tr>
+	<tr>
+		<td> 
+			<select class="input" id="server-list">
+			<c:forEach var="serverName" items="${serverNames }">
+				<option value="${serverName }">${serverName }</option>
+			</c:forEach>
+			</select>  
+		</td>
+		<td>
+			<input class="input" id="name" type="text" />
+		</td>
+	</tr>
+	<tr>
+	<td colspan="2">
+		<button class="btn-ok" id="join" onclick="joinGame()">Join</button>
+		<button class="btn-ok" id="connect" onclick="connect()">Connect</button>
+		<button class="btn-danger" id="leave" onclick="leave()">Leave</button>
+	</td>
+	</tr>
+	</table> 
 	<p>
 		Connected: <span id="connect-info" />
 	</p>

@@ -359,6 +359,12 @@ export class Game {
                     || currentEntity.missiles[i].physical.y < 0 || currentEntity.missiles[i].physical.y > this.WIN_H) {
                     currentEntity.missiles.splice(i, 1);
                 }
+                /**
+                 * ====================
+                 * == render missile ==
+                 * ====================
+                 */
+
                 let missilephysical = missile.physical;
                 ctx.save();
                 ctx.fillStyle = missilephysical.color;
@@ -502,11 +508,11 @@ export class Game {
     loadImages() {
         let urls = new Array();
         for (let i = 0; i < this.roles.length; i++) {
-            let role = this.roles[i];
-            urls.push(this.playerImagePath + role + "_u.png");
-            urls.push(this.playerImagePath + role + "_d.png");
-            urls.push(this.playerImagePath + role + "_r.png");
-            urls.push(this.playerImagePath + role + "_l.png");
+            let role = this.playerImagePath +  this.roles[i];
+            urls.push(  role + "_u.png");
+            urls.push(  role + "_d.png");
+            urls.push(  role + "_r.png");
+            urls.push(  role + "_l.png");
         }
         for (let i = 0; i < this.staticImages.length; i++) {
             let staticImage = this.staticImages[i];
@@ -574,13 +580,7 @@ export class Game {
                 let responseObject = JSON.parse(response);
                 console.log("RESPONSE", responseObject);
                 if (responseObject.responseCode == "00") {
-                    object.entity = responseObject.entity;
-                    //	console.log("USER",entity);
-                    printEntityInfo(object.entity, object.entities, object.playerPosition, object);
-                    object.window.document.title = "PLAYER: " + object.entity.name;
-                    object.document.getElementById("name").disabled = true;
-                    object.initAnimation(object);
-                    object.loadImages();
+                    object.handleSuccessJoin(responseObject);
 
                 } else {
                     alert("FAILED :" + responseObject.responseMessage);
@@ -590,6 +590,17 @@ export class Game {
 
     start() {
         draw();
+    }
+
+    handleSuccessJoin(responseObject){ 
+        this.entity = responseObject.entity;
+        //	console.log("USER",entity);
+        printEntityInfo(this.entity, this.entities, this.playerPosition, this);
+        this.window.document.title = "PLAYER: " + this.entity.name;
+        this.document.getElementById("name").disabled = true;
+        this.initAnimation(this);
+        this.loadImages();
+        alert(this.entity.name+" successfully joined");
     }
 
 }
