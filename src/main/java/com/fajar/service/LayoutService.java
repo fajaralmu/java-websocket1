@@ -87,8 +87,12 @@ public class LayoutService {
 	public void load() {
 		try {
 			log.info("------------------WILL.... LOAD LAYOUT LAYOUT: {}", getClass().getCanonicalName());
-			URL path = new URL("file:/D:/Development/Assets/websocket/layout1.png");
-			URL pathStage = new URL("file:/D:/Development/Assets/websocket/layout1-stage.png");
+			//String layoutStage = "file:/D:/Development/Assets/websocket/layout1-stage.png";
+			String layoutStage = "https://lh3.googleusercontent.com/PI3nd8hGpDbyNBEhylXev6KFfBB0C5DK1Hy60ChvOhflPGwF2tA7iq_uSnUlIsPz5AIrRC-n1GVwuMKdKRyJUxyftpcbjVXyoWJFhEOmokYXMe6cZVKD0QSdAeYnwCqMWhJWdZBajz14UYLeekXKpzyyk1KCqZ8vDn3ruJJLpMVIxMJr2tSDyO3n5fiVH0dUdOc0BocJrA_qx-cxVIDTJW-dVhg22mctWTfXX4ChieoI3p5vguT2eKA77g22JDcRStMqwDrZzyCyonOz0kqTT4gAKQeFYRd5xLPBht-rUznuM0RpRxbcsEindEp4sF9kXO1SYXjOUi9DT9cgcmK1YYbqL0rrTxb-SIBuECqtgeJkrKh7r2pVDyMQu8pjo-6DaRtDQHAWgdemKU66iJCPmn_01wMkJp4s4Kbf0GQVJk8o1rPIkN1hfO7XEKLbCIu_YmSUsVy3_QLzZe4BKBayXLn7IoyUa0yxRmoYWVi27lQ6XYOvKwW-JJy-NO_0msSNrJJCqM5V6hJ3SL0c1SfCeI3_fPraEZt_hDdDqS43VlCOqCk6XwrJ4ck5K8j6hjSAk4K9O4rvf72qDB0AXkCkDHn1nTO8bLuWE6FtWEbjMCpw3eDt3K43EO1ueeCTJXvA-ESDrOfbiTXM3_fP5SSbfsnibm_r4pjEI7tD1Q5gsxmqaKdpa1bsFw=w120-h60-no";
+			
+			//String layoutBg = "file:/D:/Development/Assets/websocket/layout1.png";
+			String layoutBg= "https://lh3.googleusercontent.com/Bh8hSWIpPcTSeefllvODW5CCvFasFsinFJQshjuPdajkY4Ip2-vGMs2h4UJ5etyVeZihWPq9xLoN_YWw2li5v-r48y1IE3ZngdmOLNDacwkdTJdEa397jZhWZsuWxDykvm-cwTJUmDw3mrwfHadH_K7hhaCMmjXPE52k24ShRrUcd_7mC85c4ZnpOz4Xf5vLZKU28GCW4diGG3YisCClucRfW8xEn8n1JJUztxeidZlgQ6LdetyQG_s6SeVZeqR_u1Sh2dRXM4xgcJz4OdzuYeLyhyvw7y-op1q6zxcZLtANC4nbkn8DgzlIzirAPxEeDBTlESQdLObN7SbStszXDrPJgKweR9BAobbjNZirH1jZrxUdyHa5tnz-3wOW976SjEVrGF6xhjRG4hQi7e_bUaPxpdTB0dmwLwobQddZXxmuj7jtQpVJdU7uyRAd26IC3F9dW1HLKFTXcCVGlnpWQ7gpA1txQpVkCJcN4-_JA9iLVeA016ccn8_witYD8Pm7HCyjsUBbVSOLZS8cGSLuuUQQOFfl5heY-A5v0n81EhFFD7oOZrrPLM8Vp_BbJc8l77IZRN2W0pU9KL4WkI9F1E8IZMyG7dyog3znAyUhi_QUztIin_VwCo3ehHcDldgGKrCI5vWTaQkeypZDaacLlqF-WeDW4UbNjjJjWqE1c1QsvOYPqe-QvQ=w120-h60-no";			URL path = new URL(layoutBg);
+			URL pathStage = new URL(layoutStage);
 			log.info("------------------IMAGE PATH1: {}, {}", path, pathStage);
 			log.info("------------------IMAGE PATH2: {}, {}", path.getPath(), pathStage.getPath());
 			log.info("------------------IMAGE PATH3: {}, {}", path.getFile(), pathStage.getFile());
