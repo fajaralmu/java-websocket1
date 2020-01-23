@@ -88,10 +88,10 @@ public class LayoutService {
 		try {
 			log.info("------------------WILL.... LOAD LAYOUT LAYOUT: {}", getClass().getCanonicalName());
 			//String layoutStage = "file:/D:/Development/Assets/websocket/layout1-stage.png";
-			String layoutStage = "https://drive.google.com/open?id=129zQBu4Jy609PFa1KqNDL_8QgCLMF1NT";
+			String layoutStage = "http://developmentmode.000webhostapp.com/assets/duckrace/layout1-stage.png";
 			
 			//String layoutBg = "file:/D:/Development/Assets/websocket/layout1.png";
-			String layoutBg= "https://drive.google.com/open?id=1e7GaFy5fG2vAsS3MIazqfCsIk3vzuE4M";			
+			String layoutBg= "http://developmentmode.000webhostapp.com/assets/duckrace/layout1.png";			
 			URL path = new URL(layoutBg);
 			URL pathStage = new URL(layoutStage);
 			log.info("------------------IMAGE PATH1: {}, {}", path, pathStage);
