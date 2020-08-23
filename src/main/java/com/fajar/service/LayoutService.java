@@ -74,8 +74,13 @@ public class LayoutService {
 	public void load() {
 		try {
 			log.info("------------------WILL.... LOAD LAYOUT LAYOUT: {}", getClass().getCanonicalName());
-			URL path = new URL("file:/D:/Development/Assets/websocket/layout1.png");
-			URL pathStage = new URL("file:/D:/Development/Assets/websocket/layout1-stage.png");
+			//String layoutStage = "file:/D:/Development/Assets/websocket/layout1-stage.png";
+			String layoutStage = "http://developmentmode.000webhostapp.com/assets/duckrace/layout1-stage.png";
+			
+			//String layoutBg = "file:/D:/Development/Assets/websocket/layout1.png";
+			String layoutBg= "http://developmentmode.000webhostapp.com/assets/duckrace/layout1.png";			
+			URL path = new URL(layoutBg);
+			URL pathStage = new URL(layoutStage);
 			log.info("------------------IMAGE PATH1: {}, {}", path, pathStage);
 			log.info("------------------IMAGE PATH2: {}, {}", path.getPath(), pathStage.getPath());
 			log.info("------------------IMAGE PATH3: {}, {}", path.getFile(), pathStage.getFile());
