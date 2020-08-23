@@ -259,12 +259,7 @@ export class Game {
             obj.animate(obj)
         });
     }
-
-    clearCanvas() {
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    }
-
-    animate(obj) {
+animate(obj) {
 
         obj.clearCanvas();
         obj.update();
@@ -276,6 +271,11 @@ export class Game {
         }
     }
  
+    clearCanvas() {
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    }
+
+    
     getLatestStoppingDirH() {
         if (this.entityDirectionHistory.length > 0) {
             for (let i = this.entityDirectionHistory.length - 1; i >= 0; i--) {
