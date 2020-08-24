@@ -14,6 +14,8 @@ import javax.imageio.ImageIO;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
 import com.fajar.dto.Entity;
@@ -74,18 +76,24 @@ public class LayoutService {
 	public void load() {
 		try {
 			log.info("------------------WILL.... LOAD LAYOUT LAYOUT: {}", getClass().getCanonicalName());
-			//String layoutStage = "file:/D:/Development/Assets/websocket/layout1-stage.png";
-			String layoutStage = "http://developmentmode.000webhostapp.com/assets/duckrace/layout1-stage.png";
-			
-			//String layoutBg = "file:/D:/Development/Assets/websocket/layout1.png";
-			String layoutBg= "http://developmentmode.000webhostapp.com/assets/duckrace/layout1.png";			
-			URL path = new URL(layoutBg);
-			URL pathStage = new URL(layoutStage);
-			log.info("------------------IMAGE PATH1: {}, {}", path, pathStage);
-			log.info("------------------IMAGE PATH2: {}, {}", path.getPath(), pathStage.getPath());
-			log.info("------------------IMAGE PATH3: {}, {}", path.getFile(), pathStage.getFile());
-			BufferedImage layout1 = ImageIO.read(path);
-			BufferedImage layout1Stage = ImageIO.read(pathStage);
+
+			Resource layoutBgResource = new ClassPathResource("com/fajar/assets/layout1.png");
+			Resource layoutStageResource = new ClassPathResource("com/fajar/assets/layout1-stage.png");
+
+			// String layoutBg = "file:/D:/Development/Assets/websocket/layout1.png";
+//			String layoutStage = "http://developmentmode.000webhostapp.com/assets/duckrace/layout1-stage.png";
+//			String layoutBg= "http://developmentmode.000webhostapp.com/assets/duckrace/layout1.png";			
+			// String layoutStage =
+			// "file:/D:/Development/Assets/websocket/layout1-stage.png";
+
+//			URL path = new URL(layoutBg);
+//			URL pathStage = new URL(layoutStage);
+
+			log.info("------------------BACKGROUND PATH1: {}, {}", layoutBgResource.getFile().getCanonicalFile());
+			log.info("------------------STAGE PATH2: {}, {}", layoutStageResource.getFile().getCanonicalFile());
+
+			BufferedImage layout1 = ImageIO.read(layoutBgResource.getFile());
+			BufferedImage layout1Stage = ImageIO.read(layoutStageResource.getFile());
 			loadStage(layout1Stage);
 			createLayout(layout1);
 			System.out.println("==============CREATING JSON LAYOUT===========");
