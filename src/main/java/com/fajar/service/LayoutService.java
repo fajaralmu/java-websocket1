@@ -2,7 +2,6 @@ package com.fajar.service;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -12,8 +11,6 @@ import java.util.Random;
 
 import javax.imageio.ImageIO;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
@@ -24,12 +21,13 @@ import com.fajar.parameter.EntityParameter;
 import com.fajar.util.JSONUtil;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class LayoutService {
-	Logger log = LoggerFactory.getLogger(LayoutService.class);
-
+	 
 	private List<Entity> layouts = new ArrayList<>();
 	private List<Integer> greenValues = new ArrayList<>();
 	private List<Entity> stages = new ArrayList<>();
@@ -58,7 +56,7 @@ public class LayoutService {
 //	}
 
 	public LayoutService() {
-		log.info("======================LAYOUT SERVICE======================");
+		System.out.println("======================LAYOUT SERVICE======================");
 	}
 
 	public Entity getLayoutById(Integer id) {
@@ -75,7 +73,7 @@ public class LayoutService {
 
 	public void load() {
 		try {
-			log.info("------------------WILL.... LOAD LAYOUT LAYOUT: {}", getClass().getCanonicalName());
+			System.out.println("------------------WILL.... LOAD LAYOUT LAYOUT: "+ getClass().getCanonicalName());
 
 			Resource layoutBgResource = new ClassPathResource("com/fajar/assets/layout1.png");
 			Resource layoutStageResource = new ClassPathResource("com/fajar/assets/layout1-stage.png");
@@ -89,13 +87,14 @@ public class LayoutService {
 //			URL path = new URL(layoutBg);
 //			URL pathStage = new URL(layoutStage);
 
-			log.info("------------------BACKGROUND PATH1: {}, {}", layoutBgResource.getFile().getCanonicalFile());
-			log.info("------------------STAGE PATH2: {}, {}", layoutStageResource.getFile().getCanonicalFile());
+			System.out.println("------------------BACKGROUND PATH1: "+layoutBgResource.getFile().getCanonicalFile());
+			System.out.println("------------------STAGE PATH2: "+layoutStageResource.getFile().getCanonicalFile());
 
 			BufferedImage layout1 = ImageIO.read(layoutBgResource.getFile());
 			BufferedImage layout1Stage = ImageIO.read(layoutStageResource.getFile());
 			loadStage(layout1Stage);
 			createLayout(layout1);
+			
 			System.out.println("==============CREATING JSON LAYOUT===========");
 			this.jsonLayoutList = JSONUtil.listToJson(this.layouts);
 //			for(Entity layout:layouts) {
@@ -203,7 +202,7 @@ public class LayoutService {
 	}
 
 	public void createLayout(BufferedImage denah) {
-
+		log.info("Creating layout");
 		int width = denah.getWidth();
 		int height = denah.getHeight();
 		for (int y = 0; y < height; y++) {
@@ -342,8 +341,8 @@ public class LayoutService {
 		return EntityParameter.ROLE_ROAD_DOWN;
 	}
 
-	private Entity getStage(Entity layout, final int role) {
-		Physical layoutPhysical = layout.getPhysical();
+	private Entity getStage(Entity entity, final int role) {
+		Physical layoutPhysical = entity.getPhysical();
 
 		for (Integer key : groupedStages.keySet()) {
 			for (Entity layoutStage : groupedStages.get(key)) {
@@ -352,14 +351,14 @@ public class LayoutService {
 				Physical layoutStagePhysical = layoutStage.getPhysical();
 				if (layoutPhysical.getX().equals(layoutStagePhysical.getX())
 						&& layoutPhysical.getY().equals(layoutStagePhysical.getY())) {
-					layout.setStageId(key);
+					entity.setStageId(key);
 					stagesRole.put(key, role);
 				}
 			}
 		}
-		System.out.println("CEK " + role + "->" + layout);
-		System.out.println("MAP STAGES:" + stagesRole);
-		return layout;
+		System.out.println(":CEK ROLE " + role + "Entity=====>" + entity);
+		System.out.println(":MAP STAGES>>" + stagesRole);
+		return entity;
 	}
 
 	public List<Entity> getLayouts() {

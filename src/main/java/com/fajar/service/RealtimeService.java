@@ -7,8 +7,6 @@ import java.util.Random;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -18,11 +16,13 @@ import com.fajar.dto.OutputMessage;
 import com.fajar.dto.Physical;
 import com.fajar.dto.RealtimeRequest;
 import com.fajar.dto.RealtimeResponse;
-import com.fajar.parameter.EntityParameter;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 public class RealtimeService {
-	Logger log = LoggerFactory.getLogger(RealtimeService.class);
+	 
 
 	private Integer bonusCount = 0;
 //	private List<Entity> entities = new ArrayList<>(); 
@@ -44,13 +44,15 @@ public class RealtimeService {
 		this.webSocket = webSocket;
 		this.layoutService = layoutService;
 		this.entityRepository = entityRepository;
-		System.out.println(":: CONSTRUCTOR ::");
+		log.info(":: RealtimeService CONSTRUCTOR ::");
+		System.out.println("Realtime Service Constructor");
 	}
 
 	 
 
 	@PostConstruct
 	private void loadLayout() {
+		System.out.println("WILL loadLayout");
 		layoutService.load();
 
 	}
