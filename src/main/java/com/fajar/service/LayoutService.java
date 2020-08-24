@@ -19,6 +19,7 @@ import com.fajar.dto.Entity;
 import com.fajar.dto.Physical;
 import com.fajar.parameter.EntityParameter;
 import com.fajar.util.JSONUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,20 +41,8 @@ public class LayoutService {
 	public int maxStage = 0;
 	public int minStage = 0;
 
-	private String jsonLayoutList;
-
-//	public static void main(String[] ddf) {
-//		new LayoutService().load();
-//		System.out.println(greenValues);
-//		for(Integer key: groupedStages.keySet()) {
-//			System.out.println("KEY:"+key+", val: "+groupedStages.get(key));
-//		}
-////		System.out.println(JSONUtil.listToJson(layouts));
-////		System.out.println(JSONUtil.listToJson(stages));
-//		for (Entity layout : layouts) {
-//			System.out.println(layout);
-//		}
-//	}
+	private String jsonLayoutList; 
+	private ObjectMapper objectMapper = new ObjectMapper();
 
 	public LayoutService() {
 		System.out.println("======================LAYOUT SERVICE======================");
@@ -75,7 +64,7 @@ public class LayoutService {
 		try {
 			System.out.println("------------------WILL.... LOAD LAYOUT LAYOUT: "+ getClass().getCanonicalName());
 
-			Resource layoutBgResource = new ClassPathResource("com/fajar/assets/layout1.png");
+			Resource layoutBgResource = new ClassPathResource("com/fajar/assets/layout1-flow.png");
 			Resource layoutStageResource = new ClassPathResource("com/fajar/assets/layout1-stage.png");
 
 			// String layoutBg = "file:/D:/Development/Assets/websocket/layout1.png";
@@ -95,14 +84,16 @@ public class LayoutService {
 			loadStage(layout1Stage);
 			createLayout(layout1);
 			
+			System.out.println("LAYOUT COUNT: " + layouts.size());
+			
 			System.out.println("==============CREATING JSON LAYOUT===========");
-			this.jsonLayoutList = JSONUtil.listToJson(this.layouts);
+			this.jsonLayoutList = objectMapper.writeValueAsString(layouts) ;//JSONUtil.listToJson(this.layouts);
 //			for(Entity layout:layouts) {
 //				System.out.println("LAYOUT ITEM: "+layout);
 //			}
-			System.out.println("LAYOUT COUNT: " + layouts.size());
+			
 			System.out.println("LAYOUT STAGES: " + this.stagesRole);
-			System.out.println("JSON LIST: " + jsonLayoutList);
+//			System.out.println("JSON LIST: " + jsonLayoutList);
 			System.out.println("**************LAYOUT LOADED************");
 
 		} catch (IOException e) {
@@ -120,8 +111,10 @@ public class LayoutService {
 	}
 
 	private void loadStage(BufferedImage denah) {
+		
 		int width = denah.getWidth();
 		int height = denah.getHeight();
+		System.out.println("loadStage size:"+width+"x"+height);
 		int currentGreen = 0;
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
@@ -149,7 +142,7 @@ public class LayoutService {
 				}
 			}
 		}
-		System.out.println();
+		System.out.println("LOADED STAGE: "+stages.size());
 		groupStages();
 		setMinAndMaxStage();
 	}
@@ -172,6 +165,7 @@ public class LayoutService {
 	}
 
 	private void groupStages() {
+		System.out.println("Grouping Stages");
 		groupedStages.clear();
 		for (Entity stage : stages) {
 			for (Integer integer : greenValues) {
@@ -186,6 +180,7 @@ public class LayoutService {
 				}
 			}
 		}
+		System.out.println("End Grouping Stages");
 	}
 
 	public int getStagesCount() {
@@ -329,7 +324,7 @@ public class LayoutService {
 				}
 			}
 		}
-		System.out.println();
+		System.out.println("END CREATING lAYOUT");
 
 	}
 
@@ -356,8 +351,8 @@ public class LayoutService {
 				}
 			}
 		}
-		System.out.println(":CEK ROLE " + role + "Entity=====>" + entity);
-		System.out.println(":MAP STAGES>>" + stagesRole);
+//		System.out.println(":CEK ROLE " + role + "Entity=====>" + entity);
+//		System.out.println(":MAP STAGES>>" + stagesRole);
 		return entity;
 	}
 
