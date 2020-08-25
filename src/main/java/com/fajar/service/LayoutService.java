@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import com.fajar.dto.Entity;
 import com.fajar.dto.Physical;
 import com.fajar.parameter.EntityParameter;
-import com.fajar.util.JSONUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.AllArgsConstructor;
@@ -64,7 +63,7 @@ public class LayoutService {
 		try {
 			System.out.println("------------------WILL.... LOAD LAYOUT LAYOUT: "+ getClass().getCanonicalName());
 
-			Resource layoutBgResource = new ClassPathResource("com/fajar/assets/layout1-flow.png");
+			Resource layoutBgResource = new ClassPathResource("com/fajar/assets/layout1-flow-resized.png");
 			Resource layoutStageResource = new ClassPathResource("com/fajar/assets/layout1-stage.png");
 
 			// String layoutBg = "file:/D:/Development/Assets/websocket/layout1.png";
@@ -88,10 +87,7 @@ public class LayoutService {
 			
 			System.out.println("==============CREATING JSON LAYOUT===========");
 			this.jsonLayoutList = objectMapper.writeValueAsString(layouts) ;//JSONUtil.listToJson(this.layouts);
-//			for(Entity layout:layouts) {
-//				System.out.println("LAYOUT ITEM: "+layout);
-//			}
-			
+ 
 			System.out.println("LAYOUT STAGES: " + this.stagesRole);
 //			System.out.println("JSON LIST: " + jsonLayoutList);
 			System.out.println("**************LAYOUT LOADED************");
@@ -142,6 +138,7 @@ public class LayoutService {
 				}
 			}
 		}
+		System.out.println();
 		System.out.println("LOADED STAGE: "+stages.size());
 		groupStages();
 		setMinAndMaxStage();
@@ -162,6 +159,8 @@ public class LayoutService {
 			}
 		}
 		this.minStage = min;
+		
+		System.out.println("min stage: "+minStage+"max stage: "+maxStage);
 	}
 
 	private void groupStages() {
@@ -180,7 +179,7 @@ public class LayoutService {
 				}
 			}
 		}
-		System.out.println("End Grouping Stages");
+		System.out.println("End Grouping Stages: "+groupedStages.size());
 	}
 
 	public int getStagesCount() {
@@ -197,9 +196,11 @@ public class LayoutService {
 	}
 
 	public void createLayout(BufferedImage denah) {
-		log.info("Creating layout");
+		System.out.println("Creating layout, startX: "+startX+", startY: "+startY);
 		int width = denah.getWidth();
 		int height = denah.getHeight();
+		System.out.println("Layout size: "+width+"x"+height);
+		
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
 				System.out.print("*");
@@ -324,7 +325,9 @@ public class LayoutService {
 				}
 			}
 		}
+		System.out.println();
 		System.out.println("END CREATING lAYOUT");
+		System.out.println("Created layout, startX: "+startX+", startY: "+startY);
 
 	}
 
