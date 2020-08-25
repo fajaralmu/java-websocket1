@@ -11,6 +11,7 @@ import java.util.Random;
 
 import javax.imageio.ImageIO;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
@@ -58,13 +59,18 @@ public class LayoutService {
 		}
 		return null;
 	}
+	
+	@Value("resources/config/layout1-flow-resized.png")
+	private Resource layoutBgResource;
+	@Value("resources/config/layout1-stage.png")
+	private Resource layoutStageResource;
 
 	public void load() {
 		try {
 			System.out.println("------------------WILL.... LOAD LAYOUT LAYOUT: "+ getClass().getCanonicalName());
 
-			Resource layoutBgResource = new ClassPathResource("com/fajar/assets/layout1-flow-resized.png");
-			Resource layoutStageResource = new ClassPathResource("com/fajar/assets/layout1-stage.png");
+//			Resource layoutBgResource = new ClassPathResource("com/fajar/assets/layout1-flow-resized.png");
+//			Resource layoutStageResource = new ClassPathResource("com/fajar/assets/layout1-stage.png");
 
 			// String layoutBg = "file:/D:/Development/Assets/websocket/layout1.png";
 //			String layoutStage = "http://developmentmode.000webhostapp.com/assets/duckrace/layout1-stage.png";
@@ -97,7 +103,7 @@ public class LayoutService {
 		}
 	}
 
-	private boolean isStored(int greenValue) {
+	private boolean updateGreenValue(int greenValue) {
 		for (Integer integer : greenValues) {
 			if (integer.equals(greenValue))
 				return true;
@@ -106,19 +112,23 @@ public class LayoutService {
 		return false;
 	}
 
-	private void loadStage(BufferedImage denah) {
+	/**
+	 * set user stages
+	 * @param stageLayout
+	 */
+	private void loadStage(BufferedImage stageLayout) {
 		
-		int width = denah.getWidth();
-		int height = denah.getHeight();
+		int width = stageLayout.getWidth();
+		int height = stageLayout.getHeight();
 		System.out.println("loadStage size:"+width+"x"+height);
-		int currentGreen = 0;
+//		int currentGreen = 0;
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
 				System.out.print("*");
-				int pixel = denah.getRGB(x, y);
+				int pixel = stageLayout.getRGB(x, y);
 				int red = (pixel >> 16) & 0xff;
 				int green = (pixel >> 8) & 0xff;
-				int blue = (pixel) & 0xff;
+//				int blue = (pixel) & 0xff;
 
 				if (red == 123) {
 					int xPos = x * 10;
@@ -134,7 +144,7 @@ public class LayoutService {
 					entity.setRole(EntityParameter.ROLE_STAGE);
 					layoutEntity.setPhysical(entity);
 					stages.add(layoutEntity);
-					isStored(green);
+					updateGreenValue(green);
 				}
 			}
 		}
@@ -144,6 +154,9 @@ public class LayoutService {
 		setMinAndMaxStage();
 	}
 
+	/**
+	 * get minimum and maximum user position in the road race
+	 */
 	private void setMinAndMaxStage() {
 		int max = 0;
 		for (Integer key : groupedStages.keySet()) {
@@ -195,16 +208,22 @@ public class LayoutService {
 		return 0;
 	}
 
-	public void createLayout(BufferedImage denah) {
+	/**
+	 * create layout including user default position and road directions
+	 * @param layout
+	 */
+	public void createLayout(BufferedImage layout) {
+		
+		int width = layout.getWidth();
+		int height = layout.getHeight();
+
 		System.out.println("Creating layout, startX: "+startX+", startY: "+startY);
-		int width = denah.getWidth();
-		int height = denah.getHeight();
 		System.out.println("Layout size: "+width+"x"+height);
 		
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
 				System.out.print("*");
-				int pixel = denah.getRGB(x, y);
+				int pixel = layout.getRGB(x, y);
 				int red = (pixel >> 16) & 0xff;
 				int green = (pixel >> 8) & 0xff;
 				int blue = (pixel) & 0xff;
@@ -246,7 +265,7 @@ public class LayoutService {
 				}
 
 				/**
-				 * CIRCUIT AND STAGE
+				 * CIRCUIT DIRECTIONS
 				 */
 				if (red == 0 && green == 255 && blue == 0) {
 					int xPos = x * 10;
