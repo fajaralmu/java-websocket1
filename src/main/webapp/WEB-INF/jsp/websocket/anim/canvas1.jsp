@@ -172,11 +172,11 @@ td{
 
 <script type="text/javascript">
 		
-		var connectBtn = document.getElementById('connect');
-		var canvas = document.getElementById('tutorial');
+		var connectBtn = _byId('connect');
+		var canvas = _byId('tutorial');
 		var ctx = canvas.getContext('2d');
-		var textInput = document.getElementById("draw-text");
-		var initBtn = document.getElementById("animate");
+		var textInput = _byId("draw-text");
+		var initBtn = _byId("animate");
 		
 	
 		/**init game**/
@@ -213,19 +213,19 @@ td{
 		
 		function joinGame(){
 			initGame();
-			var name = document.getElementById("name").value;
-			var serverName = document.getElementById("server-list").value;
+			var name = _byId("name").value;
+			var serverName = _byId("server-list").value;
 			game.join(name,serverName);
 			setupControlBtn();
 		}
 		
 		function printCircuitInfo(info){
-			document.getElementById("circuit-info").innerHTML = info;
+			_byId("circuit-info").innerHTML = info;
 		}
 		
 		
  		function printInfo(text) {
-			document.getElementById("realtime-info").innerHTML = text;
+			_byId("realtime-info").innerHTML = text;
 		}
  		
  		function printEntityInfo(entity, entities, playerPosition, game){
@@ -234,13 +234,13 @@ td{
  			var velocityInfo = "<h3>velX: "+game.velX+", velY: "+game.velY+"</h3>"+
  			"<p>StoppingMode: "+game.stoppingMode+", StoppingDirection: "+game.stoppingDir+"</p>";
  			
- 			document.getElementById("player-name").innerHTML = "<h2>Player: "+entity.name+"</h2>";
- 			document.getElementById("velocity-info").innerHTML = velocityInfo;
- 			document.getElementById("player-position").innerHTML = positionHTML;
+ 			_byId("player-name").innerHTML = "<h2>Player: "+entity.name+"</h2>";
+ 			_byId("velocity-info").innerHTML = velocityInfo;
+ 			_byId("player-position").innerHTML = positionHTML;
  			
- 			document.getElementById("entity-info").innerHTML = JSON
+ 			_byId("entity-info").innerHTML = JSON
 			.stringify(entity);
- 			document.getElementById("entity-info").innerHTML+=
+ 			_byId("entity-info").innerHTML+=
  				"<br> <b>STAGE</b>: "+entity.stageId
  				+"<br> <b>LAYOUT ID</b>: "+entity.layoutId
  				+"<br> "+positionHTML;
@@ -248,8 +248,8 @@ td{
  		}
  		 
 		function connect() { 
-		  	var socket = new SockJS(game.contextPath+'/game-app');
-	       	var stompClient = Stomp.over(socket);
+			const socket = new SockJS(game.contextPath+'/game-app');
+			const stompClient = Stomp.over(socket);
 			game.doConnect(stompClient); 
 		}
 		
@@ -261,13 +261,13 @@ td{
 			console.log("Disconnected"); */
 		}
 
-		function setConnected(connected) { document.getElementById('connect-info').innerHTML = connected; }
+		function setConnected(connected) { _byId('connect-info').innerHTML = connected; }
 
 		function leave() { window.document.title = "0FF-PLAYER: " + game.entity.name; game.leaveApp(game.entity.id); }
 
 		function updateEntityInfo() {
-			var amount = game.entity.life / game.baseHealth * game.WIN_W;
-	 		document.getElementById("life-bar").style.width = amount + "px";
+			const amount = game.entity.life / game.baseHealth * game.WIN_W;
+	 		_byId("life-bar").style.width = amount + "px";
 		}
 	 
 		window.onkeydown = function(e) { game.move(e.key); }
@@ -276,10 +276,10 @@ td{
 		 
 		
 		function setupControlBtn(){
-			let controlButtons = document.getElementsByClassName("control-btn");
+			const controlButtons = document.getElementsByClassName("control-btn");
 			for (let i = 0; i < controlButtons.length; i++) {
-				let button = controlButtons[i];
-				let moveRole = button.getAttribute("move-role");
+				const button = controlButtons[i];
+				const moveRole = button.getAttribute("move-role");
 				button.onmousedown = function(){ 	game.move(moveRole); }; 
 				button.onclick = function(){ 	game.move(moveRole); }; 
 				button.onmouseup = function(){ game.release(moveRole); }; 

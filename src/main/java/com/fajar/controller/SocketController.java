@@ -11,8 +11,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -30,10 +28,12 @@ import com.fajar.dto.RealtimeResponse;
 import com.fajar.service.GameSettingService;
 import com.fajar.service.RealtimeService;
 
+import lombok.extern.slf4j.Slf4j;
+
 @CrossOrigin
 @RestController
-public class SocketController {
-	Logger log = LoggerFactory.getLogger(SocketController.class);
+@Slf4j
+public class SocketController { 
 	@Autowired
 	private SimpMessagingTemplate webSocket;
 	@Autowired
