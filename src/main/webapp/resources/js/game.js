@@ -571,19 +571,21 @@ animate(obj) {
         else { alert("Not Supported"); }
     }
  
-    join(name,serverName) {
+    join(name, serverName, successCallback, errorCallback) {
         this.entityDirectionHistory = new Array(); 
         this.entity.name = name;
         this.serverName = serverName;
+        
         ajax.postReq( this.urlJoinPath,  "name=" + name +"&server="+serverName,  
             function (response, object) {
                 let responseObject = JSON.parse(response);
                 console.log("RESPONSE", responseObject);
                 if (responseObject.responseCode == "00") {
                     object.handleSuccessJoin(responseObject);
-
+                    successCallback();
                 } else {
                     alert("FAILED :" + responseObject.responseMessage);
+                    errorCallback();
                 }
             }, this);
     }

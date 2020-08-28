@@ -177,7 +177,7 @@ td{
 		var ctx = canvas.getContext('2d');
 		var textInput = _byId("draw-text");
 		var initBtn = _byId("animate");
-		
+		var joined = false;
 	
 		/**init game**/
 		function initGame(){
@@ -215,8 +215,16 @@ td{
 			initGame();
 			var name = _byId("name").value;
 			var serverName = _byId("server-list").value;
-			game.join(name,serverName);
+			game.join(name,serverName, function(){sucessJoin()}, function(){errorJoin()});
+			
+		}
+		
+		function sucessJoin(){
+			joined = true;
 			setupControlBtn();
+		}
+		function errorJoin(){
+			joined = false;
 		}
 		
 		function printCircuitInfo(info){
@@ -248,6 +256,12 @@ td{
  		}
  		 
 		function connect() { 
+			
+			if(this.joined!=true){
+				alert("Please Join The Game First!");
+				return;
+			}
+			
 			const socket = new SockJS(game.contextPath+'/game-app');
 			const stompClient = Stomp.over(socket);
 			game.doConnect(stompClient); 
