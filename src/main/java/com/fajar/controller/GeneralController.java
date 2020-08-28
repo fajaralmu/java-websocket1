@@ -94,6 +94,7 @@ public class GeneralController {
 		System.out.println(13);
 		model.addAttribute("contextPath", request.getContextPath());
 		model.addAttribute("serverNames", gameSettingService.getServerList());
+		
 		System.out.println("----------------END REQUESTING GAME PAGE-----------------");
 		return "websocket/anim/canvas1";
 	}

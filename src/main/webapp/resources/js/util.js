@@ -11,4 +11,12 @@ function infoLoading() {
 function infoDone() {
 	document.getElementById("info").innerHTML = "";
 }
+
+function _byId(id){
+	if(id==null || id == ""){
+		console.warn("ID IS EMPTY");
+	}
+	return document.getElementById(id);
+}
+
 	 
