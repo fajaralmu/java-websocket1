@@ -6,7 +6,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-
+<link rel="icon" href="<c:url value="/res/img/javaEE.ico" />" type="image/x-icon">
 <title>Canvas Online Race</title>
 <script src="<c:url value="/res/js/sockjs-0.3.2.min.js"></c:url >"></script>
 <script src="<c:url value="/res/js/stomp.js"></c:url >"></script> 
@@ -23,7 +23,7 @@
 <style type="text/css">
 button:hover{ cursor: pointer; }
 
-canvas { border: 1px solid black; }
+canvas { border: 3px solid green; }
 
 .btn-ok {
 	background-color: green;
