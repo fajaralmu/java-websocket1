@@ -471,6 +471,9 @@ animate(obj) {
         //ctx.strokeRect(physical.x, physical.y, currentEntity.physical.w, currentEntity.physical.h);
         //ctx.fillRect(physical.x, physical.y, currentEntity.physical.w, currentEntity.physical.h);
         const image = this.getEntityImage( physical.role,  physical.direction);
+        if(null == image){
+        	console.error("Texture not found!");
+        }
         ctx.drawImage(image, physical.x, physical.y,  physical.w,  physical.h);        
         ctx.restore();
 

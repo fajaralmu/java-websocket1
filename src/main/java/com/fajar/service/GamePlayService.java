@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.fajar.dto.Entity;
 import com.fajar.parameter.EntityParameter;
+import com.fajar.parameter.EntityRoles;
 
 /**
  * this class handles race logic
@@ -163,22 +164,22 @@ public class GamePlayService {
 
 		int side = SIDE_HORIZONTAL;
 
-		final int stageRole = layoutService.getStageRole(stageId);
-		int ROLE = 0;
-		if (stageRole == EntityParameter.ROLE_ROAD_DOWN) {
+		final EntityRoles stageRole = layoutService.getStageRole(stageId);
+		EntityRoles ROLE = EntityRoles.ROLE_LAYOUT_1;
+		if (stageRole == EntityRoles.ROLE_ROAD_DOWN) {
 			// TODO: maxY
-			ROLE = EntityParameter.ROLE_ROAD_DOWN; 
+			ROLE = EntityRoles.ROLE_ROAD_DOWN; 
 			side = SIDE_VERTICAL;
-		} else if (stageRole == EntityParameter.ROLE_ROAD_UP) {
+		} else if (stageRole == EntityRoles.ROLE_ROAD_UP) {
 			// TODO: minY
-			ROLE = EntityParameter.ROLE_ROAD_UP; 
+			ROLE = EntityRoles.ROLE_ROAD_UP; 
 			side = SIDE_VERTICAL;
-		} else if (stageRole == EntityParameter.ROLE_ROAD_LEFT) {
+		} else if (stageRole == EntityRoles.ROLE_ROAD_LEFT) {
 			// TODO: minX 
-			ROLE = EntityParameter.ROLE_ROAD_LEFT;
-		} else if (stageRole == EntityParameter.ROLE_ROAD_RIGHT) {
+			ROLE = EntityRoles.ROLE_ROAD_LEFT;
+		} else if (stageRole == EntityRoles.ROLE_ROAD_RIGHT) {
 			// TODO: maxX 
-			ROLE = EntityParameter.ROLE_ROAD_RIGHT;
+			ROLE = EntityRoles.ROLE_ROAD_RIGHT;
 		}
 		System.out.println(new Date() +"Role:"+ROLE);
 		int maxX = getMaxCoordinateVal(players, XPOS);
@@ -187,7 +188,7 @@ public class GamePlayService {
 		int minY = getMinCoordinateVal(players, YPOS);
 //		System.out.println("PLAYERS: "+players.size());
 		if (side == SIDE_HORIZONTAL) {
-			if (ROLE == EntityParameter.ROLE_ROAD_LEFT) {
+			if (ROLE == EntityRoles.ROLE_ROAD_LEFT) {
 				for (int i = minX; i <= maxX; i++) {
 					for (Entity player : players) {
 						if (player.getPhysical().getX().equals(i)) {
@@ -196,7 +197,7 @@ public class GamePlayService {
 					}
 
 				}
-			} else if (ROLE == EntityParameter.ROLE_ROAD_RIGHT) {
+			} else if (ROLE == EntityRoles.ROLE_ROAD_RIGHT) {
 				for (int i = maxX; i >= minX; i--) {
 					for (Entity player : players) {
 						if (player.getPhysical().getX().equals(i)) {
@@ -208,7 +209,7 @@ public class GamePlayService {
 			}
 
 		} else if (side == SIDE_VERTICAL) {
-			if (ROLE == EntityParameter.ROLE_ROAD_UP) {
+			if (ROLE == EntityRoles.ROLE_ROAD_UP) {
 				for (int i = minY; i <= maxY; i++) {
 					for (Entity player : players) {
 						if (player.getPhysical().getY().equals(i)) {
@@ -217,7 +218,7 @@ public class GamePlayService {
 					}
 
 				}
-			} else if (ROLE == EntityParameter.ROLE_ROAD_DOWN) {
+			} else if (ROLE == EntityRoles.ROLE_ROAD_DOWN) {
 				for (int i = maxY; i >= minY; i--) {
 					for (Entity player : players) {
 						if (player.getPhysical().getY().equals(i)) {

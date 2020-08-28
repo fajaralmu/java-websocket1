@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import com.fajar.dto.Entity;
 import com.fajar.dto.Physical;
 import com.fajar.parameter.EntityParameter;
+import com.fajar.parameter.EntityRoles;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.AllArgsConstructor;
@@ -33,7 +34,7 @@ public class LayoutService {
 	private List<Entity> stages = new ArrayList<>();
 
 	private Map<Integer, List<Entity>> groupedStages = new HashMap<Integer, List<Entity>>();
-	private Map<Integer, Integer> stagesRole = new HashMap<>();
+	private Map<Integer, EntityRoles> stagesRole = new HashMap<>();
 
 	private int startX = 100;
 	private int startY = 100;
@@ -144,7 +145,7 @@ public class LayoutService {
 					entity.setY(yPos);
 					entity.setW(layoutItemWidth);
 					entity.setH(layoutItemHeight);
-					entity.setRole(EntityParameter.ROLE_STAGE);
+					entity.setRole(EntityRoles.ROLE_STAGE);
 					layoutEntity.setPhysical(entity);
 					stages.add(layoutEntity);
 					updateGreenValue(green);
@@ -202,13 +203,13 @@ public class LayoutService {
 		return this.groupedStages.keySet().size();
 	}
 
-	public int getLayoutRole(int stageId) {
+	public EntityRoles getLayoutRole(int stageId) {
 		for (Integer key : groupedStages.keySet()) {
 			if (key.equals(stageId)) {
 				return groupedStages.get(key).get(0).getPhysical().getRole();
 			}
 		}
-		return 0;
+		return EntityRoles.ROLE_LAYOUT_1;
 	}
 	
 	private int randomId() {
@@ -252,7 +253,7 @@ public class LayoutService {
 					physicalInformation.setX(xPos);
 					physicalInformation.setY(yPos);
 					physicalInformation.setLayout(true); 
-					physicalInformation.setRole(EntityParameter.ROLE_LAYOUT_1);
+					physicalInformation.setRole(EntityRoles.ROLE_LAYOUT_1);
 					
 					layoutEntity.setPhysical(physicalInformation);
 					layouts.add(layoutEntity);
@@ -261,7 +262,7 @@ public class LayoutService {
 					 
 					Entity layoutEntity = new Entity(randomId(), "layout_" + xPos + "-" + yPos );
 					
-					Physical physicalInformation = commonPhysicalInformation(EntityParameter.ROLE_LAYOUT_1, xPos, yPos);
+					Physical physicalInformation = commonPhysicalInformation(EntityRoles.ROLE_LAYOUT_1, xPos, yPos);
 					layoutEntity.setPhysical(physicalInformation);
 					layouts.add(layoutEntity);
 				}
@@ -273,41 +274,41 @@ public class LayoutService {
 					 
 					Entity layoutEntity = new Entity(randomId(), "road_" + xPos + "-" + yPos );
 					
-					Physical physicalInformation = commonPhysicalInformation(EntityParameter.ROLE_ROAD_LEFT, xPos, yPos);
+					Physical physicalInformation = commonPhysicalInformation(EntityRoles.ROLE_ROAD_LEFT, xPos, yPos);
 					layoutEntity.setPhysical(physicalInformation);
-					layouts.add(getStage(layoutEntity, EntityParameter.ROLE_ROAD_LEFT));
+					layouts.add(getStage(layoutEntity, EntityRoles.ROLE_ROAD_LEFT));
 				}
 				if (red == 0 && green == 0 && blue == 255) {
 					 
 					Entity layoutEntity = new Entity(randomId(), "road_" + xPos + "-" + yPos );
 					
-					Physical physicalInformation = commonPhysicalInformation(EntityParameter.ROLE_ROAD_RIGHT, xPos, yPos);
+					Physical physicalInformation = commonPhysicalInformation(EntityRoles.ROLE_ROAD_RIGHT, xPos, yPos);
 					layoutEntity.setPhysical(physicalInformation);
-					layouts.add(getStage(layoutEntity, EntityParameter.ROLE_ROAD_RIGHT));
+					layouts.add(getStage(layoutEntity, EntityRoles.ROLE_ROAD_RIGHT));
 				}
 				if (red == 255 && green == 0 && blue == 100) {
 				
 					Entity layoutEntity = new Entity(randomId(), "road_" + xPos + "-" + yPos );
 					
-					Physical physicalInformation = commonPhysicalInformation(EntityParameter.ROLE_ROAD_UP, xPos, yPos);
+					Physical physicalInformation = commonPhysicalInformation(EntityRoles.ROLE_ROAD_UP, xPos, yPos);
 					layoutEntity.setPhysical(physicalInformation);
-					layouts.add(getStage(layoutEntity, EntityParameter.ROLE_ROAD_UP));
+					layouts.add(getStage(layoutEntity, EntityRoles.ROLE_ROAD_UP));
 				}
 				if (red == 111 && green == 111 && blue == 111) {
 					 
 					Entity layoutEntity = new Entity(randomId(), "road_finish_" + xPos + "-" + yPos );
 					
-					Physical physicalInformation = commonPhysicalInformation(EntityParameter.ROLE_FINISH_LINE, xPos, yPos); 
+					Physical physicalInformation = commonPhysicalInformation(EntityRoles.ROLE_FINISH_LINE, xPos, yPos); 
 					layoutEntity.setPhysical(physicalInformation);
-					layouts.add(getStage(layoutEntity, EntityParameter.ROLE_FINISH_LINE));
+					layouts.add(getStage(layoutEntity, EntityRoles.ROLE_FINISH_LINE));
 				}
 				if (red == 255 && green == 100 && blue == 0) {
 				 
 					Entity layoutEntity = new Entity(randomId(), "road_" + xPos + "-" + yPos );
 					
-					Physical physicalInformation = commonPhysicalInformation(EntityParameter.ROLE_ROAD_DOWN, xPos, yPos); 
+					Physical physicalInformation = commonPhysicalInformation(EntityRoles.ROLE_ROAD_DOWN, xPos, yPos); 
 					layoutEntity.setPhysical(physicalInformation);
-					layouts.add(getStage(layoutEntity, EntityParameter.ROLE_ROAD_DOWN));
+					layouts.add(getStage(layoutEntity, EntityRoles.ROLE_ROAD_DOWN));
 				}
 			}
 		}
@@ -317,7 +318,7 @@ public class LayoutService {
 
 	}
 
-	private Physical commonPhysicalInformation(Integer role, int xPos, int yPos) {
+	private Physical commonPhysicalInformation(EntityRoles role, int xPos, int yPos) {
 		Physical entity = new Physical();
 		entity.setX(xPos);
 		entity.setLayout(true);
@@ -328,15 +329,15 @@ public class LayoutService {
 		return entity;
 	}
 
-	public int getStageRole(int stageId) {
+	public EntityRoles getStageRole(int stageId) {
 		for (Integer key : stagesRole.keySet()) {
 			if (key.equals(stageId))
 				return stagesRole.get(key);
 		}
-		return EntityParameter.ROLE_ROAD_DOWN;
+		return EntityRoles.ROLE_ROAD_DOWN;
 	}
 
-	private Entity getStage(Entity entity, final int role) {
+	private Entity getStage(Entity entity, final EntityRoles role) {
 		Physical layoutPhysical = entity.getPhysical();
 
 		for (Integer key : groupedStages.keySet()) {

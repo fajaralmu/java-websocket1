@@ -181,6 +181,11 @@ td{
 	
 		/**init game**/
 		function initGame(){
+			if(null == game){
+				alert("Error initiating game, please reload");
+				return;
+			}
+			
 			game.canvas = this.canvas;
 			game.ctx = this.ctx;
 			game.layouts = ${layouts};
@@ -190,15 +195,15 @@ td{
 			game.imgPath = "<c:url value="/res/img/"/>" ;
 			game.WIN_W = "${winW}";
 			game.WIN_H = "${winH}";
-			game.rolePlayer = ${rolePlayer};
-			game.roleBonusLife =  ${roleBonusLife};
-			game.roleBonusArmor =  ${roleBonusArmor} ;
+			game.rolePlayer = "${rolePlayer}";
+			game.roleBonusLife =  "${roleBonusLife}";
+			game.roleBonusArmor =  "${roleBonusArmor}" ;
 			//CIRCUIT
-			game.roleRight = ${roleRight};
-			game.roleLeft = ${roleLeft};
-			game.roleUp = ${roleUp};
-			game.roleDown = ${roleDown};
-			game.roleFinish = ${roleFinish};			
+			game.roleRight = "${roleRight}";
+			game.roleLeft = "${roleLeft}";
+			game.roleUp = "${roleUp}";
+			game.roleDown = "${roleDown}";
+			game.roleFinish = "${roleFinish}";			
 			
 			game.roles = ${roles};
 			game.staticImages = ${staticImages};

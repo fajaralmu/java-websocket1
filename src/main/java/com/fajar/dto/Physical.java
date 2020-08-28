@@ -1,14 +1,10 @@
 package com.fajar.dto;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import java.util.Map;
 
 import com.fajar.annotation.Dto;
-import com.fajar.dto.RealtimeResponse.RealtimeResponseBuilder;
-import com.fajar.parameter.EntityParameter;
+import com.fajar.parameter.EntityRoles;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -38,7 +34,7 @@ public class Physical implements Serializable{
 	private String direction = "r";
 	private Boolean layout;
 	@Builder.Default
-	private Integer role = EntityParameter.ROLE_PLAYER;
+	private EntityRoles role = EntityRoles.ROLE_PLAYER;
 	private Long period;
 	private Date lastUpdated;
 	
@@ -63,10 +59,10 @@ public class Physical implements Serializable{
 	public void setPeriod(Long period) {
 		this.period = period;
 	}
-	public Integer getRole() {
+	public EntityRoles getRole() {
 		return role;
 	}
-	public void setRole(Integer role) {
+	public void setRole(EntityRoles role) {
 		this.role = role;
 	}
 	public String getDirection() {
