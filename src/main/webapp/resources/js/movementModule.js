@@ -9,15 +9,15 @@ import { Game } from './game.js';
 export function getLayoutRole(role, obj) {
 	switch (role) {
 		case obj.roleRight:
-			return "RIGHT";
+			return "right";
 		case obj.roleLeft:
-			return "LEFT";
+			return "left";
 		case obj.roleUp:
-			return "UP";
+			return "up";
 		case obj.roleDown:
-			return "DOWN";
+			return "down";
 		case obj.roleFinish:
-			return "FINISH";
+			return "finish";
 		default:
 			break;
 	}
@@ -44,7 +44,7 @@ export function intersectLayout(currentEntity, obj, layouts) {
 
 			const layoutRole = layoutItem.physical.role;
 			obj.currentLayoutId = layoutItem.id;
-			if (layoutRole != "ROLE_LAYOUT_1") {
+			if (layoutRole !=  obj.roleGeneralLayout){// "ROLE_LAYOUT_1") {
 				printCircuitInfo(layoutRole + ":" + getLayoutRole(layoutRole, obj) + ", name: " + layoutItem.name);
 			} else {
 				intersectLayout = true;
@@ -143,11 +143,11 @@ export function missileIntersectsPlayer(missile, entity, entities){
  * @param {object} missile 
  * @param {Array} layouts 
  */
-export function missileIntersectsLayout(missile,layouts){
+export function missileIntersectsLayout(missile,layouts, layoutRole){
 	let missileIntersects = false;
 	//check if missile intersects layout
 	for (let x = 0; x <  layouts.length; x++) {
-		if (layouts[x].physical.role == "ROLE_LAYOUT_1" && playerModule.intersect(missile, layouts[x]).status == true) {
+		if (layouts[x].physical.role == layoutRole && playerModule.intersect(missile, layouts[x]).status == true) {
 			 
 			missileIntersects = true;
 		}

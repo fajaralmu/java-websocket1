@@ -345,7 +345,7 @@ animate(obj) {
                 if (isPlayer) {
                     
                     const missileIntersectsPlayer = movementModule.missileIntersectsPlayer(missile,this.entity,this.entities);
-                    const missileIntersectsLayout = movementModule.missileIntersectsLayout(missile, this.layouts);
+                    const missileIntersectsLayout = movementModule.missileIntersectsLayout(missile, this.layouts, this.roleGeneralLayout);
 
                     missileIntersects = missileIntersectsPlayer||missileIntersectsLayout;
                     if(missileIntersects){

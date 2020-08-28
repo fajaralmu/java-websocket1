@@ -203,7 +203,8 @@ td{
 			game.roleLeft = "${roleLeft}";
 			game.roleUp = "${roleUp}";
 			game.roleDown = "${roleDown}";
-			game.roleFinish = "${roleFinish}";			
+			game.roleFinish = "${roleFinish}";	
+			game.roleGeneralLayout = "${roleGeneralLayout}";
 			
 			game.roles = ${roles};
 			game.staticImages = ${staticImages};

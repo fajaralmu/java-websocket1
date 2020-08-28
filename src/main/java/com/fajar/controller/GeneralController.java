@@ -66,27 +66,20 @@ public class GeneralController {
 	@GetMapping(value = "canvasv1")
 	public String canvasv1(Model model, HttpServletRequest request, HttpServletResponse response) {
 		System.out.println("----------------REQUESTING GAME PAGE-----------------");
-		model.addAttribute("winW", EntityParameter.WIN_W);
-		System.out.println(1);
-		model.addAttribute("winH", EntityParameter.WIN_H);
-		System.out.println(2);
-		model.addAttribute("baseHealth", EntityParameter.baseHealth);
-		System.out.println(3);
-		model.addAttribute("rolePlayer", EntityRoles.ROLE_PLAYER);
-		System.out.println(4);
-		model.addAttribute("roleBonusLife", EntityRoles.ROLE_BONUS_LIFE);
-		System.out.println(5);
-		model.addAttribute("roleBonusArmor", EntityRoles.ROLE_BONUS_ARMOR);
-		System.out.println(6);
-		model.addAttribute("roleRight", EntityRoles.ROLE_ROAD_RIGHT);
-		System.out.println(7);
-		model.addAttribute("roleLeft", EntityRoles.ROLE_ROAD_LEFT);
-		System.out.println(8);
-		model.addAttribute("roleUp", EntityRoles.ROLE_ROAD_UP);
-		System.out.println(9);
+		model.addAttribute("winW", EntityParameter.WIN_W); 
+		model.addAttribute("winH", EntityParameter.WIN_H); 
+		model.addAttribute("baseHealth", EntityParameter.baseHealth); 
+		
+		model.addAttribute("rolePlayer", EntityRoles.ROLE_PLAYER); 
+		model.addAttribute("roleBonusLife", EntityRoles.ROLE_BONUS_LIFE); 
+		model.addAttribute("roleBonusArmor", EntityRoles.ROLE_BONUS_ARMOR); 
+		model.addAttribute("roleRight", EntityRoles.ROLE_ROAD_RIGHT); 
+		model.addAttribute("roleLeft", EntityRoles.ROLE_ROAD_LEFT); 
+		model.addAttribute("roleUp", EntityRoles.ROLE_ROAD_UP); 
 		model.addAttribute("roleDown", EntityRoles.ROLE_ROAD_DOWN);
-		model.addAttribute("roleFinish", EntityRoles.ROLE_FINISH_LINE);
-		System.out.println(10);
+		model.addAttribute("roleFinish", EntityRoles.ROLE_FINISH_LINE); 
+		model.addAttribute("roleGeneralLayout", EntityRoles.ROLE_LAYOUT_1); 
+		
 		model.addAttribute("roles", JSONUtil.listToJson(EntityRoles.roles()));
 		System.out.println(11);
 		model.addAttribute("layouts", realtimeService.getJsonListOfLayouts());
