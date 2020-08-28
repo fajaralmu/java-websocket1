@@ -44,7 +44,7 @@ export function intersectLayout(currentEntity, obj, layouts) {
 
 			const layoutRole = layoutItem.physical.role;
 			obj.currentLayoutId = layoutItem.id;
-			if (layoutRole != 102) {
+			if (layoutRole != "ROLE_LAYOUT_1") {
 				printCircuitInfo(layoutRole + ":" + getLayoutRole(layoutRole, obj) + ", name: " + layoutItem.name);
 			} else {
 				intersectLayout = true;
@@ -147,7 +147,7 @@ export function missileIntersectsLayout(missile,layouts){
 	let missileIntersects = false;
 	//check if missile intersects layout
 	for (let x = 0; x <  layouts.length; x++) {
-		if (layouts[x].physical.role == 102 && playerModule.intersect(missile, layouts[x]).status == true) {
+		if (layouts[x].physical.role == "ROLE_LAYOUT_1" && playerModule.intersect(missile, layouts[x]).status == true) {
 			 
 			missileIntersects = true;
 		}

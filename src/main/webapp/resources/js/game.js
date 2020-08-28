@@ -547,7 +547,7 @@ animate(obj) {
 
             obj.renderEntity(currentEntity);
 
-            if (currentEntity.physical.role == 101
+            if (currentEntity.physical.role == game.roleBonusLife
                 && currentEntity.id != obj.entity.id) {
                 if (playerModule.intersect(obj.entity, currentEntity).status == true) {
                     let lifeEntity = currentEntity;
