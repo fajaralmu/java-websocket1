@@ -6,7 +6,7 @@ import { Game } from "./game.js";
  */
 export function  doConnect(obj) { 
     obj.stompClient.connect({}, function (frame) {
-        //    obj.setConnected(true);
+        obj.connectCallback();
         console.log('Connected -> ' + frame);
         console.log('stomp client', obj.stompClient);
         obj.document.getElementById("ws-info").innerHTML = obj.stompClient.ws._transport.ws.url;

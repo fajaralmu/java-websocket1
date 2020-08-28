@@ -65,6 +65,8 @@ export class Game {
     stompClient = null;
     baseCount = 3;
     updateCount = this.baseCount;
+    
+    updateConnectionInfo = function(connected){};
 
     constructor() {
         console.log("NEW GAME");
@@ -99,6 +101,11 @@ export class Game {
         }
         setConnected(false);
         console.log("Disconnected");
+        this.updateConnectionInfo(false);
+    }
+    
+    connectCallback(){
+    	this.updateConnectionInfo(true);
     }
 
     leaveApp(entityId) {

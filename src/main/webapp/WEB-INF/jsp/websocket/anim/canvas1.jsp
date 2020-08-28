@@ -163,7 +163,7 @@ td{
 	</tr>
 	</table> 
 	<p>
-		Connected: <span id="connect-info" />
+		Connected: <span id="connect-info"></span>
 	</p>
 	<!-- <h2>Touchpad-Control</h2> -->
 	<!-- <div id="touchpad-control" >
@@ -212,7 +212,7 @@ td{
 			game.window = window;
 			game.document = document;
 			game.fullAddress = window.location.protocol + '//'  + window.location.hostname + (window.location.port ? ':' + window.location.port : '');
-			
+			game.updateConnectionInfo = updateConnectionInfo;
 			console.log("INIT - GAME",game);
 			
 		}
@@ -237,7 +237,10 @@ td{
 			_byId("circuit-info").innerHTML = info;
 		}
 		
-		
+		function updateConnectionInfo(connected){
+			_byId("connect-info").innerHTML = connected;
+		}
+				
  		function printInfo(text) {
 			_byId("realtime-info").innerHTML = text;
 		}
