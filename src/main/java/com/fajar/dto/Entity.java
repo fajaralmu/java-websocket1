@@ -59,6 +59,13 @@ public class Entity implements Serializable {
 		this.missiles = new ArrayList<>();
 		life = EntityParameter.baseHealth;
 	}
+	public Entity(Integer id, String name ) {
+		this.id = id;
+		this.name = name;
+		this.joinedDate = new Date();
+		this.missiles = new ArrayList<>();
+		life = EntityParameter.baseHealth;
+	}
 	
 	public List<Missile> getMissiles() {
 		if(this.missiles == null) {

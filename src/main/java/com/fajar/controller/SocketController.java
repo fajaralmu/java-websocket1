@@ -47,9 +47,7 @@ public class SocketController {
 
 	@PostMapping(value = "/game-app-simple/join", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public RealtimeResponse register(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		response.setContentType(APPLICATION_JSON);
-		System.out.println("JOIN REQUEST");
-		response.setCharacterEncoding(UTF_8);
+		 
 		RealtimeResponse responseObject = realtimeUserService.registerUser(request);
 		responseObject.setEntities(realtimeUserService.getPlayers(request.getParameter("server")));
 		join2(responseObject);

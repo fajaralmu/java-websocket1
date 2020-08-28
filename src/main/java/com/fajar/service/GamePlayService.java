@@ -167,24 +167,20 @@ public class GamePlayService {
 		int ROLE = 0;
 		if (stageRole == EntityParameter.ROLE_ROAD_DOWN) {
 			// TODO: maxY
-			ROLE = EntityParameter.ROLE_ROAD_DOWN;
-			System.out.println(new Date() + "role down");
+			ROLE = EntityParameter.ROLE_ROAD_DOWN; 
 			side = SIDE_VERTICAL;
 		} else if (stageRole == EntityParameter.ROLE_ROAD_UP) {
 			// TODO: minY
-			ROLE = EntityParameter.ROLE_ROAD_UP;
-			System.out.println(new Date() + "role up");
+			ROLE = EntityParameter.ROLE_ROAD_UP; 
 			side = SIDE_VERTICAL;
 		} else if (stageRole == EntityParameter.ROLE_ROAD_LEFT) {
-			// TODO: minX
-			System.out.println(new Date() + "role L");
+			// TODO: minX 
 			ROLE = EntityParameter.ROLE_ROAD_LEFT;
 		} else if (stageRole == EntityParameter.ROLE_ROAD_RIGHT) {
-			// TODO: maxX
-			System.out.println(new Date() + "role R");
+			// TODO: maxX 
 			ROLE = EntityParameter.ROLE_ROAD_RIGHT;
 		}
-
+		System.out.println(new Date() +"Role:"+ROLE);
 		int maxX = getMaxCoordinateVal(players, XPOS);
 		int minX = getMinCoordinateVal(players, XPOS);
 		int maxY = getMaxCoordinateVal(players, YPOS);

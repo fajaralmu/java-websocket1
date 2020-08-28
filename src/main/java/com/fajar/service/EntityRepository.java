@@ -15,7 +15,7 @@ import com.fajar.dto.Entity;
 @Service
 public class EntityRepository {
 
-	private Map<String, List<Entity>> entities = new HashMap<String, List<Entity>>();
+	private final Map<String, List<Entity>> entities = new  HashMap<String, List<Entity>>();
 	
 	@Autowired
 	private GameSettingService gameSettingService;

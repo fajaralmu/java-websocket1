@@ -39,6 +39,8 @@ public class LayoutService {
 	private int startY = 100;
 	private int maxStage = 0;
 	private int minStage = 0;
+	private int layoutItemHeight = 10;
+	private int layoutItemWidth = 10;
 
 	@Value("resources/config/layout1-flow-resized.png")
 	private Resource layoutBgResource;
@@ -140,8 +142,8 @@ public class LayoutService {
 					entity.setX(xPos);
 					entity.setLayout(true);
 					entity.setY(yPos);
-					entity.setW(10);
-					entity.setH(10);
+					entity.setW(layoutItemWidth);
+					entity.setH(layoutItemHeight);
 					entity.setRole(EntityParameter.ROLE_STAGE);
 					layoutEntity.setPhysical(entity);
 					stages.add(layoutEntity);
@@ -181,14 +183,14 @@ public class LayoutService {
 		System.out.println("Grouping Stages");
 		groupedStages.clear();
 		for (Entity stage : stages) {
-			for (Integer integer : greenValues) {
-				if (stage.getName().equals(integer.toString())) {
-					if (groupedStages.get(integer) == null) {
+			for (Integer greenValue : greenValues) {
+				if (stage.getName().equals(greenValue.toString())) {
+					if (groupedStages.get(greenValue) == null) {
 						List<Entity> groupedStageList = new ArrayList<>();
 						groupedStageList.add(stage);
-						groupedStages.put(integer, groupedStageList);
+						groupedStages.put(greenValue, groupedStageList);
 					} else {
-						groupedStages.get(integer).add(stage);
+						groupedStages.get(greenValue).add(stage);
 					}
 				}
 			}
@@ -225,7 +227,8 @@ public class LayoutService {
 
 		System.out.println("Creating layout, startX: " + startX + ", startY: " + startY);
 		System.out.println("Layout size: " + width + "x" + height);
-
+		int multiplier = 10;
+		
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
 				System.out.print("*");
@@ -233,16 +236,16 @@ public class LayoutService {
 				int red = (pixel >> 16) & 0xff;
 				int green = (pixel >> 8) & 0xff;
 				int blue = (pixel) & 0xff;
+				int xPos = x * multiplier;
+				int yPos = y * multiplier;
 
 				if (red == 120 && green == 120 && blue == 120) {
-					int xPos = x * 10;
-					int yPos = y * 10;
+					 
 					this.startX = (xPos);
 					this.startY = (yPos);
 				}
 				if (red == 255 && green == 0 && blue == 0) {
-					int xPos = x * 10;
-					int yPos = y * 10;
+					 
 					Entity layoutEntity = new Entity(randomId(), "layout_" + xPos + "-" + yPos,
 							new Date());
 					Physical physicalInformation = new Physical();
@@ -255,9 +258,8 @@ public class LayoutService {
 					layouts.add(layoutEntity);
 				}
 				if (red == 0 && green == 0 && blue == 0) {
-					int xPos = x * 10;
-					int yPos = y * 10;
-					Entity layoutEntity = new Entity(randomId(), "layout_" + xPos + "-" + yPos, new Date());
+					 
+					Entity layoutEntity = new Entity(randomId(), "layout_" + xPos + "-" + yPos );
 					
 					Physical physicalInformation = commonPhysicalInformation(EntityParameter.ROLE_LAYOUT_1, xPos, yPos);
 					layoutEntity.setPhysical(physicalInformation);
@@ -268,45 +270,40 @@ public class LayoutService {
 				 * CIRCUIT DIRECTIONS
 				 */
 				if (red == 0 && green == 255 && blue == 0) {
-					int xPos = x * 10;
-					int yPos = y * 10;
-					Entity layoutEntity = new Entity(randomId(), "road_" + xPos + "-" + yPos, new Date());
+					 
+					Entity layoutEntity = new Entity(randomId(), "road_" + xPos + "-" + yPos );
 					
 					Physical physicalInformation = commonPhysicalInformation(EntityParameter.ROLE_ROAD_LEFT, xPos, yPos);
 					layoutEntity.setPhysical(physicalInformation);
 					layouts.add(getStage(layoutEntity, EntityParameter.ROLE_ROAD_LEFT));
 				}
 				if (red == 0 && green == 0 && blue == 255) {
-					int xPos = x * 10;
-					int yPos = y * 10;
-					Entity layoutEntity = new Entity(randomId(), "road_" + xPos + "-" + yPos, new Date());
+					 
+					Entity layoutEntity = new Entity(randomId(), "road_" + xPos + "-" + yPos );
 					
 					Physical physicalInformation = commonPhysicalInformation(EntityParameter.ROLE_ROAD_RIGHT, xPos, yPos);
 					layoutEntity.setPhysical(physicalInformation);
 					layouts.add(getStage(layoutEntity, EntityParameter.ROLE_ROAD_RIGHT));
 				}
 				if (red == 255 && green == 0 && blue == 100) {
-					int xPos = x * 10;
-					int yPos = y * 10;
-					Entity layoutEntity = new Entity(randomId(), "road_" + xPos + "-" + yPos, new Date());
+				
+					Entity layoutEntity = new Entity(randomId(), "road_" + xPos + "-" + yPos );
 					
 					Physical physicalInformation = commonPhysicalInformation(EntityParameter.ROLE_ROAD_UP, xPos, yPos);
 					layoutEntity.setPhysical(physicalInformation);
 					layouts.add(getStage(layoutEntity, EntityParameter.ROLE_ROAD_UP));
 				}
 				if (red == 111 && green == 111 && blue == 111) {
-					int xPos = x * 10;
-					int yPos = y * 10;
-					Entity layoutEntity = new Entity(randomId(), "road_finish_" + xPos + "-" + yPos, new Date());
+					 
+					Entity layoutEntity = new Entity(randomId(), "road_finish_" + xPos + "-" + yPos );
 					
 					Physical physicalInformation = commonPhysicalInformation(EntityParameter.ROLE_FINISH_LINE, xPos, yPos); 
 					layoutEntity.setPhysical(physicalInformation);
 					layouts.add(getStage(layoutEntity, EntityParameter.ROLE_FINISH_LINE));
 				}
 				if (red == 255 && green == 100 && blue == 0) {
-					int xPos = x * 10;
-					int yPos = y * 10;
-					Entity layoutEntity = new Entity(randomId(), "road_" + xPos + "-" + yPos, new Date());
+				 
+					Entity layoutEntity = new Entity(randomId(), "road_" + xPos + "-" + yPos );
 					
 					Physical physicalInformation = commonPhysicalInformation(EntityParameter.ROLE_ROAD_DOWN, xPos, yPos); 
 					layoutEntity.setPhysical(physicalInformation);
