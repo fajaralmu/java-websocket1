@@ -6,180 +6,173 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<link rel="icon" href="<c:url value="/res/img/javaEE.ico" />" type="image/x-icon">
+<link rel="icon" href="<c:url value="/res/img/javaEE.ico" />"
+	type="image/x-icon">
 <title>Canvas Online Race</title>
-<script src="<c:url value="/res/js/sockjs-0.3.2.min.js"></c:url >"></script>
-<script src="<c:url value="/res/js/stomp.js"></c:url >"></script> 
-<script src="<c:url value="/res/js/util.js"></c:url >"></script> 
 
+<script src="<c:url value="/res/js/jquery-3.3.1.slim.min.js"></c:url >"></script>
+<script src="<c:url value="/res/js/bootstrap.min.js"></c:url >"></script>
+<script src="<c:url value="/res/js/sockjs-0.3.2.min.js"></c:url >"></script>
+<script src="<c:url value="/res/js/stomp.js"></c:url >"></script>
+<script src="<c:url value="/res/js/util.js"></c:url >"></script>
 <script type="text/javascript">
 	var game;
-</script> 
+</script>
 <script type="module">
 	import {Game} from "<c:url value="/res/js/game.js"></c:url >";
 
 	game = new Game();
 </script>
 <style type="text/css">
-button:hover{ cursor: pointer; }
-
-canvas { border: 3px solid green; }
-
-.btn-ok {
-	background-color: green;
-	font-size: 2em;
-	color: white
+button:hover {
+	cursor: pointer;
 }
 
-.btn-danger {
-	background-color: red;
-	font-size: 2em;
-	color: white
+canvas {
+	border: 3px solid green;
 }
 
-.life-bar {
+#life-bar {
 	border: solid 1px black;
 	background-color: rgb(100, 200, 0);
 	height: 20px;
 	width: ${winW}px;
-
+}
+#life-bar-wrapper{
+	width:${winW+10}px; 
+	padding:5px; 
+	height: 30px;
+	border:solid 1px blue;
 }
 
-td{
-/* 	border: solid 1px blue; */
-	word-wrap:break-all;
+td {
+	/* 	border: solid 1px blue; */
+	word-wrap: break-all;
 }
 
-#layout-table{
-	 
+#layout-table {
 	table-layout: fixed;
 }
-
-.control-btn{
-	width:100%;
-	padding: 10px;
-	color: yellow;
-	background-color: maroon;
-	font-family: arial;
-	font-size: 2em; 
-	margin: auto;
-	text-align: center;
-	border-radius: 5px;
-}
-
-.control-btn:hover{
-	font-size: 2.5em;
+ .control-btn{
+ 	width: 400px;
+ 	font-size: 2em;
+ 	border-radius: 5px;
+ 	height:100px;
+ }
+.control-btn:hover { 
 	background-color: gray;
-	 
+	color: white;
 }
-
-#touchpad-control{
+/*
+#touchpad-control {
 	width: 500px;
-	height:500px;
-	border:solid 1px orange;
+	height: 500px;
+	border: solid 1px orange;
 	border-radius: 10px;
 	background-color: yellow;
 }
-
-.input{
-	font-size: 1.5em;
+*/
+#content{
+	padding:10px;
 }
- 
 </style>
+<link type="text/css" rel="stylesheet"
+	href="<c:url value="/res/style/bootstrap.min.css"></c:url >" />
 </head>
 <body onload="disconnect()">
-<div id="content" >
-		<h1 align="center">BALAP BEBEK <small>online</small></h1>
+	<div id="content">
+		<h1 align="center">RACING DUCKS <small>online</small>
+		</h1>
 		<p id="info" align="center"></p>
-	<h3 id="ws-info"></h3>
+		<span class="badge badge-info" id="ws-info"></span>
 
-	<table id="layout-table">
-		<tr>
-			<td colspan="3"><h3 >Health</h3>
-				<div  style="  width:${winW}px; padding:5px; border:solid 1px blue;">
-					<div id="life-bar" class="life-bar"></div>
-				</div>
+		<table id="layout-table">
+			<tr>
+				<td colspan="3"><h3>Health</h3>
+					<div id="life-bar-wrapper" class="progress">
+						<div id="life-bar" class="progress-bar progress-bar-striped"></div>
+					</div></td>
+				<td></td>
+			</tr> 
+			<tr valign="top">
+				<td colspan="3" style="width: ${winW}px">
+					<div
+						style="background-image:url('<c:url value="/res/img/layout1.png" />'); background-repeat: no-repeat">
+						<canvas id="tutorial" width="${winW}" height="${winH}"> </canvas>
+					</div>
 				</td>
-			 <td></td>
-		</tr>
 
-		<tr valign="top">
-			<td colspan="3" style="width: ${winW}px">
-			<div style="background-image:url('<c:url value="/res/img/layout1.png" />'); background-repeat: no-repeat" >
-			<canvas id="tutorial" width="${winW}" height="${winH}">
-				</canvas></div>
+				<td style="width: 300px">
+					<p id="circuit-info"></p>
+					<p id="entity-info"></p>
+					<p id="realtime-info"></p>
+					<p id="msg-info"></p>
 				</td>
-				
-			<td   style="width:300px">
-				<p id="circuit-info" ></p>
-				<p id="entity-info"></p>
-				<p id="realtime-info"></p>
-				<p id="msg-info"></p>
-			</td>
-		</tr>
-		<tr>
-			<td><p id="player-name"></p></td>
-			<td><button class="control-btn" move-role="w" id="btn-up">UP</button> </td>
-			<td><p id="player-position"></p></td>
-			
-		</tr>
-		<tr>
-			<td><button class="control-btn"  move-role="a" id="btn-left">LEFT</button> </td>
-			<td><button class="control-btn" style="background-color: red" onclick="releaseAll()" id="btn-stop">STOP</button> </td>
-			<td><button class="control-btn"  move-role="d" id="btn-right">RIGHT</button> </td>
-		</tr>
-		<tr>
-			<td></td>
-			<td><button class="control-btn"  move-role="s" id="btn-down">DOWN</button> </td>
-			<td></td>
-		</tr>
+			</tr>
+			<tr>
+				<td style="text-align: center"><p id="player-name"></p></td>
+				<td><button class="control-btn" move-role="w" id="btn-up">UP</button>
+				</td>
+				<td style="text-align: center"><p id="player-position"></p></td> 
+			</tr>
+			<tr>
+				<td><button class="control-btn" move-role="a" id="btn-left">LEFT</button>
+				</td>
+				<td><button class="control-btn" style="background-color: red"
+						onclick="releaseAll()" id="btn-stop">STOP</button></td>
+				<td><button class="control-btn" move-role="d" id="btn-right">RIGHT</button>
+				</td>
+			</tr>
+			<tr>
+				<td></td>
+				<td><button class="control-btn" move-role="s" id="btn-down">DOWN</button>
+				</td>
+				<td></td>
+			</tr>
 
-	</table>
-	<p></p>
-	<p id="velocity-info"></p>
-	<table>
-	<tr>
-	<td>Select Server </td>
-	<td>Input Name </td>
-	</tr>
-	<tr>
-		<td> 
-			<select class="input" id="server-list">
-			<c:forEach var="serverName" items="${serverNames }">
-				<option value="${serverName }">${serverName }</option>
-			</c:forEach>
-			</select>  
-		</td>
-		<td>
-			<input class="input" id="name" type="text" />
-		</td>
-	</tr>
-	<tr>
-	<td colspan="2">
-		<button class="btn-ok" id="join" onclick="joinGame()">Join</button>
-		<button class="btn-ok" id="connect" onclick="connect()">Connect</button>
-		<button class="btn-danger" id="leave" onclick="leave()">Leave</button>
-	</td>
-	</tr>
-	</table> 
-	<p>
-		Connected: <span id="connect-info"></span>
-	</p>
-	<!-- <h2>Touchpad-Control</h2> -->
-	<!-- <div id="touchpad-control" >
-	</div> -->
-</div>
-
-<script type="text/javascript">
+		</table>
+		<p></p> 
 		
+		<!-- CONTROLS -->
+		
+		<table class="table-borderless" style="table-layout: fixed; width: 900px">
+			<tr>
+				<td>Select Server</td>
+				<td><select class="form-control" id="server-list">
+						<c:forEach var="serverName" items="${serverNames }">
+							<option value="${serverName }">${serverName }</option>
+						</c:forEach>
+					</select>
+				</td>
+				<td>Additional Info</td>
+			</tr>
+			<tr>
+				<td>Input Name</td>
+				<td><input class="form-control" id="name" type="text" required="required"/></td>
+				<td><p id="velocity-info"></p></td>
+			</tr>
+			<tr>
+				<td colspan="3">
+					<button class="btn btn-primary" id="join" onclick="joinGame()">Join</button>
+					<button class="btn btn-primary" id="connect" onclick="connect()">Connect</button>
+					<button class="btn btn-danger" id="leave" onclick="leave()">Leave</button>
+				</td>
+			</tr>
+		</table>
+		<p>Connected: <span id="connect-info"></span></p>
+		<!-- <h2>Touchpad-Control</h2><div id="touchpad-control"  </div> -->
+	</div>
+
+	<script type="text/javascript">
 		var connectBtn = _byId('connect');
 		var canvas = _byId('tutorial');
 		var ctx = canvas.getContext('2d');
 		var textInput = _byId("draw-text");
 		var initBtn = _byId("animate");
 		var joined = false;
-	
+
 		/**init game**/
+
 		function initGame(){
 			if(null == game){
 				alert("Error initiating game, please reload");
@@ -216,101 +209,126 @@ td{
 			console.log("INIT - GAME",game);
 			
 		}
-		
-		function joinGame(){
+
+		function joinGame() {
 			initGame();
 			var name = _byId("name").value;
+			if(name == null){
+				alert("Name must be provider");
+				return;
+			}
 			var serverName = _byId("server-list").value;
-			game.join(name,serverName, function(){sucessJoin()}, function(){errorJoin()});
-			
+			game.join(name, serverName, function() {
+				sucessJoin()
+			}, function() {
+				errorJoin()
+			});
+
 		}
-		
-		function sucessJoin(){
+
+		function sucessJoin() {
 			joined = true;
 			setupControlBtn();
 		}
-		function errorJoin(){
+		function errorJoin() {
 			joined = false;
 		}
-		
-		function printCircuitInfo(info){
+
+		function printCircuitInfo(info) {
 			_byId("circuit-info").innerHTML = info;
 		}
-		
-		function updateConnectionInfo(connected){
+
+		function updateConnectionInfo(connected) {
 			_byId("connect-info").innerHTML = connected;
 		}
-				
- 		function printInfo(text) {
+
+		function printInfo(text) {
 			_byId("realtime-info").innerHTML = text;
 		}
- 		
- 		function printEntityInfo(entity, entities, playerPosition, game){
- 			var positionHTML = "<h2>POSITION:"+( playerPosition+1)+"/"+ entities.length+", LAP:"+entity.lap+"</h2>";
- 			
- 			var velocityInfo = "<h3>velX: "+game.velX+", velY: "+game.velY+"</h3>"+
- 			"<p>StoppingMode: "+game.stoppingMode+", StoppingDirection: "+game.stoppingDir+"</p>";
- 			
- 			_byId("player-name").innerHTML = "<h2>Player: "+entity.name+"</h2>";
- 			_byId("velocity-info").innerHTML = velocityInfo;
- 			_byId("player-position").innerHTML = positionHTML;
- 			
- 			_byId("entity-info").innerHTML = JSON
-			.stringify(entity);
- 			_byId("entity-info").innerHTML+=
- 				"<br> <b>STAGE</b>: "+entity.stageId
- 				+"<br> <b>LAYOUT ID</b>: "+entity.layoutId
- 				+"<br> "+positionHTML;
- 				+"<br> <b>LAP</b>: "+entity.lap;
- 		}
- 		 
-		function connect() { 
-			
-			if(this.joined!=true){
+
+		function printEntityInfo(entity, entities, playerPosition, game) {
+			var positionHTML = "<h2>POSITION:" + (playerPosition + 1) + "/"
+					+ entities.length + ", LAP:" + entity.lap + "</h2>";
+
+			var velocityInfo = "<h3>velX: " + game.velX + ", velY: "
+					+ game.velY + "</h3>" + "<p>StoppingMode: "
+					+ game.stoppingMode + ", StoppingDirection: "
+					+ game.stoppingDir + "</p>";
+
+			_byId("player-name").innerHTML = "<h2>Player: " + entity.name
+					+ "</h2>";
+			_byId("velocity-info").innerHTML = velocityInfo;
+			_byId("player-position").innerHTML = positionHTML;
+
+			_byId("entity-info").innerHTML = JSON.stringify(entity);
+			_byId("entity-info").innerHTML += "<br> <b>STAGE</b>: "
+					+ entity.stageId + "<br> <b>LAYOUT ID</b>: "
+					+ entity.layoutId + "<br> " + positionHTML;
+			+"<br> <b>LAP</b>: " + entity.lap;
+		}
+
+		function connect() {
+
+			if (this.joined != true) {
 				alert("Please Join The Game First!");
 				return;
 			}
-			
-			const socket = new SockJS(game.contextPath+'/game-app');
+
+			const socket = new SockJS(game.contextPath + '/game-app');
 			const stompClient = Stomp.over(socket);
-			game.doConnect(stompClient); 
+			game.doConnect(stompClient);
 		}
-		
+
 		function disconnect() {
-			if (game!=null && game.stompClient != null) {
+			if (game != null && game.stompClient != null) {
 				game.stompClient.disconnect();
 			}
 			/* setConnected(false);
 			console.log("Disconnected"); */
 		}
 
-		function setConnected(connected) { _byId('connect-info').innerHTML = connected; }
+		function setConnected(connected) {
+			_byId('connect-info').innerHTML = connected;
+		}
 
-		function leave() { window.document.title = "0FF-PLAYER: " + game.entity.name; game.leaveApp(game.entity.id); }
+		function leave() {
+			window.document.title = "0FF-PLAYER: " + game.entity.name;
+			game.leaveApp(game.entity.id);
+		}
 
 		function updateEntityInfo() {
 			const amount = game.entity.life / game.baseHealth * game.WIN_W;
-	 		_byId("life-bar").style.width = amount + "px";
+			_byId("life-bar").style.width = amount + "px";
 		}
-	 
-		window.onkeydown = function(e) { game.move(e.key); }
 
-		window.onkeyup = function(e) { game.release(e.key); }
-		 
-		
-		function setupControlBtn(){
-			const controlButtons = document.getElementsByClassName("control-btn");
+		window.onkeydown = function(e) {
+			game.move(e.key);
+		}
+
+		window.onkeyup = function(e) {
+			game.release(e.key);
+		}
+
+		function setupControlBtn() {
+			const controlButtons = document
+					.getElementsByClassName("control-btn");
 			for (let i = 0; i < controlButtons.length; i++) {
 				const button = controlButtons[i];
 				const moveRole = button.getAttribute("move-role");
-				button.onmousedown = function(){ 	game.move(moveRole); }; 
-				button.onclick = function(){ 	game.move(moveRole); }; 
-				button.onmouseup = function(){ game.release(moveRole); }; 
-				button.onmouseout = function(){ game.release(moveRole); }; 
-			} 
+				button.onmousedown = function() {
+					game.move(moveRole);
+				};
+				button.onclick = function() {
+					game.move(moveRole);
+				};
+				button.onmouseup = function() {
+					game.release(moveRole);
+				};
+				button.onmouseout = function() {
+					game.release(moveRole);
+				};
+			}
 		}
-		
-		 
 	</script>
 </body>
 </html>

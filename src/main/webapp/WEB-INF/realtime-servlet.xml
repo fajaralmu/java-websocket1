@@ -54,7 +54,7 @@
 		<property name="password" value="root" />
 	</bean> -->
 	
-	<bean id="dataSourceOLD"
+	<!-- <bean id="dataSourceOLD"
 		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName"
 			value="com.mysql.jdbc.Driver" />
@@ -62,7 +62,7 @@
 			value="jdbc:mysql://remotemysql.com:3306/3Pr3bnWyEg" />
 		<property name="username" value="3Pr3bnWyEg" />
 		<property name="password" value="3XgqyBpX53" />
-	</bean>
+	</bean> -->
 
 	<!-- <bean id="entityManagerFactory"
 		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
