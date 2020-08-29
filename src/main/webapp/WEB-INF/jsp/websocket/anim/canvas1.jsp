@@ -109,7 +109,7 @@ td {
 				</td>
 			</tr>
 		</table>
-		
+		<p></p>
 		<!-- CONTROLS -->
 		<table id="controls-pad" class="table-fixed" valign="top">
 			<tr valign="top">
@@ -131,13 +131,12 @@ td {
 				<td><button class="control-btn" move-role="s" id="btn-down">DOWN</button>
 				</td>
 				<td style="text-align: center"><p id="player-position"></p></td>
-			</tr>
-
-		</table>
-		<p></p> 
-		
+			</tr> 
+		</table> 
+		<div style="display: none" id="show-control-btn"><button class="btn btn-primary btn-sm" onclick="showControlPad()">Show Control Pad</button></div>
+		 
 		<!-- INPUTS -->
-		<div id="show-control-btn"><button class="btn btn-primary btn-sm" onclick="showControlPad()">Show Control Pad</button></div>
+		<p></p>
 		<table  class="table-borderless" style="table-layout: fixed; width: 1000px; " valign="top">
 			<tr valign="top">
 				<td>Select Server</td>
