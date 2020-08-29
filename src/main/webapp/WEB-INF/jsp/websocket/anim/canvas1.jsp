@@ -113,22 +113,22 @@ td {
 		<!-- CONTROLS -->
 		<table id="controls-pad" class="table-fixed" valign="top">
 			<tr valign="top">
-				<td><div><button class="btn btn-secondary btn-sm" onclick="closeControlPad()">Close</button></div></td>
-				<td><button class="control-btn" move-role="w" id="btn-up">UP</button>
+				<td><div><button class="btn btn-secondary btn-sm" onclick="closeControlPad()">Close Control Pad</button></div></td>
+				<td><button class="control-btn" move-role="w" id="btn-up">UP -w</button>
 				</td>
 				<td></td> 
 			</tr>
 			<tr valign="top">
-				<td><button class="control-btn" move-role="a" id="btn-left">LEFT</button>
+				<td><button class="control-btn" move-role="a" id="btn-left">LEFT -a</button>
 				</td>
 				<td><button class="control-btn" style="background-color: red"
 						onclick="releaseAll()" id="btn-stop">STOP</button></td>
-				<td><button class="control-btn" move-role="d" id="btn-right">RIGHT</button>
+				<td><button class="control-btn" move-role="d" id="btn-right">RIGHT -d</button>
 				</td>
 			</tr>
 			<tr valign="top">
 				<td style="text-align: center"><p id="player-name"></p></td>
-				<td><button class="control-btn" move-role="s" id="btn-down">DOWN</button>
+				<td><button class="control-btn" move-role="s" id="btn-down">DOWN -s</button>
 				</td>
 				<td style="text-align: center"><p id="player-position"></p></td>
 			</tr> 
@@ -151,17 +151,22 @@ td {
 			<tr valign="top">
 				<td>Input Name</td>
 				<td><input class="form-control" id="name" type="text" required="required"/></td>
-				<td><div id="velocity-info"><h4>velX:<small>0</small></h4><h4>velY:<small>0</small></h4><p>StoppingMode: false<br>StoppingDirection: 0</p></div></td>
+				<td rowspan="3"  ><div id="velocity-info"><h4>velX:<small>0</small></h4><h4>velY:<small>0</small></h4><p>StoppingMode: false<br>StoppingDirection: 0</p></div></td>
 			</tr>
 			<tr valign="top">
-				<td colspan="3">
+				<td colspan="2">
 					<button class="btn btn-primary" id="join" onclick="joinGame()">Join</button>
 					<button class="btn btn-primary" id="connect" onclick="connect()">Connect</button>
 					<button class="btn btn-danger" id="leave" onclick="leave()">Leave</button>
 				</td>
 			</tr>
 			<tr>
-				<td colspan="3"><span class="badge badge-info" id="ws-info"></span></td>
+				<td colspan="2"><span class="badge badge-info" id="ws-info"></span></td>
+			</tr>
+			<tr>
+				<td colspan="3">
+					<h4>Press 'O' to fire!</h4>
+				</td>
 			</tr>
 		</table>
 		<p>Connected: <span id="connect-info"></span></p>
