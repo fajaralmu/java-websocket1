@@ -32,17 +32,14 @@ canvas {
 	border: 3px solid green;
 }
 
-#life-bar {
-	border: solid 1px black;
-	background-color: rgb(100, 200, 0);
+#life-bar {  
 	height: 20px;
 	width: ${winW}px;
 }
-#life-bar-wrapper{
-	width:${winW+10}px; 
+#life-bar-wrapper{ 
 	padding:5px; 
-	height: 30px;
-	border:solid 1px blue;
+	height: 30px; 
+	width:${winW+10}px; 
 }
 
 td {
@@ -50,7 +47,7 @@ td {
 	word-wrap: break-all;
 }
 
-#layout-table {
+.table-fixed {
 	table-layout: fixed;
 }
  .control-btn{
@@ -83,12 +80,11 @@ td {
 	<div id="content">
 		<h1 align="center">RACING DUCKS <small>online</small>
 		</h1>
-		<p id="info" align="center"></p>
-		<span class="badge badge-info" id="ws-info"></span>
+		<p id="info" align="center"></p> 
 
-		<table id="layout-table">
+		<table class="table-fixed">
 			<tr>
-				<td colspan="3"><h3>Health</h3>
+				<td colspan="3"><span class="badge badge-secondary">Health</span>
 					<div id="life-bar-wrapper" class="progress">
 						<div id="life-bar" class="progress-bar progress-bar-striped"></div>
 					</div></td>
@@ -109,6 +105,8 @@ td {
 					<p id="msg-info"></p>
 				</td>
 			</tr>
+		</table>
+		<table id="controls-pad" class="table-fixed">
 			<tr>
 				<td style="text-align: center"><p id="player-name"></p></td>
 				<td><button class="control-btn" move-role="w" id="btn-up">UP</button>
@@ -124,7 +122,7 @@ td {
 				</td>
 			</tr>
 			<tr>
-				<td></td>
+				<td><button class="btn btn-secondary btn-sm" onclick="closeControlPad()">Close</button></td>
 				<td><button class="control-btn" move-role="s" id="btn-down">DOWN</button>
 				</td>
 				<td></td>
@@ -134,8 +132,8 @@ td {
 		<p></p> 
 		
 		<!-- CONTROLS -->
-		
-		<table class="table-borderless" style="table-layout: fixed; width: 900px">
+		<div id="show-control-btn"><button class="btn btn-primary btn-sm" onclick="showControlPad()">Show Control Pad</button></div>
+		<table  class="table-borderless" style="table-layout: fixed; width: 1000px; text-align: center">
 			<tr>
 				<td>Select Server</td>
 				<td><select class="form-control" id="server-list">
@@ -157,6 +155,9 @@ td {
 					<button class="btn btn-primary" id="connect" onclick="connect()">Connect</button>
 					<button class="btn btn-danger" id="leave" onclick="leave()">Leave</button>
 				</td>
+			</tr>
+			<tr>
+				<td colspan="3"><span class="badge badge-info" id="ws-info"></span></td>
 			</tr>
 		</table>
 		<p>Connected: <span id="connect-info"></span></p>
@@ -250,9 +251,9 @@ td {
 			var positionHTML = "<h2>POSITION:" + (playerPosition + 1) + "/"
 					+ entities.length + ", LAP:" + entity.lap + "</h2>";
 
-			var velocityInfo = "<h3>velX: " + game.velX + ", velY: "
-					+ game.velY + "</h3>" + "<p>StoppingMode: "
-					+ game.stoppingMode + ", StoppingDirection: "
+			var velocityInfo = "<h4>velX:<small>" + game.velX + "</small></h4><h4>velY:<small>"
+					+ game.velY + "</small></h4>" + "<p>StoppingMode: "
+					+ game.stoppingMode + "<br/>StoppingDirection: "
 					+ game.stoppingDir + "</p>";
 
 			_byId("player-name").innerHTML = "<h2>Player: " + entity.name
@@ -328,6 +329,16 @@ td {
 					game.release(moveRole);
 				};
 			}
+		}
+		
+		function showControlPad(){
+			_byId("controls-pad").style.display = "block";
+			_byId("show-control-btn").style.display = "none";
+		}
+		
+		function closeControlPad(){
+			_byId("controls-pad").style.display = "none"; 
+		 	_byId("show-control-btn").style.display = "block";
 		}
 	</script>
 </body>
