@@ -72,6 +72,9 @@ td {
 #content{
 	padding:10px;
 }
+#velocity-info{
+	padding:20px; 
+}
 </style>
 <link type="text/css" rel="stylesheet"
 	href="<c:url value="/res/style/bootstrap.min.css"></c:url >" />
@@ -82,7 +85,7 @@ td {
 		</h1>
 		<p id="info" align="center"></p> 
 
-		<table class="table-fixed">
+		<table class="table-fixed" >
 			<tr>
 				<td colspan="3"><span class="badge badge-secondary">Health</span>
 					<div id="life-bar-wrapper" class="progress">
@@ -106,14 +109,16 @@ td {
 				</td>
 			</tr>
 		</table>
-		<table id="controls-pad" class="table-fixed">
-			<tr>
-				<td style="text-align: center"><p id="player-name"></p></td>
+		
+		<!-- CONTROLS -->
+		<table id="controls-pad" class="table-fixed" valign="top">
+			<tr valign="top">
+				<td><div><button class="btn btn-secondary btn-sm" onclick="closeControlPad()">Close</button></div></td>
 				<td><button class="control-btn" move-role="w" id="btn-up">UP</button>
 				</td>
-				<td style="text-align: center"><p id="player-position"></p></td> 
+				<td></td> 
 			</tr>
-			<tr>
+			<tr valign="top">
 				<td><button class="control-btn" move-role="a" id="btn-left">LEFT</button>
 				</td>
 				<td><button class="control-btn" style="background-color: red"
@@ -121,20 +126,20 @@ td {
 				<td><button class="control-btn" move-role="d" id="btn-right">RIGHT</button>
 				</td>
 			</tr>
-			<tr>
-				<td><button class="btn btn-secondary btn-sm" onclick="closeControlPad()">Close</button></td>
+			<tr valign="top">
+				<td style="text-align: center"><p id="player-name"></p></td>
 				<td><button class="control-btn" move-role="s" id="btn-down">DOWN</button>
 				</td>
-				<td></td>
+				<td style="text-align: center"><p id="player-position"></p></td>
 			</tr>
 
 		</table>
 		<p></p> 
 		
-		<!-- CONTROLS -->
+		<!-- INPUTS -->
 		<div id="show-control-btn"><button class="btn btn-primary btn-sm" onclick="showControlPad()">Show Control Pad</button></div>
-		<table  class="table-borderless" style="table-layout: fixed; width: 1000px; text-align: center">
-			<tr>
+		<table  class="table-borderless" style="table-layout: fixed; width: 1000px; " valign="top">
+			<tr valign="top">
 				<td>Select Server</td>
 				<td><select class="form-control" id="server-list">
 						<c:forEach var="serverName" items="${serverNames }">
@@ -142,14 +147,14 @@ td {
 						</c:forEach>
 					</select>
 				</td>
-				<td>Additional Info</td>
+				<td style="text-align: center">Additional Info</td>
 			</tr>
-			<tr>
+			<tr valign="top">
 				<td>Input Name</td>
 				<td><input class="form-control" id="name" type="text" required="required"/></td>
-				<td><p id="velocity-info"></p></td>
+				<td><div id="velocity-info"><h4>velX:<small>0</small></h4><h4>velY:<small>0</small></h4><p>StoppingMode: false<br>StoppingDirection: 0</p></div></td>
 			</tr>
-			<tr>
+			<tr valign="top">
 				<td colspan="3">
 					<button class="btn btn-primary" id="join" onclick="joinGame()">Join</button>
 					<button class="btn btn-primary" id="connect" onclick="connect()">Connect</button>
