@@ -78,7 +78,11 @@ public class SocketController {
 	public void move(RealtimeRequest request) throws IOException {
 //		log.info("MOVE: {},",request);
 //		realtimeUserService.update(request);
-		realtimeUserService.update (request);
+		try{
+			realtimeUserService.update (request);
+		}catch (Exception e) {
+			// TODO: handle exception
+		}
 	}
 
 	@MessageMapping("/leave")
@@ -89,9 +93,15 @@ public class SocketController {
 	}
 	
 	@MessageMapping("/resetposition") 
-	public void resetPosition(RealtimeRequest request) throws IOException {
-		System.out.println("resetPosition.........");
-		realtimeUserService.resetPosition(request);
+	public void resetPosition(RealtimeRequest request) throws IOException { 
+		
+		try{
+			System.out.println("resetPosition.........");
+			realtimeUserService.resetPosition(request);
+		}catch (Exception e) {
+			System.out.println("Error reset position..");
+			e.printStackTrace();
+		}
 	}
 
 	@MessageMapping("/chat")

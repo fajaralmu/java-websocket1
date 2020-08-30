@@ -318,16 +318,32 @@ export class Game {
      
     /**
      * render entity
-     * @param {*} currentEntity 
+     * @param {*} currentEntity => entity object calculated from server
      */
     renderEntity = function(currentEntity) {
         const isPlayer = (currentEntity.id == this.entity.id);
+        
+        //////////Update Values From Server////////////
+        let isForceUpdate = false;
         if (isPlayer && this.entity != null) {
             //	missiles = this.entity.missiles;
             this.entity.stageId = currentEntity.stageId;
             this.entity.lap = currentEntity.lap;
+            this.entity.forceUpdate = currentEntity.forceUpdate; 
             this.entity.stagesPassed = currentEntity.stagesPassed;
-            currentEntity = this.entity;
+            isForceUpdate = currentEntity.forceUpdate;
+            
+            if(isForceUpdate){
+            	document.title =  currentEntity.physical.x +", "+ currentEntity.physical.y;
+            	currentEntity.physical.lastUpdate = new Date();
+//            	console.debug("currentEntity Position: ",);
+	        	 this.entity.physical.x = currentEntity.physical.x ;
+	             this.entity.physical.y = currentEntity.physical.y ;
+            }else{
+            	document.title = isForceUpdate;
+            }
+            
+            currentEntity = this.entity;   
         }
 
         /**
@@ -429,8 +445,8 @@ export class Game {
 
             let velXToDo = this.velX;
             let velYToDo = this.velY;
-            document.title = this.entity.forceUpdate;
-            if (currentphysical.lastUpdate < this.entity.physical.lastUpdate || this.entity.forceUpdate) {
+          
+            if (currentphysical.lastUpdate < this.entity.physical.lastUpdate  ) {
                 currentEntity.physical.x = this.entity.physical.x;
                 currentEntity.physical.y = this.entity.physical.y;
             }

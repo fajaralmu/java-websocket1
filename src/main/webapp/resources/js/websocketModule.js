@@ -59,6 +59,7 @@ export function doSendUpdate(obj, entity){
                 'layoutId': entity.layoutId,
                 'lap': entity.lap,
                 'stagesPassed': entity.stagesPassed,
+                'forceUpdate':false,
                 'physical': {
                     'x': entity.physical.x,
                     'y': entity.physical.y,

@@ -259,6 +259,7 @@ public class RealtimeService {
 		entity.setLife(requestEntity.getLife());
 		entity.setLap(requestEntity.getLap());
 		entity.setActive(requestEntity.isActive());
+		entity.setForceUpdate(requestEntity.isForceUpdate());
 		entity.setStage();
 	}
 
@@ -309,19 +310,29 @@ public class RealtimeService {
 	}
 
 	public synchronized void resetPosition(RealtimeRequest request) {
+		int entityId = request.getEntity().getId();
+		System.out.println("RESET POSITION "+entityId);
 		ThreadUtil.run(() -> {
-			List<Entity> entities = loopAndProcessSelectedEntity(request.getServerName(), request.getEntity().getId(), (Entity e) -> {
+			String serverName = request.getServerName();
+			List<Entity> entities = loopAndProcessSelectedEntity(serverName, entityId, (Entity e) -> {
 				e.getPhysical().setX(layoutService.getStartX());
 				e.getPhysical().setY(layoutService.getStartY());
 				e.setForceUpdate(Boolean.TRUE);
 				e.setBreakLoop(true);
 				return e;
 			});
+			
 			List<Entity> sortedEntities = gamePlayService.calculateAndSortPlayer(entities);
-			RealtimeResponse response = new RealtimeResponse("00", "OK", request.getServerName(), sortedEntities);
-
-			entityRepository.setPlayers(sortedEntities, request.getServerName());
+			RealtimeResponse response = new RealtimeResponse("00", "OK", request.getServerName(), sortedEntities);  
+			
+			entityRepository.setPlayers(sortedEntities, serverName);
+			Entity theEntity =  entityRepository.getPlayerByID(entityId, serverName);
+			
+			System.out.println("theEntity force Update;"+theEntity.isForceUpdate());
+			System.out.println("POSITION: "+ theEntity.getPhysical());
+			
 			webSocket.convertAndSend("/wsResp/players", response);
+			System.out.println("Success Reset posiiton");
 		});
 
 	}
