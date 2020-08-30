@@ -102,15 +102,13 @@ td {
 </head>
 <body onload="disconnect()">
 	<div id="content">
-		<div class="header">
-			<h1 align="center">Racing Game <small>online</small></h1>
-			<span></span><span></span>
-			<img id="header-icon" src="<c:url value="/res/img/mascot.png"></c:url >"  height="200" /> 
-		</div>
-		
-		</h1>
+	
+		<!-- HEADER -->
+		<jsp:include page="partials/header.jsp"></jsp:include>
+		 
 		<p id="info" align="center"></p> 
 
+		<!-- CANVAS -->
 		<table class="table-fixed" >
 			<tr>
 				<td colspan="3"><span class="badge badge-secondary">Health</span>
@@ -136,30 +134,9 @@ td {
 			</tr>
 		</table>
 		<p></p>
+		
 		<!-- CONTROLS -->
-		<table id="controls-pad" class="table-fixed" valign="top">
-			<tr valign="top">
-				<td><div><button class="btn btn-secondary btn-sm" onclick="closeControlPad()">Close Control Pad</button></div></td>
-				<td><button class="control-btn" move-role="w" id="btn-up">UP -w</button>
-				</td>
-				<td></td> 
-			</tr>
-			<tr valign="top">
-				<td><button class="control-btn" move-role="a" id="btn-left">LEFT -a</button>
-				</td>
-				<td><button class="control-btn" style="background-color: red"
-						onclick="releaseAll()" id="btn-stop">STOP</button></td>
-				<td><button class="control-btn" move-role="d" id="btn-right">RIGHT -d</button>
-				</td>
-			</tr>
-			<tr valign="top">
-				<td style="text-align: center"><p id="player-name"></p></td>
-				<td><button class="control-btn" move-role="s" id="btn-down">DOWN -s</button>
-				</td>
-				<td style="text-align: center"><p id="player-position"></p></td>
-			</tr> 
-		</table> 
-		<div style="display: none" id="show-control-btn"><button class="btn btn-primary btn-sm" onclick="showControlPad()">Show Control Pad</button></div>
+		<jsp:include page="partials/controls.jsp"></jsp:include>
 		 
 		<!-- INPUTS -->
 		<p></p>
