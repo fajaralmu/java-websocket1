@@ -5,10 +5,10 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <!DOCTYPE html>
-<div style="display: block" id="show-game-wapper"><button id="btn-show-game" class="btn btn-primary">Show Game</button></div>
+<div style="display: block" id="show-game-wapper"><button id="btn-show-game" class="btn btn-primary btn-sm">Show Game</button></div>
 <table id="game-layout" style="display: none" class="table-fixed">
 	<tr>
-		<td colspan="3"><button id="btn-hide-game" class="btn btn-secondary">Hide Game</button></td>
+		<td colspan="3"><button id="btn-hide-game" class="btn btn-secondary btn-sm">Hide Game</button></td>
 	</tr>
 	<tr>
 		<td colspan="3"><span class="badge badge-secondary">Health</span>
