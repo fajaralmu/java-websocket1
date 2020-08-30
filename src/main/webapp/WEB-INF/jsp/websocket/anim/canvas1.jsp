@@ -300,9 +300,7 @@
 			const icon = _byId("header-icon");
 			
 			icon.onmouseover = function(e){ 
-				if(e.target.getAttribute("hovered") == "true"){
-					return;
-				}
+				
 				e.target.setAttribute("hovered","true");
 				zoomInIcon();
 
@@ -338,7 +336,7 @@
 		} 
 		
 		function doInformGameReady(){
-			
+			const icon = _byId("header-icon");
 			 console.debug("informGameReady");
 			 return new Promise(function(resolve, reject)  {
 				 incrementHeightAsync(icon, 300, 1, function(){zoomOutIcon();} );
@@ -349,9 +347,8 @@
 		
 		function zoomOutIcon(){
 			const icon = _byId("header-icon");
-			if(icon.getAttribute("animating")!="true"){
-				incrementHeightAsync(icon, 200, -1, null );
-			}
+			incrementHeightAsync(icon, 200, -1, null );
+			 
 			
 		}
 		
