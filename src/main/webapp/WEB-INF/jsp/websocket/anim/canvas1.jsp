@@ -111,7 +111,7 @@
 				<td colspan="2">
 					<button class="btn btn-primary" id="join" onclick="joinGame()">Join</button>
 					<button class="btn btn-primary" id="connect" onclick="connect()">Connect</button>
-					<button class="btn btn-danger" id="leave" onclick="disconnect()">Leave</button>
+					<button class="btn btn-danger" id="btn-leave" >Leave</button>
 				</td>
 			</tr>
 			<tr>
@@ -247,7 +247,7 @@
 			 
 			if (game != null && game.stompClient != null) {
 				 leave();
-				 game.updateMovement(game.entity);
+				 game.sendUpdate(game.entity);
 			}
 			/* setConnected(false);
 			console.log("Disconnected"); */
@@ -316,6 +316,13 @@
 			icon.onmouseout = function(e){ 
 				e.target.height = 200;
 
+			}
+			
+			_byId("btn-leave").onclick = function(e){
+				if(!confirm("Do you want to leave?")){
+					return;
+				}
+				disconnect();
 			}
 		}
 		

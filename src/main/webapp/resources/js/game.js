@@ -73,7 +73,7 @@ export class Game {
     }
 
     /***WEB SERVICE***/ 
-    async updateMovement(entity) {
+    updateMovement = async function(entity) {
         await this.sendUpdate(entity);
     }
 
