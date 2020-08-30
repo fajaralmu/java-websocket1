@@ -624,7 +624,7 @@ export class Game {
             function (response, object) {
                 let responseObject = JSON.parse(response);
                 console.log("RESPONSE", responseObject);
-                if (responseObject.responseCode == "00") {
+                if (responseObject && responseObject.responseCode == "00") {
                     object.handleSuccessJoin(responseObject);
                     successCallback();
                 } else {

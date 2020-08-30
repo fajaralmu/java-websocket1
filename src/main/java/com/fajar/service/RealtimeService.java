@@ -87,11 +87,16 @@ public class RealtimeService {
 	}
 
 	public synchronized RealtimeResponse registerUser(HttpServletRequest request) {
+		if(null ==  request.getParameter("name")) {
+			return RealtimeResponse.failed("invalid Name");
+		}
+		
 		isRegistering = true;
 		RealtimeResponse responseObject = new RealtimeResponse();
-		String name = request.getParameter("name");
+		String name = request.getParameter("name").replace(" ", "_");
 		final String serverName = request.getParameter("server");
 		System.out.println("_____NAME:" + name + ",____SERVER:" + serverName);
+		
 		Entity user = entityRepository.getPlayerByName(name, serverName);
 		if (user != null) {
 //			responseObject.setResponseCode("01");

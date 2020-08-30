@@ -46,6 +46,10 @@ public class RealtimeResponse implements Serializable{
 		this.serverName = serverName;
 		this.entities = entities;
 	}
+	public static RealtimeResponse failed(String string) {
+		 
+		return new RealtimeResponse("01", string);
+	}
 	
 	
 	
