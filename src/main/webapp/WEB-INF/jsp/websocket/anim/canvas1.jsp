@@ -111,7 +111,7 @@
 				<td colspan="2">
 					<button class="btn btn-primary" id="join" onclick="joinGame()">Join</button>
 					<button class="btn btn-primary" id="connect" onclick="connect()">Connect</button>
-					<button class="btn btn-danger" id="leave" onclick="leave()">Leave</button>
+					<button class="btn btn-danger" id="leave" onclick="disconnect()">Leave</button>
 				</td>
 			</tr>
 			<tr>
@@ -244,8 +244,10 @@
 		}
 
 		function disconnect() {
+			 
 			if (game != null && game.stompClient != null) {
-				game.stompClient.disconnect();
+				 leave();
+				 game.updateMovement(game.entity);
 			}
 			/* setConnected(false);
 			console.log("Disconnected"); */

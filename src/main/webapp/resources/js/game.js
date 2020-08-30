@@ -66,10 +66,10 @@ export class Game {
     baseCount = 3;
     updateCount = this.baseCount;
     
-    updateConnectionInfo = function(connected){};
+    updateConnectionInfo = function(connected){}
 
     constructor() {
-        console.log("NEW GAME");
+        console.debug("NEW GAME");
     }
 
     /***WEB SERVICE***/ 
@@ -77,7 +77,7 @@ export class Game {
         await this.sendUpdate(entity);
     }
 
-    sendUpdate(entity) {
+    sendUpdate = function(entity) {
         this.updateCount++;
         if (entity == null) {
             console.error("Entity is NULL");
@@ -90,12 +90,12 @@ export class Game {
         return websocketModule.doSendUpdate(this, entity);
     }
 
-    doConnect(stompClient) { 
+    doConnect = function(stompClient) { 
         this.stompClient = stompClient;  
         websocketModule.doConnect(this);  
     }
 
-    disconnect() {
+    disconnect = function() {
         if (stompClient != null) {
             stompClient.disconnect();
         }
@@ -104,24 +104,24 @@ export class Game {
         this.updateConnectionInfo(false);
     }
     
-    connectCallback(){
+    connectCallback = function(){
     	this.updateConnectionInfo(true);
     }
 
-    leaveApp(entityId) {
+    leaveApp = function(entityId) {
         websocketModule.doLeave(this, entityId);
     }
 
-    init(canvas, ctx) {
+    init = function(canvas, ctx) {
         this.canvas = canvas;
         this.ctx = ctx;
     }
 
-    print() {
+    print = function() {
         console.log("Hello from game");
     }
 
-    getLatestDirection() {
+    getLatestDirection = function() {
         if (this.entityDirectionHistory.length > 0) {
             return this.entityDirectionHistory[this.entityDirectionHistory.length - 1];
         }
@@ -129,7 +129,7 @@ export class Game {
     }
 
 
-    releaseAll() {
+    releaseAll = function() {
         release('w');
         release('a');
         release('s');
@@ -140,7 +140,7 @@ export class Game {
      * handles key release
      * @param {String} key 
      */
-    release(key) {
+    release = function(key) {
         this.run = 0;
         this.entity.physical.lastUpdated = new Date();
         /**
@@ -178,13 +178,13 @@ export class Game {
         } 
     }
 
-    update() { }
+   update = function() { }
 
     /**
      * handle entity movement
      * @param {String} key 
      */
-    move(key) {
+    move = function(key) {
         this.entity.physical.lastUpdated = new Date();
 
         const pressW = key == 'w';
@@ -252,21 +252,21 @@ export class Game {
      * check entity direction if == current stopping direction
      * @param {String} dir 
      */
-    stopStoppingModeIf(dir) {
+    stopStoppingModeIf = function(dir) {
         if (this.stoppingDir == dir) {
             this.stoppingMode = false;
         }
         return dir;
     }
 
-    initAnimation(obj) {
+    initAnimation  = function(obj) {
         this.isAnimate = !this.isAnimate;
         console.log("Init Anim", this);
         this.window.requestAnimationFrame(function () {
             obj.animate(obj)
         });
     }
-animate(obj) {
+    animate  = function(obj) {
 
         obj.clearCanvas();
         obj.update();
@@ -278,12 +278,12 @@ animate(obj) {
         }
     }
  
-    clearCanvas() {
+    clearCanvas = function() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     }
 
     
-    getLatestStoppingDirH() {
+    getLatestStoppingDirH = function() {
         if (this.entityDirectionHistory.length > 0) {
             for (let i = this.entityDirectionHistory.length - 1; i >= 0; i--) {
                 const dir = this.entityDirectionHistory[i];
@@ -293,7 +293,7 @@ animate(obj) {
         return null;
     }
 
-    getLatestStoppingDirV() {
+    getLatestStoppingDirV = function() {
         if (this.entityDirectionHistory.length > 0) {
             for (let i = this.entityDirectionHistory.length - 1; i >= 0; i--) {
                 const dir = this.entityDirectionHistory[i];
@@ -308,7 +308,7 @@ animate(obj) {
      * render entity
      * @param {*} currentEntity 
      */
-    renderEntity(currentEntity) {
+    renderEntity = function(currentEntity) {
         const isPlayer = (currentEntity.id == this.entity.id);
         if (isPlayer && this.entity != null) {
             //	missiles = this.entity.missiles;
@@ -489,7 +489,7 @@ animate(obj) {
     /**
      * do fire missile
      */
-    fireMissile() {
+    fireMissile = function() {
         if (this.fireTiming < 20) {
             return;
         }
@@ -502,7 +502,7 @@ animate(obj) {
         this.updateMovement(this.entity);
     }
 
-    getEntityImage(role, dir) { 
+    getEntityImage = function(role, dir) { 
         const url = this.fullAddress + this.playerImagePath  + playerModule.getDirImage(role, dir);
         for (let i = 0; i < this.entityImages.length; i++) {
             if (this.entityImages[i].src == url) {
@@ -515,7 +515,7 @@ animate(obj) {
     /**
      * load textures for entities
      */
-    loadImages() {
+    loadImages = function() {
         let urls = new Array();
         for (let i = 0; i < this.roles.length; i++) {
             let role = this.playerImagePath +  this.roles[i];
@@ -543,7 +543,7 @@ animate(obj) {
      * main render method
      * @param {Game} obj 
      */
-    render(obj) {
+    render = function(obj) {
         //layout not rendered because it is the background image
         for (let i = 0; i < obj.entities.length; i++) {
             let currentEntity = obj.entities[i];
@@ -576,12 +576,12 @@ animate(obj) {
         }
     }
 
-    draw() {
+    draw = function() {
         if (canvas.getContext) { ctx.beginPath(); ctx.arc(70, 80, 10, 0, 2 * Math.PI, false); ctx.fill(); }
         else { alert("Not Supported"); }
     }
  
-    join(name, serverName, successCallback, errorCallback) {
+    join = function(name, serverName, successCallback, errorCallback) {
         this.entityDirectionHistory = new Array(); 
         this.entity.name = name;
         this.serverName = serverName;
@@ -600,11 +600,11 @@ animate(obj) {
             }, this);
     }
 
-    start() {
+    start = function() {
         draw();
     }
 
-    handleSuccessJoin(responseObject){ 
+    handleSuccessJoin = function(responseObject){ 
         this.entity = responseObject.entity;
         //	console.log("USER",entity);
         printEntityInfo(this.entity, this.entities, this.playerPosition, this);
