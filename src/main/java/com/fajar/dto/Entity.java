@@ -25,14 +25,15 @@ import lombok.NoArgsConstructor;
 @Data
 @Builder
 @AllArgsConstructor 
+@NoArgsConstructor
 public class Entity implements Serializable {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -6053163038967434721L;
-	private final Integer id;
-	private final String name;
+	private   Integer id;
+	private   String name;
 	@Builder.Default
 	private Date joinedDate = new Date();
 	@Builder.Default

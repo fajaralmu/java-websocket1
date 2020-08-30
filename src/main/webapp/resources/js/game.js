@@ -68,8 +68,12 @@ export class Game {
     
     updateConnectionInfo = function(connected){}
 
-    constructor() {
+    constructor(callback) {
+//    	var callback = null;
         console.debug("NEW GAME");
+        if(callback){
+        	callback();
+        }
     }
 
     /***WEB SERVICE***/ 
@@ -193,6 +197,9 @@ export class Game {
      * @param {String} key 
      */
     move = function(key) {
+    	if( this.entity == null ||  this.entity.physical == null){
+     		return;
+    	}
         this.entity.physical.lastUpdated = new Date();
 
         const pressW = key == 'w';

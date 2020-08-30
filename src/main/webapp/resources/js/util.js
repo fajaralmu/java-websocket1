@@ -19,4 +19,9 @@ function _byId(id){
 	return document.getElementById(id);
 }
 
+
+function sleep(ms) {
+	  return new Promise(resolve => setTimeout(resolve, ms));
+	}
+
 	 

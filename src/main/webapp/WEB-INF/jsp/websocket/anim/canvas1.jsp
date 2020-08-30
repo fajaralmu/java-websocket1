@@ -17,12 +17,15 @@
 <script src="<c:url value="/res/js/util.js"></c:url >"></script>
 <script type="text/javascript">
 	var game;
+	 
 </script>
 <script type="module">
 	import {Game} from "<c:url value="/res/js/game.js"></c:url >";
 
-	game = new Game();
-	alert("GAME INITIATED :"+game);
+	document.body.onload = function(e){
+
+ 		game = new Game(informGameReady); 
+	}
 </script>
 <style type="text/css">
 .header{
@@ -52,7 +55,7 @@
 <link type="text/css" rel="stylesheet"
 	href="<c:url value="/res/style/style.css"></c:url >" />
 </head>
-<body onload="disconnect()">
+<body >
 	<div id="content">
 	
 		<!-- HEADER -->
@@ -114,6 +117,9 @@
 		var textInput = _byId("draw-text");
 		var initBtn = _byId("animate");
 		var joined = false;
+
+		
+		const timeOuts = {};
 
 		/**init game**/
 
@@ -295,11 +301,15 @@
 			const icon = _byId("header-icon");
 			
 			icon.onmouseover = function(e){ 
-				e.target.height = 300;
+				e.target.setAttribute("hovered","true");
+				zoomInIcon();
 
 			}
 			icon.onmouseout = function(e){ 
-				e.target.height = 200;
+				if(e.target.getAttribute("hovered") == "true"){
+					zoomOutIcon();
+				}
+				e.target.setAttribute("hovered","false");
 
 			}
 			
@@ -312,10 +322,73 @@
 			}
 			
 			_byId("btn-reset-pos").onclick = function(e){
-				if(game && confirm("Reset Position?")){
+				if(game && game.stompClient != null && confirm("Reset Position?") ){
 					game.resetPosition();
 				}
 			}
+			
+			console.debug("game is null :", (game == null));
+			 
+		}
+		
+		function informGameReady(){
+			doInformGameReady().then(function(){
+				
+			});
+		} 
+		
+		function doInformGameReady(){
+			
+			 console.debug("informGameReady");
+			 return new Promise(function(resolve, reject)  {
+				 incrementHeightAsync(_byId("header-icon"), 300, 1, function(){
+					
+					 incrementHeightAsync(_byId("header-icon"), 200, -1, null );
+					 
+				 } );
+				 resolve();
+			 });
+			
+		}  
+		
+		function incrementHeightAsync(imageElement, maxHeight, incrementBy, finalHandler){
+			const id = new Date().getMilliseconds();
+			timeOuts[id] = setTimeout(function (){
+				incrementImageHeight(imageElement, id, maxHeight,incrementBy, finalHandler);
+			}, 1);
+		}
+		
+		function incrementImageHeight(icon, id, maxHeight,incrementBy, finalHandler){
+			if(!incrementBy || incrementBy == 0){incrementBy=1;}
+			if(!maxHeight){maxHeight=300;}
+			var test = icon.height >= maxHeight;
+			
+			if(incrementBy<0){
+				test = icon.height <= maxHeight;
+			}
+			
+			icon.height = icon.height + incrementBy;
+			
+			if(test){
+				clearTimeout(timeOuts[id]);
+				if(finalHandler){ finalHandler(); }
+			} else{
+				setTimeout(function(){
+					incrementImageHeight(icon, id, maxHeight,incrementBy, finalHandler);
+				}, 1);
+			}
+		}
+	 
+		
+		function zoomOutIcon(){
+			const icon = _byId("header-icon");
+			icon.height = 200;
+		}
+		
+		function zoomInIcon(){
+			console.debug("zoomInIcon");
+			const icon = _byId("header-icon");
+			icon.height = 300;
 		}
 		
 		initEvents();
