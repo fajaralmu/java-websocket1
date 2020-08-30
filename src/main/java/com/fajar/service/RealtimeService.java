@@ -24,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class RealtimeService {
 
-	private Integer bonusCount = 0;
+//	private Integer bonusCount = 0;
 //	private List<Entity> entities = new ArrayList<>(); 
 	private Random random = new Random();
 	private Long currentTime = new Date().getTime();
@@ -92,18 +92,15 @@ public class RealtimeService {
 		}
 		
 		isRegistering = true;
-		RealtimeResponse responseObject = new RealtimeResponse();
-		String name = request.getParameter("name").replace(" ", "_");
+		
+		final String name = request.getParameter("name").replace(" ", "_");
 		final String serverName = request.getParameter("server");
-		System.out.println("_____NAME:" + name + ",____SERVER:" + serverName);
+		
+		System.out.println("Will Join NAME:" + name + ",SERVER:" + serverName);
 		
 		Entity user = entityRepository.getPlayerByName(name, serverName);
-		if (user != null) {
-//			responseObject.setResponseCode("01");
-//			responseObject.setResponseMessage("Please choose another name!");
-//			return responseObject;
-			// user = entityRepository.getPlayerByName(name);
-		} else {
+		String responseMessage;
+		if (user == null) {
 			user = new Entity(random.nextInt(100), name, new Date());
 			user.setStageId(layoutService.getMinStage());
 			user.setLayoutId(0);
@@ -115,15 +112,21 @@ public class RealtimeService {
 			entity.setColor("rgb(" + random.nextInt(200) + "," + random.nextInt(200) + "," + random.nextInt(200) + ")");
 
 			user.setPhysical(entity);
-
+			responseMessage = name+" Successfully joined";
+		}else {
+			responseMessage = "Welcome back, "+ name + " !"; 
 		}
-		responseObject.setResponseCode("00");
-		responseObject.setResponseMessage("OK");
-
+		 
 		entityRepository.addUser(user, serverName);
+		
+		RealtimeResponse responseObject = new RealtimeResponse();
+		responseObject.setResponseCode("00");
+		responseObject.setResponseMessage(responseMessage);
 		responseObject.setEntity(user);
 		responseObject.setEntities(entityRepository.getPlayers(serverName));
+		
 		isRegistering = false;
+		
 		System.out.println("----------------------REGISTER USER: " + user);
 
 		return responseObject;
@@ -181,11 +184,13 @@ public class RealtimeService {
 		Integer userId = request.getEntity().getId();
 		Entity user = entityRepository.getPlayerByID(userId, request.getServerName());
 		log.info("REQ: {}", request);
+		
 		if (user == null) {
-			RealtimeResponse response = new RealtimeResponse("01", "Invalid USER!");
+			RealtimeResponse response =   RealtimeResponse.failed("Invalid USER!"); 
 			response.setMessage(new OutputMessage("SYSTEM", "INVALID USER", new Date().toString()));
 			return response;
 		}
+		
 		RealtimeResponse response = new RealtimeResponse("00", "OK");
 		response.setEntity(user);
 		response.setServerName(request.getServerName());

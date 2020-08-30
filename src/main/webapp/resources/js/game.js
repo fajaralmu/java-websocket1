@@ -646,7 +646,7 @@ export class Game {
         this.document.getElementById("name").disabled = true;
         this.initAnimation(this);
         this.loadImages();
-        alert(this.entity.name+" successfully joined");
+        alert(responseObject.responseMessage+", Click 'Connect' To Continue..");
     }
 
 }

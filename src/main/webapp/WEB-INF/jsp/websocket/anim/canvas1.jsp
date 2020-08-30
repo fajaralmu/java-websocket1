@@ -217,8 +217,7 @@
 			_byId("entity-info").innerHTML = JSON.stringify(entity);
 			_byId("entity-info").innerHTML += "<br> <b>STAGE</b>: "
 					+ entity.stageId + "<br> <b>LAYOUT ID</b>: "
-					+ entity.layoutId + "<br> " + positionHTML;
-			+"<br> <b>LAP</b>: " + entity.lap;
+					+ entity.layoutId + "<br> " + positionHTML +"<br> <b>LAP</b>: " + entity.lap;
 		}
 
 		function connect() {
