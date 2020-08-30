@@ -646,7 +646,7 @@ export class Game {
         this.document.getElementById("name").disabled = true;
         this.initAnimation(this);
         this.loadImages();
-        alert(responseObject.responseMessage+", Click 'Connect' To Continue..");
+        alert(responseObject.responseMessage+"\nClick 'Connect' To Continue..");
     }
 
 }
