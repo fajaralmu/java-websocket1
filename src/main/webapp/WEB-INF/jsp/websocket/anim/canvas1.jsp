@@ -54,7 +54,8 @@ td {
  	width: 400px;
  	font-size: 2em;
  	border-radius: 5px;
- 	height:100px;
+ 	height:100px; 
+ 	font-family: Arial;
  }
 .control-btn:hover { 
 	background-color: gray;
@@ -76,8 +77,14 @@ td {
 	padding:20px; 
 }
 .header{
+	color: gray;
 	display: grid;
-	grid-template-columns: 60% 40% ;
+	grid-template-columns: 70% 30% ;
+	background-image: url("<c:url value="/res/img/bg.png"></c:url >" );
+	background-repeat: no-repeat;
+	background-size: ${winW}px 300px; 
+	width: ${winW}px;
+	height: 300px;
 	
 }
 </style>
@@ -88,6 +95,7 @@ td {
 	<div id="content">
 		<div class="header">
 			<h1 align="center">Racing Game <small>online</small></h1>
+			<span></span><span></span>
 			<img src="<c:url value="/res/img/mascot.png"></c:url >"  height="200" /> 
 		</div>
 		
