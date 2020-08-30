@@ -334,13 +334,13 @@ export class Game {
             isForceUpdate = currentEntity.forceUpdate;
             
             if(isForceUpdate){
-            	document.title =  currentEntity.physical.x +", "+ currentEntity.physical.y;
+//            	document.title =  currentEntity.physical.x +", "+ currentEntity.physical.y;
             	currentEntity.physical.lastUpdate = new Date();
 //            	console.debug("currentEntity Position: ",);
 	        	 this.entity.physical.x = currentEntity.physical.x ;
 	             this.entity.physical.y = currentEntity.physical.y ;
             }else{
-            	document.title = isForceUpdate;
+//            	document.title = isForceUpdate;
             }
             
             currentEntity = this.entity;   

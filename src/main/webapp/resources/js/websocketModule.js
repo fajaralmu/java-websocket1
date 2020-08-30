@@ -5,6 +5,7 @@ import { Game } from "./game.js";
  * @param {Game} obj 
  */
 export function  doConnect(obj) { 
+	const serverName = obj.serverName;
     obj.stompClient.connect({}, function (frame) {
         obj.connectCallback();
         console.log('Connected -> ' + frame);
@@ -18,7 +19,7 @@ export function  doConnect(obj) {
         obj.stompClient.subscribe('/wsResp/players', function (response) {
             
             var respObject = JSON.parse(response.body);
-            if(obj.serverName != respObject.serverName){
+            if(serverName != respObject.serverName){
                 return;
             }
             obj.document.getElementById("ws-info").innerHTML = "<b>["+respObject.serverName+"]</b> url: "+ obj.stompClient.ws._transport.ws.url;
