@@ -22,6 +22,7 @@
 	import {Game} from "<c:url value="/res/js/game.js"></c:url >";
 
 	game = new Game();
+	alert("GAME INITIATED :"+game);
 </script>
 <style type="text/css">
 .header{

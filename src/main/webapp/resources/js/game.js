@@ -292,8 +292,7 @@ export class Game {
  
     clearCanvas = function() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    }
-
+    } 
     
     getLatestStoppingDirH = function() {
         if (this.entityDirectionHistory.length > 0) {
@@ -337,8 +336,8 @@ export class Game {
 //            	document.title =  currentEntity.physical.x +", "+ currentEntity.physical.y;
             	currentEntity.physical.lastUpdate = new Date();
 //            	console.debug("currentEntity Position: ",);
-	        	 this.entity.physical.x = currentEntity.physical.x ;
-	             this.entity.physical.y = currentEntity.physical.y ;
+	        	this.entity.physical.x = currentEntity.physical.x ;
+	            this.entity.physical.y = currentEntity.physical.y ;
             }else{
 //            	document.title = isForceUpdate;
             }
