@@ -4,7 +4,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%><!DOCTYPE html>
 <!-- CONTROLS -->
-<table id="controls-pad" class="table-fixed" valign="top">
+<table style="display: none" id="controls-pad" class="table-fixed" valign="top">
 	<tr valign="top">
 		<td><div>
 				<button class="btn btn-secondary btn-sm" onclick="closeControlPad()">Close
@@ -29,7 +29,7 @@
 		<td style="text-align: center"><p id="player-position"></p></td>
 	</tr>
 </table>
-<div style="display: none" id="show-control-btn">
+<div style="display: block" id="show-control-btn">
 	<button class="btn btn-primary btn-sm" onclick="showControlPad()">Show
 		Control Pad</button>
 </div>
