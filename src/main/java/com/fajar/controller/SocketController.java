@@ -1,8 +1,5 @@
 package com.fajar.controller;
 
-import static com.fajar.parameter.RestParameter.APPLICATION_JSON;
-import static com.fajar.parameter.RestParameter.UTF_8;
-
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -81,7 +78,7 @@ public class SocketController {
 	public void move(RealtimeRequest request) throws IOException {
 //		log.info("MOVE: {},",request);
 //		realtimeUserService.update(request);
-		realtimeUserService.updatev2(request);
+		realtimeUserService.update (request);
 	}
 
 	@MessageMapping("/leave")
@@ -109,6 +106,9 @@ public class SocketController {
 		return response;
 	}
 
+	
+	////////////////////////////////////////// JAVA DESKTOP CHAT HANDLER //////////////////////////////////////////
+	
 	@MessageMapping("/guichat")
 	public void chat(Map<String, Object> request, SimpMessageHeaderAccessor headerAccessor) throws IOException {
 

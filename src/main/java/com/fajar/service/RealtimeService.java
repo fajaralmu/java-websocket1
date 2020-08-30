@@ -265,19 +265,20 @@ public class RealtimeService {
 	public synchronized void update(RealtimeRequest request) {
 
 		ThreadUtil.run(() -> {
-			final List<Entity> entities = entityRepository.getPlayers(request.getServerName());
+			final String serverName = request.getServerName();
+			final List<Entity> entities = entityRepository.getPlayers(serverName);
 
 			loop: for (int i = 0; i < entities.size(); i++) {
 				Entity entity = entities.get(i);
 
 				if (entity.getId().equals(request.getEntity().getId())) {
-					entity.setLayoutId(request.getEntity().getLayoutId());
+					int layoutId = request.getEntity().getLayoutId();
+					entity.setLayoutId(layoutId);
 					try {
-						int stageId = layoutService.getLayoutById(request.getEntity().getLayoutId()).getStageId();
+						int stageId = layoutService.getLayoutById(layoutId).getStageId();
 						entity.setStageId(stageId);
 					} catch (Exception ex) {
-						System.out.println(ex.getMessage() + "/**************NO STAGE HANDLED************/:"
-								+ request.getEntity().getLayoutId());
+						System.out.println(ex.getMessage() + "/**************NO STAGE HANDLED************/:" + layoutId);
 
 						entity.setStageId(0);
 					}
@@ -290,9 +291,9 @@ public class RealtimeService {
 			}
 
 			List<Entity> sortedEntities = gamePlayService.calculateAndSortPlayer(entities);
-			RealtimeResponse response = new RealtimeResponse("00", "OK", request.getServerName(), sortedEntities);
+			RealtimeResponse response = new RealtimeResponse("00", "OK", serverName, sortedEntities);
 
-			entityRepository.setPlayers(sortedEntities, request.getServerName());
+			entityRepository.setPlayers(sortedEntities, serverName);
 			webSocket.convertAndSend("/wsResp/players", response);
 
 		});
@@ -312,6 +313,7 @@ public class RealtimeService {
 			List<Entity> entities = loopAndProcessSelectedEntity(request.getServerName(), request.getEntity().getId(), (Entity e) -> {
 				e.getPhysical().setX(layoutService.getStartX());
 				e.getPhysical().setY(layoutService.getStartY());
+				e.setForceUpdate(Boolean.TRUE);
 				e.setBreakLoop(true);
 				return e;
 			});

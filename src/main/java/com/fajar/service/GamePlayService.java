@@ -1,7 +1,6 @@
 package com.fajar.service;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.fajar.dto.Entity;
-import com.fajar.parameter.EntityParameter;
 import com.fajar.parameter.EntityRoles;
 
 /**
@@ -53,7 +51,8 @@ public class GamePlayService {
 
 	private static int getMaxStage(List<Entity> players) {
 		int maxStage = 0;
-		for (Entity entity : players) {
+		for (int p = 0 ;p <players.size();p++) {
+			Entity entity = players.get(p);
 			if (entity.getStageId() > maxStage) {
 				maxStage = entity.getStageId();
 			}
@@ -63,7 +62,8 @@ public class GamePlayService {
 
 	private static int getMinStage(List<Entity> players) {
 		int stage = getMaxStage(players); 
-		for (Entity entity : players) {
+		for (int p = 0 ;p <players.size();p++) {
+			Entity entity = players.get(p);
 			if (entity.getStageId() <= stage) {
 				stage = entity.getStageId();
 			}
@@ -146,7 +146,8 @@ public class GamePlayService {
 
 	public int getMinLap(List<Entity> players) {
 		int minLap = getMaxLap(players);
-		for (Entity entity : players) {
+		for (int p = 0 ;p <players.size();p++) {
+			Entity entity = players.get(p);
 			if (entity.getLap() < minLap) {
 				minLap = entity.getLap();
 			}
@@ -156,7 +157,8 @@ public class GamePlayService {
 
 	public int getMaxLap(List<Entity> players) {
 		int maxLap = 0;
-		for (Entity entity : players) {
+		for (int p = 0 ;p <players.size();p++) {
+			Entity entity = players.get(p);
 			if (entity.getLap() > maxLap) {
 				maxLap = entity.getLap();
 			}

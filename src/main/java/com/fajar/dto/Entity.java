@@ -36,13 +36,17 @@ public class Entity implements Serializable {
 	private String name;
 	@Builder.Default
 	private Date joinedDate = new Date();
-	private Physical physical;
 	@Builder.Default
 	@Getter(value = AccessLevel.NONE)
 	private List<Integer> stagesPassed = new ArrayList<>();
 	@Builder.Default
 	private int life = EntityParameter.baseHealth;
+	
 	private boolean active;
+	private boolean forceUpdate; //force update entity position based on  what is calculated in server side although the server lastUpdated < client lastUpdated
+	
+	private Physical physical;
+	
 	//RACE
 	private int layoutId;
 	private int stageId;

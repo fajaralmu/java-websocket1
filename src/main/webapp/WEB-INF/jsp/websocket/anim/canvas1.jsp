@@ -60,7 +60,7 @@
 		<p id="info" align="center"></p> 
 
 		<!-- CANVAS -->
-		<jsp:include page="partials/canvas.jsp"></jsp:include>
+		<jsp:include page="partials/canvas-layout.jsp"></jsp:include>
 		<p></p>
 		
 		<!-- CONTROLS --> 
@@ -70,7 +70,7 @@
 		<p></p>
 		<table  class="table-borderless" style="table-layout: fixed; width: 1000px; " valign="top">
 			<tr valign="top">
-				<td>Select Server</td>
+				<td>Select Room</td>
 				<td><select class="form-control" id="server-list">
 						<c:forEach var="serverName" items="${serverNames }">
 							<option value="${serverName }">${serverName }</option>

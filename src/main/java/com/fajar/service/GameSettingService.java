@@ -13,9 +13,9 @@ public class GameSettingService {
 	public List<String> getServerList() {
 		List<String> list = new ArrayList<String>();
 		// TODO Auto-generated method stub
-		list.add("Server_A");
-		list.add("Server_B");
-		list.add("Server_C");
+		list.add("ROOM_A");
+		list.add("ROOM_B");
+		list.add("ROOM_C");
 		return list ;
 	}
 

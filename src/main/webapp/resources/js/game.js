@@ -76,6 +76,11 @@ export class Game {
     updateMovement = async function(entity) {
         await this.sendUpdate(entity);
     }
+    
+    resetPosition = async function(){
+    	console.debug("resetPosition");
+    	await websocketModule.resetPosition(this, this.entity);
+    }
 
     sendUpdate = function(entity) {
         this.updateCount++;
@@ -194,6 +199,7 @@ export class Game {
         const pressS = key == 's';
         const pressA = key == 'a';
         const pressD = key == 'd';
+        const pressR = key == 'r';
         const stoppingDec = playerModule.speedDec;
 
         if (this.stoppingMode && this.stoppingDir == this.dirUp && !pressW) {
@@ -248,6 +254,9 @@ export class Game {
             }
         }
         if (key == "o") { this.fireMissile(); }
+        if(pressR){
+        	this.resetPosition();
+        }
         /* else{ stoppingMode = false; } */
     }
 
@@ -273,7 +282,7 @@ export class Game {
 
         obj.clearCanvas();
         obj.update();
-        obj.render(obj);
+        obj.render();
         if (obj.isAnimate) {
             obj.window.requestAnimationFrame(function () {
                 obj.animate(obj)
@@ -420,7 +429,8 @@ export class Game {
 
             let velXToDo = this.velX;
             let velYToDo = this.velY;
-            if (currentphysical.lastUpdate < this.entity.physical.lastUpdate) {
+            document.title = this.entity.forceUpdate;
+            if (currentphysical.lastUpdate < this.entity.physical.lastUpdate || this.entity.forceUpdate) {
                 currentEntity.physical.x = this.entity.physical.x;
                 currentEntity.physical.y = this.entity.physical.y;
             }
@@ -543,40 +553,39 @@ export class Game {
     }
 
     /**
-     * main render method
-     * @param {Game} obj 
+     * main render method 
      */
-    render = function(obj) {
+    render = function() {
         //layout not rendered because it is the background image
-        for (let i = 0; i < obj.entities.length; i++) {
-            let currentEntity = obj.entities[i];
+    	 for (let i = 0; i < this.entities.length; i++) {
+             let currentEntity = this.entities[i];
 
-            if (currentEntity.id == obj.entity.id) {
-                obj.playerPosition = i;
-            }
+             if (currentEntity.id == this.entity.id) {
+                 this.playerPosition = i;
+             }
 
-            obj.renderEntity(currentEntity);
+             this.renderEntity(currentEntity);
 
-            if (currentEntity.physical.role == game.roleBonusLife
-                && currentEntity.id != obj.entity.id) {
-                if (playerModule.intersect(obj.entity, currentEntity).status == true) {
-                    let lifeEntity = currentEntity;
-                    obj.velX = 0;
-                    obj.velY = 0;
-                    if (obj.entity.life < obj.baseHealth) {
-                        obj.entity.life += lifeEntity.life;
-                        if (obj.entity.life > obj.baseHealth) {
-                            obj.entity.life = obj.baseHealth
-                        }
+             if (currentEntity.physical.role == game.roleBonusLife
+                 && currentEntity.id != this.entity.id) {
+                 if (playerModule.intersect(this.entity, currentEntity).status == true) {
+                     let lifeEntity = currentEntity;
+                     this.velX = 0;
+                     this.velY = 0;
+                     if (this.entity.life < this.baseHealth) {
+                         this.entity.life += lifeEntity.life;
+                         if (this.entity.life > this.baseHealth) {
+                             this.entity.life = this.baseHealth
+                         }
 
-                        obj.updateMovement(obj.entity);
-                    }
-                    console.log("-------ADD BONUS", obj.entity, lifeEntity);
-                    obj.leaveApp(lifeEntity.id);
-                    obj.entities.splice(i, 1);
-                }
-            }
-        }
+                         this.updateMovement(this.entity);
+                     }
+                     console.log("-------ADD BONUS", this.entity, lifeEntity);
+                     this.leaveApp(lifeEntity.id);
+                     this.entities.splice(i, 1);
+                 }
+             }
+         }
     }
 
     draw = function() {

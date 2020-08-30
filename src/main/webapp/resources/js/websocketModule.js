@@ -9,7 +9,12 @@ export function  doConnect(obj) {
         obj.connectCallback();
         console.log('Connected -> ' + frame);
         console.log('stomp client', obj.stompClient);
-        obj.document.getElementById("ws-info").innerHTML = obj.stompClient.ws._transport.ws.url;
+        try{
+        	document.getElementById("ws-info").innerHTML = obj.stompClient.ws._transport.ws.url;
+        }catch (e) {
+			 
+		}
+        //////////SUBSCRIBE//////////
         obj.stompClient.subscribe('/wsResp/players', function (response) {
             
             var respObject = JSON.parse(response.body);
@@ -38,7 +43,7 @@ export function doLeave(obj, entityId){
 }
 
 /**
- * send player update to server
+ * player move and update to server
  * @param {Game} obj 
  * @param {Object} entity 
  */
@@ -62,6 +67,24 @@ export function doSendUpdate(obj, entity){
                     'lastUpdated': new Date()
                 },
                 'missiles': entity.missiles
+            }
+        }));
+
+    });
+}
+
+/**
+ * reset to starting position
+ * @param {Game} obj 
+ * @param {Object} entity  
+ */
+export function resetPosition(obj, entity){
+    return new Promise((resolve, reject) => {
+        //	console.log("===============Update Entity, ",entity);
+        obj.stompClient.send("/app/resetposition", {}, JSON.stringify({
+            'serverName':obj.serverName,
+            'entity': {
+                'id': entity.id * 1
             }
         }));
 
