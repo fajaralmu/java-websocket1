@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.fajar.annotation.Dto;
 import com.fajar.parameter.EntityParameter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -51,6 +52,12 @@ public class Entity implements Serializable {
 	@Builder.Default
 	@Getter(value = AccessLevel.NONE)
 	private List<Missile> missiles = new ArrayList<Missile>();
+	
+	//////////////FOR PROCESSING ONLY//////////////
+	@JsonIgnore
+	private boolean continueLoop;
+	@JsonIgnore
+	private boolean breakLoop;
 
 	public Entity(Integer id, String name, Date createdDate) {
 		this.id = id;

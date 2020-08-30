@@ -142,6 +142,9 @@ export class Game {
      */
     release = function(key) {
         this.run = 0;
+        if(this.entity==null || this.entity.physical == null){
+        	return;
+        }
         this.entity.physical.lastUpdated = new Date();
         /**
        * stopping object wil be handled in the loooooop

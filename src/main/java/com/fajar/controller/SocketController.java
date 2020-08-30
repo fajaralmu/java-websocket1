@@ -80,14 +80,21 @@ public class SocketController {
 	// @SendTo("/wsResp/players")
 	public void move(RealtimeRequest request) throws IOException {
 //		log.info("MOVE: {},",request);
-		realtimeUserService.update(request);
+//		realtimeUserService.update(request);
+		realtimeUserService.updatev2(request);
 	}
 
 	@MessageMapping("/leave")
 	@SendTo("/wsResp/players")
 	public RealtimeResponse leave(RealtimeRequest request) throws IOException {
-
+		System.out.println("Leaving APP.........");
 		return realtimeUserService.disconnectUser(request);
+	}
+	
+	@MessageMapping("/resetposition") 
+	public void resetPosition(RealtimeRequest request) throws IOException {
+		System.out.println("resetPosition.........");
+		realtimeUserService.resetPosition(request);
 	}
 
 	@MessageMapping("/chat")

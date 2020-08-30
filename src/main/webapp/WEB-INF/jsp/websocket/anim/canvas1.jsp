@@ -60,34 +60,11 @@
 		<p id="info" align="center"></p> 
 
 		<!-- CANVAS -->
-		<table class="table-fixed" >
-			<tr>
-				<td colspan="3"><span class="badge badge-secondary">Health</span>
-					<div id="life-bar-wrapper" class="progress">
-						<div id="life-bar" class="progress-bar progress-bar-striped"></div>
-					</div></td>
-				<td></td>
-			</tr> 
-			<tr valign="top">
-				<td colspan="3" style="width: ${winW}px">
-					<div
-						style="background-image:url('<c:url value="/res/img/layout1.png" />'); background-repeat: no-repeat">
-						<canvas id="tutorial" width="${winW}" height="${winH}"> </canvas>
-					</div>
-				</td>
-
-				<td style="width: 300px">
-					<p id="circuit-info"></p>
-					<p id="entity-info"></p>
-					<p id="realtime-info"></p>
-					<p id="msg-info"></p>
-				</td>
-			</tr>
-		</table>
+		<jsp:include page="partials/canvas.jsp"></jsp:include>
 		<p></p>
 		
-		<!-- CONTROLS -->
-		<jsp:include page="partials/controls.jsp"></jsp:include>
+		<!-- CONTROLS --> 
+		<jsp:include page="partials/controls.jsp"></jsp:include> 
 		 
 		<!-- INPUTS -->
 		<p></p>
@@ -183,11 +160,16 @@
 			}
 			var serverName = _byId("server-list").value;
 			game.join(name, serverName, function() {
-				sucessJoin()
+				sucessJoin();
 			}, function() {
-				errorJoin()
+				errorJoin();
 			});
 
+		}
+		
+		function showGameCanvas(){
+			_byId("game-layout").style.display = "block";
+			_byId("show-game-wapper").style.display = "none";
 		}
 
 		function sucessJoin() {
@@ -203,6 +185,7 @@
 		}
 
 		function updateConnectionInfo(connected) {
+			showGameCanvas();
 			_byId("connect-info").innerHTML = connected;
 		}
 
@@ -240,7 +223,7 @@
 
 			const socket = new SockJS(game.contextPath + '/game-app');
 			const stompClient = Stomp.over(socket);
-			game.doConnect(stompClient);
+			game.doConnect(stompClient); 
 		}
 
 		function disconnect() {
@@ -253,7 +236,7 @@
 			console.log("Disconnected"); */
 		}
 
-		function setConnected(connected) {
+		function setConnected(connected) { 
 			_byId('connect-info').innerHTML = connected;
 		}
 
@@ -322,7 +305,8 @@
 				if(!confirm("Do you want to leave?")){
 					return;
 				}
-				disconnect();
+				disconnect();  
+				window.location.reaload();
 			}
 		}
 		

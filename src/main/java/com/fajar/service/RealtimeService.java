@@ -16,13 +16,13 @@ import com.fajar.dto.OutputMessage;
 import com.fajar.dto.Physical;
 import com.fajar.dto.RealtimeRequest;
 import com.fajar.dto.RealtimeResponse;
+import com.fajar.util.ThreadUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
 public class RealtimeService {
-	 
 
 	private Integer bonusCount = 0;
 //	private List<Entity> entities = new ArrayList<>(); 
@@ -30,10 +30,10 @@ public class RealtimeService {
 	private Long currentTime = new Date().getTime();
 	private Boolean isRegistering = false;
 	private Long deltaTime = 8000L;
- 
-	private final GamePlayService gamePlayService; 
-	private final SimpMessagingTemplate webSocket; 
-	private final LayoutService layoutService; 
+
+	private final GamePlayService gamePlayService;
+	private final SimpMessagingTemplate webSocket;
+	private final LayoutService layoutService;
 	private final EntityRepository entityRepository;
 
 	@Autowired
@@ -47,8 +47,6 @@ public class RealtimeService {
 		log.info(":: RealtimeService CONSTRUCTOR ::");
 		System.out.println("Realtime Service Constructor");
 	}
-
-	 
 
 	@PostConstruct
 	private void loadLayout() {
@@ -71,7 +69,7 @@ public class RealtimeService {
 					Long systemDate = new Date().getTime();
 					Long delta = systemDate - currentTime;
 					if (delta >= deltaTime && isRegistering == false) {
-						//addBonusLife();
+						// addBonusLife();
 						currentTime = systemDate;
 					}
 				}
@@ -93,8 +91,8 @@ public class RealtimeService {
 		RealtimeResponse responseObject = new RealtimeResponse();
 		String name = request.getParameter("name");
 		final String serverName = request.getParameter("server");
-		System.out.println("_____NAME:"+name+",____SERVER:"+serverName);
-		Entity user = entityRepository.getPlayerByName(name,serverName);
+		System.out.println("_____NAME:" + name + ",____SERVER:" + serverName);
+		Entity user = entityRepository.getPlayerByName(name, serverName);
 		if (user != null) {
 //			responseObject.setResponseCode("01");
 //			responseObject.setResponseMessage("Please choose another name!");
@@ -117,7 +115,7 @@ public class RealtimeService {
 		responseObject.setResponseCode("00");
 		responseObject.setResponseMessage("OK");
 
-		entityRepository.addUser(user,serverName);
+		entityRepository.addUser(user, serverName);
 		responseObject.setEntity(user);
 		responseObject.setEntities(entityRepository.getPlayers(serverName));
 		isRegistering = false;
@@ -157,7 +155,7 @@ public class RealtimeService {
 
 	public RealtimeResponse disconnectUser(RealtimeRequest request) {
 		Integer userId = request.getEntity().getId();
-		Entity user = entityRepository.getPlayerByID(userId,request.getServerName());
+		Entity user = entityRepository.getPlayerByID(userId, request.getServerName());
 		log.info("REQ: {}", request);
 		/*
 		 * if(user == null) { RealtimeResponse response = new
@@ -165,7 +163,7 @@ public class RealtimeService {
 		 * OutputMessage("SYSTEM", "INVALID USER", new Date().toString())); return
 		 * response; }
 		 */
-		entityRepository.removePlayer(userId,request.getServerName());
+		entityRepository.removePlayer(userId, request.getServerName());
 		RealtimeResponse response = new RealtimeResponse("00", "OK");
 		response.setEntity(user);
 		response.setEntities(entityRepository.getPlayers(request.getServerName()));
@@ -176,7 +174,7 @@ public class RealtimeService {
 
 	public RealtimeResponse connectUser(RealtimeRequest request) {
 		Integer userId = request.getEntity().getId();
-		Entity user = entityRepository.getPlayerByID(userId,request.getServerName());
+		Entity user = entityRepository.getPlayerByID(userId, request.getServerName());
 		log.info("REQ: {}", request);
 		if (user == null) {
 			RealtimeResponse response = new RealtimeResponse("01", "Invalid USER!");
@@ -188,55 +186,142 @@ public class RealtimeService {
 		response.setServerName(request.getServerName());
 		response.setMessage(new OutputMessage(user.getName(), "HI!, i'm joining conversation!", new Date().toString()));
 		return response;
-	} 
+	}
+
+	private List<Entity> loopAndProcessSelectedEntity(String serverName, int requestedId, EntityLoop handler) {
+		final List<Entity> entities = entityRepository.getPlayers(serverName);
+
+		loop: for (int i = 0; i < entities.size(); i++) {
+			final Entity entity = entities.get(i);
+			final Entity processedEntity = handler.process(entity);
+
+			if (null == entity.getId() || entity.getId().equals(requestedId) == Boolean.FALSE) {
+				continue loop;
+			}
+
+//			if(processedEntity.isContinueLoop()) {
+//				continue;
+//			}
+			if (processedEntity.isBreakLoop()) {
+				entities.set(i, processedEntity);
+				break loop;
+			}
+			entities.set(i, processedEntity);
+		}
+		return entities;
+	}
+
+	static interface EntityLoop {
+		/**
+		 * process if requested ID equals current entity
+		 * 
+		 * @param entity
+		 * @return
+		 */
+		public Entity process(Entity entity);
+	}
+
+	public synchronized void updatev2(RealtimeRequest request) {
+		ThreadUtil.run(() -> {
+			List<Entity> entities = loopAndProcessSelectedEntity(request.getServerName(), request.getEntity().getId(), (Entity entity) -> {
+
+				entity.setLayoutId(request.getEntity().getLayoutId());
+
+				try {
+					int stageId = layoutService.getLayoutById(request.getEntity().getLayoutId()).getStageId();
+					entity.setStageId(stageId);
+				} catch (Exception ex) {
+					System.out.println(ex.getMessage() + "/**************NO STAGE HANDLED************/:"
+							+ request.getEntity().getLayoutId());
+
+					entity.setStageId(0);
+				}
+
+				updateFromRequest(entity, request.getEntity());
+				entity.setBreakLoop(true);
+
+				return entity;
+			});
+
+			List<Entity> sortedEntities = gamePlayService.calculateAndSortPlayer(entities);
+			RealtimeResponse response = new RealtimeResponse("00", "OK", request.getServerName(), sortedEntities);
+
+			entityRepository.setPlayers(sortedEntities, request.getServerName());
+			webSocket.convertAndSend("/wsResp/players", response);
+		});
+	}
+
+	private static void updateFromRequest(Entity entity, Entity requestEntity) {
+		entity.getPhysical().setLastUpdated(new Date());
+		entity.setStagesPassed(requestEntity.getStagesPassed());
+		entity.setPhysical(requestEntity.getPhysical());
+		entity.setMissiles(requestEntity.getMissiles());
+		entity.setLife(requestEntity.getLife());
+		entity.setLap(requestEntity.getLap());
+		entity.setActive(requestEntity.isActive());
+		entity.setStage();
+	}
 
 	public synchronized void update(RealtimeRequest request) {
-		final List<Entity> entities = entityRepository.getPlayers(request.getServerName());
-		Thread thread = new Thread(new Runnable() {
 
-			@Override
-			public void run() {
-				RealtimeResponse response = new RealtimeResponse("00", "OK");
-				response.setServerName(request.getServerName());
-				for (Entity entity : entities) {
-					entity.getPhysical().setLastUpdated(new Date());
-					if (entity.getId().equals(request.getEntity().getId())) {
-						entity.setLayoutId(request.getEntity().getLayoutId());
-						try { 
-							int stageId = layoutService.getLayoutById(request.getEntity().getLayoutId()).getStageId();
-							entity.setStageId( stageId); 
-						} catch (Exception ex) {
-							System.out.println(ex.getMessage() + "/**************NO STAGE HANDLED************/:"
-									+ request.getEntity().getLayoutId());
+		ThreadUtil.run(() -> {
+			final List<Entity> entities = entityRepository.getPlayers(request.getServerName());
 
-							entity.setStageId(0);
-						}
-						entity.setStagesPassed(request.getEntity().getStagesPassed());
-						entity.setPhysical(request.getEntity().getPhysical());
-						entity.setMissiles(request.getEntity().getMissiles());
-						entity.setLife(request.getEntity().getLife());
-						entity.setLap(request.getEntity().getLap());
-						entity.setActive(request.getEntity().isActive());
-						entity.setStage();
+			loop: for (int i = 0; i < entities.size(); i++) {
+				Entity entity = entities.get(i);
+
+				if (entity.getId().equals(request.getEntity().getId())) {
+					entity.setLayoutId(request.getEntity().getLayoutId());
+					try {
+						int stageId = layoutService.getLayoutById(request.getEntity().getLayoutId()).getStageId();
+						entity.setStageId(stageId);
+					} catch (Exception ex) {
+						System.out.println(ex.getMessage() + "/**************NO STAGE HANDLED************/:"
+								+ request.getEntity().getLayoutId());
+
+						entity.setStageId(0);
 					}
-				} 
-				List<Entity> sortedEntities = gamePlayService.calculateAndSortPlayer(entities);
-				response.setEntities(sortedEntities);
-				entityRepository.setPlayers(sortedEntities,request.getServerName()); 
-				webSocket.convertAndSend("/wsResp/players", response);
 
+					updateFromRequest(entity, request.getEntity());
+
+					entities.set(i, entity);
+					break loop;
+				}
 			}
+
+			List<Entity> sortedEntities = gamePlayService.calculateAndSortPlayer(entities);
+			RealtimeResponse response = new RealtimeResponse("00", "OK", request.getServerName(), sortedEntities);
+
+			entityRepository.setPlayers(sortedEntities, request.getServerName());
+			webSocket.convertAndSend("/wsResp/players", response);
+
 		});
-		thread.start();
 
 	}
 
-	public   String getJsonListOfLayouts() {
+	public String getJsonListOfLayouts() {
 		return layoutService.getJsonListOfLayouts();
 	}
 
-	public List<Entity> getPlayers(String serverName) { 
+	public List<Entity> getPlayers(String serverName) {
 		return entityRepository.getPlayers(serverName);
+	}
+
+	public synchronized void resetPosition(RealtimeRequest request) {
+		ThreadUtil.run(() -> {
+			List<Entity> entities = loopAndProcessSelectedEntity(request.getServerName(), request.getEntity().getId(), (Entity e) -> {
+				e.getPhysical().setX(layoutService.getStartX());
+				e.getPhysical().setY(layoutService.getStartY());
+				e.setBreakLoop(true);
+				return e;
+			});
+			List<Entity> sortedEntities = gamePlayService.calculateAndSortPlayer(entities);
+			RealtimeResponse response = new RealtimeResponse("00", "OK", request.getServerName(), sortedEntities);
+
+			entityRepository.setPlayers(sortedEntities, request.getServerName());
+			webSocket.convertAndSend("/wsResp/players", response);
+		});
+
 	}
 
 }

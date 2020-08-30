@@ -40,7 +40,12 @@ public class RealtimeResponse implements Serializable{
 		this.responseCode = rc;
 		this.responseMessage = rm;
 	}
-	
+	public RealtimeResponse(String rc,String rm,String serverName, List<Entity> entities) {
+		this.responseCode = rc;
+		this.responseMessage = rm;
+		this.serverName = serverName;
+		this.entities = entities;
+	}
 	
 	
 	
