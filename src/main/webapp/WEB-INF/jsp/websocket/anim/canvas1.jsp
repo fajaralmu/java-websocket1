@@ -77,7 +77,7 @@ td {
 }
 .header{
 	display: grid;
-	grid-template-columns: 20% 75%;
+	grid-template-columns: 60% 40% ;
 	
 }
 </style>
@@ -86,10 +86,10 @@ td {
 </head>
 <body onload="disconnect()">
 	<div id="content">
-	<div class="header">
-	<img src="<c:url value="/res/img/mascot.png"></c:url >" width="200" height="200" />
-	<h1 align="center">Racing Game <small>online</small></h1>
-	</div>
+		<div class="header">
+			<h1 align="center">Racing Game <small>online</small></h1>
+			<img src="<c:url value="/res/img/mascot.png"></c:url >"  height="200" /> 
+		</div>
 		
 		</h1>
 		<p id="info" align="center"></p> 
