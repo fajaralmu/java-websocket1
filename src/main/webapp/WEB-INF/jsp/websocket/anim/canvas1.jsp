@@ -15,6 +15,7 @@
 <script src="<c:url value="/res/js/sockjs-0.3.2.min.js"></c:url >"></script>
 <script src="<c:url value="/res/js/stomp.js"></c:url >"></script>
 <script src="<c:url value="/res/js/util.js"></c:url >"></script>
+<script src="<c:url value="/res/js/timeouts.js"></c:url >"></script>
 <script type="text/javascript">
 	var game;
 	 
@@ -116,11 +117,9 @@
 		var ctx = canvas.getContext('2d');
 		var textInput = _byId("draw-text");
 		var initBtn = _byId("animate");
-		var joined = false;
-
+		var joined = false; 
 		
-		const timeOuts = {};
-
+		
 		/**init game**/
 
 		function initGame(){
@@ -332,9 +331,7 @@
 		}
 		
 		function informGameReady(){
-			doInformGameReady().then(function(){
-				
-			});
+			doInformGameReady().then(function(){ });
 		} 
 		
 		function doInformGameReady(){
@@ -342,47 +339,18 @@
 			 console.debug("informGameReady");
 			 return new Promise(function(resolve, reject)  {
 				 incrementHeightAsync(_byId("header-icon"), 300, 1, function(){
-					
-					 incrementHeightAsync(_byId("header-icon"), 200, -1, null );
-					 
+					 zoomOutIcon(); 
 				 } );
 				 resolve();
 			 });
 			
 		}  
 		
-		function incrementHeightAsync(imageElement, maxHeight, incrementBy, finalHandler){
-			const id = new Date().getMilliseconds();
-			timeOuts[id] = setTimeout(function (){
-				incrementImageHeight(imageElement, id, maxHeight,incrementBy, finalHandler);
-			}, 1);
-		}
 		
-		function incrementImageHeight(icon, id, maxHeight,incrementBy, finalHandler){
-			if(!incrementBy || incrementBy == 0){incrementBy=1;}
-			if(!maxHeight){maxHeight=300;}
-			var test = icon.height >= maxHeight;
-			
-			if(incrementBy<0){
-				test = icon.height <= maxHeight;
-			}
-			
-			icon.height = icon.height + incrementBy;
-			
-			if(test){
-				clearTimeout(timeOuts[id]);
-				if(finalHandler){ finalHandler(); }
-			} else{
-				setTimeout(function(){
-					incrementImageHeight(icon, id, maxHeight,incrementBy, finalHandler);
-				}, 1);
-			}
-		}
 	 
 		
 		function zoomOutIcon(){
-			const icon = _byId("header-icon");
-			icon.height = 200;
+			incrementHeightAsync(_byId("header-icon"), 200, -1, null );
 		}
 		
 		function zoomInIcon(){
