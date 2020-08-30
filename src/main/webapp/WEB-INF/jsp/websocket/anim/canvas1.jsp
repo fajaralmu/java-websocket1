@@ -75,13 +75,22 @@ td {
 #velocity-info{
 	padding:20px; 
 }
+.header{
+	display: grid;
+	grid-template-columns: 20% 75%;
+	
+}
 </style>
 <link type="text/css" rel="stylesheet"
 	href="<c:url value="/res/style/bootstrap.min.css"></c:url >" />
 </head>
 <body onload="disconnect()">
 	<div id="content">
-		<h1 align="center">Racing Game <small>online</small>
+	<div class="header">
+	<img src="<c:url value="/res/img/mascot.png"></c:url >" width="200" height="200" />
+	<h1 align="center">Racing Game <small>online</small></h1>
+	</div>
+		
 		</h1>
 		<p id="info" align="center"></p> 
 
