@@ -204,8 +204,7 @@
 					+ game.stoppingMode + "<br/>StoppingDirection: "
 					+ game.stoppingDir + "</p>";
 
-			_byId("player-name").innerHTML = "<h2>Player: " + entity.name
-					+ "</h2>";
+			_byId("player-name").innerHTML = "<h2>Player: " + entity.name + "</h2>";
 			_byId("velocity-info").innerHTML = velocityInfo;
 			_byId("player-position").innerHTML = positionHTML;
 

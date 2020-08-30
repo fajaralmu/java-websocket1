@@ -8,6 +8,6 @@
 	<h1 align="center">
 		Racing Game <small>online</small>
 	</h1>
-	<span></span><h3>Select Room, Join, and Connect!</h3><img id="header-icon"
+	<span></span><h3 align="center">Select Room, Join, and Connect!</h3><img id="header-icon"
 		src="<c:url value="/res/img/mascot.png"></c:url >" height="200" />
 </div>
