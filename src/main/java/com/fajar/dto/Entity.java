@@ -86,23 +86,26 @@ public class Entity implements Serializable {
 	}
 	
 	public void setStage() {
-		
-		for (int i = 0; i < stagesPassed.size(); i++) {
-			int array_element =stagesPassed.get(i);
-			if(array_element == 0) {
-				stagesPassed.remove(i);
+		try {
+			for (int i = 0; i < stagesPassed.size(); i++) {
+				int array_element = stagesPassed.get(i);
+				if(array_element == 0) {
+					stagesPassed.remove(i);
+				}
 			}
-		}
-		 
-		boolean stageIsInclude = false;
-		for(int stage:getStagesPassed()) {
-			if(stage == stageId) {
-				stageIsInclude = true;
-				break;
+			 
+			boolean stageIsInclude = false;
+			for(int stage:getStagesPassed()) {
+				if(stage == stageId) {
+					stageIsInclude = true;
+					break;
+				}
 			}
-		}
-		if(stageIsInclude==false) {
-			this.stagesPassed.add(stageId);
+			if(stageIsInclude==false) {
+				this.stagesPassed.add(stageId);
+			}
+		}catch (Exception e) {
+			 
 		}
 	}
 	

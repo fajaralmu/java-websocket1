@@ -89,6 +89,7 @@
 					<button class="btn btn-primary" id="join" onclick="joinGame()">Join</button>
 					<button class="btn btn-primary" id="connect" onclick="connect()">Connect</button>
 					<button class="btn btn-danger" id="btn-leave" >Leave</button>
+					<button class="btn btn-warning" id="btn-reset-pos" >Reset Position</button>
 				</td>
 			</tr>
 			<tr>
@@ -97,6 +98,7 @@
 			<tr>
 				<td colspan="3">
 					<h4>Press 'O' to fire!</h4>
+					<h4>Press 'R' to reset position!</h4>
 				</td>
 			</tr>
 		</table>
@@ -307,6 +309,12 @@
 				}
 				disconnect();  
 				window.location.reaload();
+			}
+			
+			_byId("btn-reset-pos").onclick = function(e){
+				if(game && confirm("Reset Position?")){
+					game.resetPosition();
+				}
 			}
 		}
 		
