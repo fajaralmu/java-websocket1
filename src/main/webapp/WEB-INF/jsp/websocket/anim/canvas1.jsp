@@ -87,6 +87,15 @@ td {
 	height: 300px;
 	
 }
+
+#header-icon{
+	z-index: 2;
+	
+}
+#header-icon:hover{
+	cursor: pointer;
+	transition-duration:400ms;
+}
 </style>
 <link type="text/css" rel="stylesheet"
 	href="<c:url value="/res/style/bootstrap.min.css"></c:url >" />
@@ -96,7 +105,7 @@ td {
 		<div class="header">
 			<h1 align="center">Racing Game <small>online</small></h1>
 			<span></span><span></span>
-			<img src="<c:url value="/res/img/mascot.png"></c:url >"  height="200" /> 
+			<img id="header-icon" src="<c:url value="/res/img/mascot.png"></c:url >"  height="200" /> 
 		</div>
 		
 		</h1>
@@ -366,6 +375,21 @@ td {
 			_byId("controls-pad").style.display = "none"; 
 		 	_byId("show-control-btn").style.display = "block";
 		}
+		
+		function initEvents(){
+			const icon = _byId("header-icon");
+			
+			icon.onmouseover = function(e){ 
+				e.target.height = 300;
+
+			}
+			icon.onmouseout = function(e){ 
+				e.target.height = 200;
+
+			}
+		}
+		
+		initEvents();
 	</script>
 </body>
 </html>
