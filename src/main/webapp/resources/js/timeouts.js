@@ -40,20 +40,26 @@ function incrementImageHeight(icon, id, maxHeight, incrementBy, finalHandler) {
 }
 
 function incrementImageHeightv2(icon, id, maxHeight, incrementBy, finalHandler) {
-	animateObjAttribute(icon, "height", id, function(e, height) {
+	const modifyOperation = function(e, height) {
 		const newVal = e.height + incrementBy;
 		var test = incrementBy < 0 ? e.height <= maxHeight : e.height >= maxHeight;
-		if (test) {
+		 
+		if (test || (e.target.getAttribute("hovered") == "true")) {
+			
+			e.setAttribute("animating", "false");
 			return null;
 		}
+		e.setAttribute("animating", "true");
 		return newVal;
-	}, finalHandler);
+	};
+	
+	animateObjAttribute(icon, "height", id, modifyOperation, finalHandler);
 }
 
 function animateObjAttribute(element, attribute, id, modifier, finalHandler) {
 
 	const attributeVal = element.getAttribute(attribute);
-	var newValue = modifier(element, attributeVal);
+	var newValue = modifier(element, attributeVal); //returns null if will end timeout, otherwise returns result value of the attribute
 
 	if (newValue == null) {
 		clearTimeout(timeOuts[id]);

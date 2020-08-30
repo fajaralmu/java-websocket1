@@ -300,6 +300,9 @@
 			const icon = _byId("header-icon");
 			
 			icon.onmouseover = function(e){ 
+				if(e.target.getAttribute("hovered") == "true"){
+					return;
+				}
 				e.target.setAttribute("hovered","true");
 				zoomInIcon();
 
@@ -338,25 +341,24 @@
 			
 			 console.debug("informGameReady");
 			 return new Promise(function(resolve, reject)  {
-				 incrementHeightAsync(_byId("header-icon"), 300, 1, function(){
-					 zoomOutIcon(); 
-				 } );
+				 incrementHeightAsync(icon, 300, 1, function(){zoomOutIcon();} );
 				 resolve();
 			 });
 			
-		}  
-		
-		
-	 
+		}   
 		
 		function zoomOutIcon(){
-			incrementHeightAsync(_byId("header-icon"), 200, -1, null );
+			const icon = _byId("header-icon");
+			if(icon.getAttribute("animating")!="true"){
+				incrementHeightAsync(icon, 200, -1, null );
+			}
+			
 		}
 		
 		function zoomInIcon(){
-			console.debug("zoomInIcon");
 			const icon = _byId("header-icon");
 			icon.height = 300;
+			
 		}
 		
 		initEvents();
