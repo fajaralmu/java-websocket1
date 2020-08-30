@@ -24,58 +24,6 @@
 	game = new Game();
 </script>
 <style type="text/css">
-button:hover {
-	cursor: pointer;
-}
-
-canvas {
-	border: 3px solid green;
-}
-
-#life-bar {  
-	height: 20px;
-	width: ${winW}px;
-}
-#life-bar-wrapper{ 
-	padding:5px; 
-	height: 30px; 
-	width:${winW+10}px; 
-}
-
-td {
-	/* 	border: solid 1px blue; */
-	word-wrap: break-all;
-}
-
-.table-fixed {
-	table-layout: fixed;
-}
- .control-btn{
- 	width: 400px;
- 	font-size: 2em;
- 	border-radius: 5px;
- 	height:100px; 
- 	font-family: Arial;
- }
-.control-btn:hover { 
-	background-color: gray;
-	color: white;
-}
-/*
-#touchpad-control {
-	width: 500px;
-	height: 500px;
-	border: solid 1px orange;
-	border-radius: 10px;
-	background-color: yellow;
-}
-*/
-#content{
-	padding:10px;
-}
-#velocity-info{
-	padding:20px; 
-}
 .header{
 	color: gray;
 	display: grid;
@@ -87,18 +35,21 @@ td {
 	height: 300px;
 	
 }
-
-#header-icon{
-	z-index: 2;
-	
+ 
+#life-bar {  
+	height: 20px;
+	width: ${winW}px;
 }
-#header-icon:hover{
-	cursor: pointer;
-	transition-duration:400ms;
+#life-bar-wrapper{ 
+	padding:5px; 
+	height: 30px; 
+	width:${winW+10}px; 
 }
 </style>
 <link type="text/css" rel="stylesheet"
 	href="<c:url value="/res/style/bootstrap.min.css"></c:url >" />
+<link type="text/css" rel="stylesheet"
+	href="<c:url value="/res/style/style.css"></c:url >" />
 </head>
 <body onload="disconnect()">
 	<div id="content">
