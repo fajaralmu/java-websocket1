@@ -81,7 +81,7 @@ td {
 </head>
 <body onload="disconnect()">
 	<div id="content">
-		<h1 align="center">RACING DUCKS <small>online</small>
+		<h1 align="center">Racing Game <small>online</small>
 		</h1>
 		<p id="info" align="center"></p> 
 
