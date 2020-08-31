@@ -3,7 +3,6 @@ package com.fajar.controller;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -12,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,7 +22,6 @@ import com.fajar.dto.RealtimeRequest;
 import com.fajar.dto.RealtimeResponse;
 import com.fajar.service.GameSettingService;
 import com.fajar.service.RealtimeService;
-import com.fajar.util.CollectionUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -119,25 +116,5 @@ public class SocketController {
 	}
 
 	
-	////////////////////////////////////////// JAVA DESKTOP CHAT HANDLER //////////////////////////////////////////
 	
-	@MessageMapping("/guichat")
-	public void chat(Map<String, Object> request, SimpMessageHeaderAccessor headerAccessor) throws IOException {
-
-		log.info("request: {}", request);
-
-		Map<String, Object> sessAttribute = headerAccessor.getSessionAttributes();
-		log.info("sessAttribute: {}", sessAttribute);
-
-		String sessionIdFromSession = headerAccessor.getSessionId();
-		String subscriptionId = headerAccessor.getSubscriptionId();
-
-		log.info("sessionIdFromSession: {}", sessionIdFromSession);
-		log.info("subscriptionId: {}", subscriptionId);
-		log.info("headerAccessor session map: {}", headerAccessor.getSessionAttributes().keySet().size());
-
-		webSocket.convertAndSend("/wsResp/chats/" + request.get("messageTo"), request);
-
- 
-	}
 }

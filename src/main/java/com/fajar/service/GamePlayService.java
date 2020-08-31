@@ -6,16 +6,18 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fajar.dto.CoordinateModule;
 import com.fajar.dto.Entity;
-import com.fajar.parameter.EntityRoles;
+import com.fajar.dto.EntityRoles;
+import com.fajar.dto.RoadSide;
 
 /**
  * this class handles race logic
+ * 
  * @author Republic Of Gamers
  *
  */
@@ -25,12 +27,7 @@ public class GamePlayService {
 	@Autowired
 	private LayoutService layoutService;
 	@Autowired
-	private EntityRepository entityRepository;
-	
-	
-	static final int XPOS = 1, YPOS = 2;
-
-	static final int SIDE_HORIZONTAL = 0x22, SIDE_VERTICAL = 0x33;
+	private EntityRepository entityRepository; 
 
 	public GamePlayService() {
 
@@ -67,15 +64,15 @@ public class GamePlayService {
 	}
 
 	private static int getMinStage(Map<Integer, Entity> players) {
-		int stage = getMaxStage(players); 
+		int stage = Integer.MAX_VALUE;// getMaxStage(players);
 		for (Entry<Integer, Entity> e : players.entrySet()) {
 			Entity entity = e.getValue();
 			if (entity.getStageId() <= stage) {
 				stage = entity.getStageId();
 			}
-		} 
+		}
 		return stage;
-	} 
+	}
 
 	static <T> List<T> singletonList(T obj) {
 		List<T> list = new ArrayList<>();
@@ -87,18 +84,18 @@ public class GamePlayService {
 	public LinkedHashMap<Integer, Entity> calculateAndSortPlayer(String serverName) {
 		Map<Integer, Entity> players = entityRepository.getPlayers(serverName);
 		List<Entity> playerSortedByStage = new ArrayList<Entity>();
-		LinkedHashMap<Integer, Entity> finalSortedPlayer = new LinkedHashMap<>(); 
+		LinkedHashMap<Integer, Entity> finalSortedPlayer = new LinkedHashMap<>();
 		Map<Integer, List<Entity>> groupedPlayerByStage = new HashMap<>();
 
-		int maxStage = getMaxStage(players); 
+		int maxStage = getMaxStage(players);
 		int minStage = getMinStage(players);
 
-		//System.out.println("Stage: " + minStage + "-" + maxStage);
-		for (int i = maxStage; i >= minStage; i--) { 
-			
-			for (Entry<Integer, Entity> e:  players.entrySet() ) {
+		// System.out.println("Stage: " + minStage + "-" + maxStage);
+		for (int i = maxStage; i >= minStage; i--) {
+
+			for (Entry<Integer, Entity> e : players.entrySet()) {
 				Entity player = e.getValue();
-				
+
 				if (player.getStageId() == (i)) {
 					if (groupedPlayerByStage.get(i) == null) {
 						groupedPlayerByStage.put(i, singletonList(player));
@@ -121,7 +118,7 @@ public class GamePlayService {
 
 				/**
 				 * Update Lap
-				 */  
+				 */
 				if (isFinishv2(entity)) {
 					entity.setLap(entity.getLap() + 1);
 					entity.setStagesPassed(new ArrayList<>());
@@ -130,7 +127,6 @@ public class GamePlayService {
 			}
 		}
 
-		
 		int minLap = getMinLap(playerSortedByStage);
 		int maxLap = getMaxLap(playerSortedByStage);
 
@@ -147,14 +143,14 @@ public class GamePlayService {
 
 	}
 
-	private boolean isFinishv2(Entity entity) { 
+	private boolean isFinishv2(Entity entity) {
 		return entity.getStagesPassed().size() == layoutService.getStagesCount()
 				&& entity.getStageId() == layoutService.getMinStage();
 	}
 
 	public int getMinLap(List<Entity> players) {
-		int minLap = Integer.MAX_VALUE;//getMaxLap(players);
-		for (int p = 0 ;p <players.size();p++) {
+		int minLap = Integer.MAX_VALUE;// getMaxLap(players);
+		for (int p = 0; p < players.size(); p++) {
 			Entity entity = players.get(p);
 			if (entity.getLap() < minLap) {
 				minLap = entity.getLap();
@@ -165,7 +161,7 @@ public class GamePlayService {
 
 	public int getMaxLap(List<Entity> players) {
 		int maxLap = 0;
-		for (int p = 0 ;p <players.size();p++) {
+		for (int p = 0; p < players.size(); p++) {
 			Entity entity = players.get(p);
 			if (entity.getLap() > maxLap) {
 				maxLap = entity.getLap();
@@ -174,36 +170,35 @@ public class GamePlayService {
 		return maxLap;
 	}
 
-
 	public List<Entity> sortPlayerInSameStage(List<Entity> players, Integer stageId) {
 		List<Entity> resultPlayer = new ArrayList<Entity>();
 
-		int side = SIDE_HORIZONTAL;
+		RoadSide side = RoadSide.SIDE_HORIZONTAL;
 
 		final EntityRoles stageRole = layoutService.getStageRole(stageId);
 		EntityRoles ROLE = EntityRoles.ROLE_LAYOUT_1;
 		if (stageRole == EntityRoles.ROLE_ROAD_DOWN) {
 			// TODO: maxY
-			ROLE = EntityRoles.ROLE_ROAD_DOWN; 
-			side = SIDE_VERTICAL;
+			ROLE = EntityRoles.ROLE_ROAD_DOWN;
+			side = RoadSide.SIDE_VERTICAL;
 		} else if (stageRole == EntityRoles.ROLE_ROAD_UP) {
 			// TODO: minY
-			ROLE = EntityRoles.ROLE_ROAD_UP; 
-			side = SIDE_VERTICAL;
+			ROLE = EntityRoles.ROLE_ROAD_UP;
+			side = RoadSide.SIDE_VERTICAL;
 		} else if (stageRole == EntityRoles.ROLE_ROAD_LEFT) {
-			// TODO: minX 
+			// TODO: minX
 			ROLE = EntityRoles.ROLE_ROAD_LEFT;
 		} else if (stageRole == EntityRoles.ROLE_ROAD_RIGHT) {
-			// TODO: maxX 
+			// TODO: maxX
 			ROLE = EntityRoles.ROLE_ROAD_RIGHT;
 		}
-		//System.out.println(new Date() +"Role:"+ROLE);
-		int maxX = getMaxCoordinateVal(players, XPOS);
-		int minX = getMinCoordinateVal(players, XPOS);
-		int maxY = getMaxCoordinateVal(players, YPOS);
-		int minY = getMinCoordinateVal(players, YPOS);
+		// System.out.println(new Date() +"Role:"+ROLE);
+		int maxX = getMaxCoordinateVal(players, CoordinateModule.XPOS);
+		int minX = getMinCoordinateVal(players, CoordinateModule.XPOS);
+		int maxY = getMaxCoordinateVal(players, CoordinateModule.YPOS);
+		int minY = getMinCoordinateVal(players, CoordinateModule.YPOS);
 //		//System.out.println("PLAYERS: "+players.size());
-		if (side == SIDE_HORIZONTAL) {
+		if (side == RoadSide. SIDE_HORIZONTAL) {
 			if (ROLE == EntityRoles.ROLE_ROAD_LEFT) {
 				for (int i = minX; i <= maxX; i++) {
 					for (Entity player : players) {
@@ -224,7 +219,7 @@ public class GamePlayService {
 				}
 			}
 
-		} else if (side == SIDE_VERTICAL) {
+		} else if (side == RoadSide.SIDE_VERTICAL) {
 			if (ROLE == EntityRoles.ROLE_ROAD_UP) {
 				for (int i = minY; i <= maxY; i++) {
 					for (Entity player : players) {
@@ -255,19 +250,20 @@ public class GamePlayService {
 	
 	/**
 	 * get maximum coordinate value
+	 * 
 	 * @param players
 	 * @param module
 	 * @return
 	 */
-	private static int getMaxCoordinateVal(List<Entity> players, int module) {
+	private static int getMaxCoordinateVal(List<Entity> players, CoordinateModule module) {
 		int maxVal = 0;
 		for (Entity entity : players) {
-			if (module == XPOS) {
+			if (module.equals(CoordinateModule.XPOS)) {
 				if (entity.getPhysical().getX() >= maxVal) {
 					maxVal = entity.getPhysical().getX();
 				}
 			}
-			if (module == YPOS) {
+			if (module.equals(CoordinateModule.YPOS)) {
 				if (entity.getPhysical().getY() >= maxVal) {
 					maxVal = entity.getPhysical().getY();
 				}
@@ -278,19 +274,20 @@ public class GamePlayService {
 
 	/**
 	 * get minimum coordinate value
+	 * 
 	 * @param players
 	 * @param module
 	 * @return
 	 */
-	private static int getMinCoordinateVal(List<Entity> players, int module) {
-		int maxVal = getMaxCoordinateVal(players, module);
+	private static int getMinCoordinateVal(List<Entity> players, CoordinateModule module) {
+		int maxVal = Integer.MAX_VALUE;// getMaxCoordinateVal(players, module);
 		for (Entity entity : players) {
-			if (module == XPOS) {
+			if (module.equals(CoordinateModule.XPOS)) {
 				if (entity.getPhysical().getX() <= maxVal) {
 					maxVal = entity.getPhysical().getX();
 				}
 			}
-			if (module == YPOS) {
+			if (module.equals(CoordinateModule.YPOS)) {
 				if (entity.getPhysical().getY() <= maxVal) {
 					maxVal = entity.getPhysical().getY();
 				}

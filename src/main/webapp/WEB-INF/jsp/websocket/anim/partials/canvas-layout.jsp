@@ -19,8 +19,8 @@
 	</tr>
 	<tr valign="top">
 		<td colspan="3" style="width: ${winW}px">
-			<div
-				style="background-image:url('<c:url value="/res/img/layout1.png" />'); background-repeat: no-repeat">
+			<div id="canvas-bg"
+				style="background-repeat: no-repeat">
 				<canvas id="tutorial" width="${winW}" height="${winH}"> </canvas>
 			</div>
 		</td>
@@ -34,7 +34,8 @@
 	</tr>
 </table>
 <script>
-	function xyz(){
+	function initCanvasEvent(){
+		_byId("canvas-bg").style.backgroundImage = "url('<c:url value="/res/img/layout1.png" />')";
 		_byId("btn-show-game").onclick = function(e){
 		 
 			showGameCanvas();
@@ -48,5 +49,5 @@
 		
 	}
 	
-	xyz();
+	initCanvasEvent();
 </script>

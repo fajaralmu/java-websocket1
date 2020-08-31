@@ -13,8 +13,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.fajar.dto.EntityRoles;
 import com.fajar.parameter.EntityParameter;
-import com.fajar.parameter.EntityRoles;
 import com.fajar.service.GameSettingService;
 import com.fajar.service.RealtimeService;
 import com.fajar.util.JSONUtil;

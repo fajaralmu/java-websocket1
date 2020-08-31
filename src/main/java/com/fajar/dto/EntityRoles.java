@@ -1,4 +1,4 @@
-package com.fajar.parameter;
+package com.fajar.dto;
 
 import java.util.Arrays;
 import java.util.List;

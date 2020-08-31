@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.fajar.dto.Entity;
+import com.fajar.dto.EntityRoles;
 import com.fajar.util.CollectionUtil;
 
 @Service
@@ -96,7 +97,7 @@ public class EntityRepository {
 	 * 
 	 * @param role
 	 */
-	public synchronized void removeByRole(Integer role, String serverName) {
+	public synchronized void removeByRole(EntityRoles role, String serverName) {
 		List<Entity> playerList = new ArrayList<>();
 		playerList.addAll(CollectionUtil.mapToList(getEntityMap(serverName)));
 		

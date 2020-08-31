@@ -187,6 +187,8 @@
 		}
 
 		function sucessJoin() {
+			_byId("name").disabled = true;
+			_byId("server-list").disabled = true;
 			joined = true;
 			setupControlBtn();
 		}

@@ -643,7 +643,7 @@ export class Game {
         //	console.log("USER",entity);
         printEntityInfo(this.entity, this.entities, this.playerPosition, this);
         this.window.document.title = "PLAYER: " + this.entity.name;
-        this.document.getElementById("name").disabled = true;
+        
         this.initAnimation(this);
         this.loadImages();
         alert(responseObject.responseMessage+"\nClick 'Connect' To Continue..");

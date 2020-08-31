@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Date;
 
 import com.fajar.annotation.Dto;
-import com.fajar.parameter.EntityRoles;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -36,9 +35,7 @@ public class Physical implements Serializable{
 	@Builder.Default
 	private EntityRoles role = EntityRoles.ROLE_PLAYER;
 	private Long period;
-	private Date lastUpdated;
-	
-
+	private Date lastUpdated; 
 	
 	
 	public Date getLastUpdated() {

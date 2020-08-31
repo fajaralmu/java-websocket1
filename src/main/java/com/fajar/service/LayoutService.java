@@ -16,9 +16,9 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
 import com.fajar.dto.Entity;
+import com.fajar.dto.EntityRoles;
 import com.fajar.dto.Physical;
 import com.fajar.parameter.EntityParameter;
-import com.fajar.parameter.EntityRoles;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.AllArgsConstructor;
