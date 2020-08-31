@@ -43,10 +43,7 @@ public class SocketController {
 	@PostMapping(value = "/game-app-simple/join", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public RealtimeResponse register(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
-		RealtimeResponse responseObject = realtimeUserService.registerUser(request);
-		String serverName = request.getParameter("server");
-		responseObject.setEntities(realtimeUserService.getPlayers(serverName));
-		sendResponse(serverName, responseObject);
+		RealtimeResponse responseObject = realtimeUserService.registerUser(request); 
 		return responseObject;
 	}
 
@@ -57,15 +54,8 @@ public class SocketController {
 		responseObject.setAvailableServers(gameSettingService.getServerList());
 		return responseObject;
 	}
-
-	// @MessageMapping("/move")
-	// @SendTo("/wsResp/players")
-	public RealtimeResponse sendResponse(String serverName, RealtimeResponse response) throws IOException {
-		webSocket.convertAndSend("/wsResp/players/" + serverName, response);
-		return response;
-	}
  
-
+	 
 	@MessageMapping("/move")
 	// @SendTo("/wsResp/players")
 	public void move(RealtimeRequest request) throws IOException {
@@ -81,8 +71,7 @@ public class SocketController {
 	@MessageMapping("/leave") 
 	public void leave(RealtimeRequest request) throws IOException {
 		System.out.println("Leaving APP.........");
-		RealtimeResponse response = realtimeUserService.disconnectUser(request);
-		sendResponse(request.getServerName(), response);
+		realtimeUserService.disconnectUser(request); 
 	}
 
 	@MessageMapping("/resetposition")

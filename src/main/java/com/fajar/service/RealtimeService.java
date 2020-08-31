@@ -1,5 +1,8 @@
 package com.fajar.service;
 
+import static com.fajar.util.CollectionUtil.mapToList;
+
+import java.io.IOException;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -17,7 +20,6 @@ import com.fajar.dto.OutputMessage;
 import com.fajar.dto.Physical;
 import com.fajar.dto.RealtimeRequest;
 import com.fajar.dto.RealtimeResponse;
-import com.fajar.util.CollectionUtil;
 import com.fajar.util.ThreadUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -117,6 +119,8 @@ public class RealtimeService {
 		responseObject.setEntity(user);
 		responseObject.setEntities(entityRepository.getPlayersAsList(serverName));
 
+		sendResponse(serverName, responseObject);
+
 		isRegistering = false;
 
 		System.out.println("----------------------REGISTER USER: " + user);
@@ -186,8 +190,12 @@ public class RealtimeService {
 		RealtimeResponse response = new RealtimeResponse("00", "OK");
 		response.setEntity(user);
 		response.setEntities(entityRepository.getPlayersAsList(request.getServerName()));
-		if (user != null)
+
+		if (user != null) {
 			response.setMessage(new OutputMessage(user.getName(), "Good bye! i'm leaving now", new Date().toString()));
+		}
+
+		sendResponse(request.getServerName(), response);
 		return response;
 	}
 
@@ -226,21 +234,19 @@ public class RealtimeService {
 		ThreadUtil.run(() -> {
 			final String serverName = request.getServerName();
 			final int entityId = request.getEntity().getId();
-			Entity entity = entityRepository.getPlayerByID(entityId, serverName);
-
-			if (entity.getId().equals(request.getEntity().getId())) {
-				int layoutId = request.getEntity().getLayoutId();
+			Entity entity = entityRepository.getPlayerByID(entityId, serverName); 
+			
+			try {
+				int layoutId = request.getEntity().getLayoutId(); 
+				int stageId = layoutService.getLayoutById(layoutId).getStageId();
+				entity.setStageId(stageId);
 				entity.setLayoutId(layoutId);
-				try {
-					int stageId = layoutService.getLayoutById(layoutId).getStageId();
-					entity.setStageId(stageId);
-				} catch (Exception ex) {
-					System.out.println(ex.getMessage() + "/**************NO STAGE HANDLED************/:" + layoutId);
-					entity.setStageId(0);
-				}
-
-				updateFromRequest(entity, request.getEntity());
+				
+			} catch (Exception ex) { 
+				entity.setStageId(0);
 			}
+
+			updateFromRequest(entity, request.getEntity());
 
 			entityRepository.updateUser(entity, serverName);
 
@@ -260,20 +266,26 @@ public class RealtimeService {
 		System.out.println("RESET POSITION " + entityId);
 
 		ThreadUtil.run(() -> {
+
 			String serverName = request.getServerName();
-			Entity e = entityRepository.getPlayerByID(entityId, serverName);
-
-			e.getPhysical().setX(layoutService.getStartX());
-			e.getPhysical().setY(layoutService.getStartY());
-			e.setForceUpdate(Boolean.TRUE);
-			e.setBreakLoop(true);
-
-			entityRepository.updateUser(e, serverName);
+			entityReset(entityId, serverName);
 			calculatePositionAndSend(serverName);
 
 			System.out.println("Success Reset Position");
 		});
 
+	}
+
+	private Entity entityReset(int entityId, String serverName) {
+		Entity e = entityRepository.getPlayerByID(entityId, serverName);
+
+		e.getPhysical().setX(layoutService.getStartX());
+		e.getPhysical().setY(layoutService.getStartY());
+		e.setForceUpdate(Boolean.TRUE);
+		e.setBreakLoop(true);
+
+		entityRepository.updateUser(e, serverName);
+		return e;
 	}
 
 	private void calculatePositionAndSend(String serverName) {
@@ -282,15 +294,26 @@ public class RealtimeService {
 		entityRepository.setPlayers(sortedEntities, serverName);
 
 		ThreadUtil.run(() -> {
-			RealtimeResponse response = new RealtimeResponse("00", "OK", serverName,
-					CollectionUtil.mapToList(sortedEntities));
-			webSocket.convertAndSend("/wsResp/players/" + serverName, response);
+			RealtimeResponse response = new RealtimeResponse("00", "OK", serverName, mapToList(sortedEntities));
+			sendResponse(serverName, response);
 		});
 	}
 
 	public List<Entity> getPlayers(String serverName) {
 
-		return CollectionUtil.mapToList(entityRepository.getPlayers(serverName));
+		return mapToList(entityRepository.getPlayers(serverName));
+	}
+
+	/**
+	 * Send to topic : wsResp/players/{serverName}
+	 * 
+	 * @param serverName
+	 * @param response
+	 * @return
+	 */
+	public RealtimeResponse sendResponse(String serverName, RealtimeResponse response) {
+		webSocket.convertAndSend("/wsResp/players/" + serverName, response);
+		return response;
 	}
 
 }
