@@ -2,8 +2,11 @@ package com.fajar.service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -52,10 +55,10 @@ public class GamePlayService {
 //		return players;
 //	}
 
-	private static int getMaxStage(List<Entity> players) {
+	private static int getMaxStage(Map<Integer, Entity> players) {
 		int maxStage = 0;
-		for (int p = 0 ;p <players.size();p++) {
-			Entity entity = players.get(p);
+		for (Entry<Integer, Entity> e : players.entrySet()) {
+			Entity entity = e.getValue();
 			if (entity.getStageId() > maxStage) {
 				maxStage = entity.getStageId();
 			}
@@ -63,10 +66,10 @@ public class GamePlayService {
 		return maxStage;
 	}
 
-	private static int getMinStage(List<Entity> players) {
+	private static int getMinStage(Map<Integer, Entity> players) {
 		int stage = getMaxStage(players); 
-		for (int p = 0 ;p <players.size();p++) {
-			Entity entity = players.get(p);
+		for (Entry<Integer, Entity> e : players.entrySet()) {
+			Entity entity = e.getValue();
 			if (entity.getStageId() <= stage) {
 				stage = entity.getStageId();
 			}
@@ -81,19 +84,20 @@ public class GamePlayService {
 
 	}
 
-	public List<Entity> calculateAndSortPlayer(String serverName) {
-		List<Entity> players = entityRepository.getPlayersAsList(serverName);
+	public LinkedHashMap<Integer, Entity> calculateAndSortPlayer(String serverName) {
+		Map<Integer, Entity> players = entityRepository.getPlayers(serverName);
 		List<Entity> playerSortedByStage = new ArrayList<Entity>();
-		List<Entity> finalSortedPlayer = new ArrayList<>(); 
+		LinkedHashMap<Integer, Entity> finalSortedPlayer = new LinkedHashMap<>(); 
 		Map<Integer, List<Entity>> groupedPlayerByStage = new HashMap<>();
 
 		int maxStage = getMaxStage(players); 
 		int minStage = getMinStage(players);
 
 		//System.out.println("Stage: " + minStage + "-" + maxStage);
-		for (int i = maxStage; i >= minStage; i--) {
-			for (int p = 0; p < players.size(); p++) {
-				Entity player = players.get(p);
+		for (int i = maxStage; i >= minStage; i--) { 
+			
+			for (Entry<Integer, Entity> e:  players.entrySet() ) {
+				Entity player = e.getValue();
 				
 				if (player.getStageId() == (i)) {
 					if (groupedPlayerByStage.get(i) == null) {
@@ -134,7 +138,7 @@ public class GamePlayService {
 			for (int p = 0; p < playerSortedByStage.size(); p++) {
 				Entity player = playerSortedByStage.get(p);
 				if (player.getLap() == i) {
-					finalSortedPlayer.add(player);
+					finalSortedPlayer.put(player.getId(), player);
 				}
 			}
 		}

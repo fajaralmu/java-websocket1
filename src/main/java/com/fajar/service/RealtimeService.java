@@ -1,6 +1,7 @@
 package com.fajar.service;
 
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Random;
 
@@ -16,6 +17,7 @@ import com.fajar.dto.OutputMessage;
 import com.fajar.dto.Physical;
 import com.fajar.dto.RealtimeRequest;
 import com.fajar.dto.RealtimeResponse;
+import com.fajar.util.CollectionUtil;
 import com.fajar.util.ThreadUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -243,9 +245,7 @@ public class RealtimeService {
 		return layoutService.getJsonListOfLayouts();
 	}
 
-	public List<Entity> getPlayers(String serverName) {
-		return entityRepository.getPlayersAsList(serverName);
-	}
+ 
 
 	public synchronized void resetPosition(RealtimeRequest request) {
 		int entityId = request.getEntity().getId();
@@ -271,12 +271,13 @@ public class RealtimeService {
 
 	private void calculatePositionAndSend(String serverName) {
 		 
-		List<Entity> sortedEntities = gamePlayService.calculateAndSortPlayer(serverName);
-		RealtimeResponse response = new RealtimeResponse("00", "OK", serverName, sortedEntities);
-
+		LinkedHashMap<Integer, Entity> sortedEntities = gamePlayService.calculateAndSortPlayer(serverName); 
 		entityRepository.setPlayers(sortedEntities, serverName);
 
-		webSocket.convertAndSend("/wsResp/players", response);
+		ThreadUtil.run(()->{
+			RealtimeResponse response = new RealtimeResponse("00", "OK", serverName, CollectionUtil.mapToList(sortedEntities)); 
+			webSocket.convertAndSend("/wsResp/players", response);
+		});
 	}
 
 }

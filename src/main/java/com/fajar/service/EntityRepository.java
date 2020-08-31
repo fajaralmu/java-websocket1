@@ -113,8 +113,7 @@ public class EntityRepository {
 		}
 	}
 
-	public void setPlayers(List<Entity> sortedEntities, String server) {
-		LinkedHashMap<Integer, Entity> entitiesMap = CollectionUtil.listToLinkedHashMap(sortedEntities);
+	public void setPlayers(LinkedHashMap<Integer, Entity> entitiesMap, String server) { 
 		this.entities.put(server, entitiesMap);
 	}
 
