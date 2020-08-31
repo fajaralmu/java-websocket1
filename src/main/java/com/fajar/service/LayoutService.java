@@ -18,15 +18,13 @@ import org.springframework.stereotype.Service;
 import com.fajar.dto.Entity;
 import com.fajar.dto.EntityRoles;
 import com.fajar.dto.Physical;
-import com.fajar.parameter.EntityParameter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 @Service
 @AllArgsConstructor
-@Slf4j
+//@Slf4j
 public class LayoutService {
 
 	private List<Entity> layouts = new ArrayList<>();

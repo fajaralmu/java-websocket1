@@ -1,12 +1,8 @@
 package com.fajar.dto;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 import com.fajar.annotation.Dto;
-import com.fajar.dto.RealtimeResponse.RealtimeResponseBuilder;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

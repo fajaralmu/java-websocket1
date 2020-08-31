@@ -16,12 +16,10 @@ export function  doConnect(obj) {
 			 
 		}
         //////////SUBSCRIBE//////////
-        obj.stompClient.subscribe('/wsResp/players', function (response) {
+        obj.stompClient.subscribe('/wsResp/players/'+serverName, function (response) {
             
             var respObject = JSON.parse(response.body);
-            if(serverName != respObject.serverName){
-                return;
-            }
+            
             obj.document.getElementById("ws-info").innerHTML = "<b>["+respObject.serverName+"]</b> url: "+ obj.stompClient.ws._transport.ws.url;
             obj.entities = respObject.entities; 
         });

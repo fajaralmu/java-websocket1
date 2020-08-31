@@ -3,7 +3,6 @@ package com.fajar.parameter;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fajar.util.JSONUtil;
 
 public class EntityParameter {
 
