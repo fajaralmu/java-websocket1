@@ -280,4 +280,9 @@ public class RealtimeService {
 		});
 	}
 
+	public List<Entity> getPlayers(String serverName) {
+		
+		return CollectionUtil.mapToList(entityRepository.getPlayers(serverName));
+	}
+
 }

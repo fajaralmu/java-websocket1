@@ -24,6 +24,7 @@ import com.fajar.dto.RealtimeRequest;
 import com.fajar.dto.RealtimeResponse;
 import com.fajar.service.GameSettingService;
 import com.fajar.service.RealtimeService;
+import com.fajar.util.CollectionUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -46,7 +47,8 @@ public class SocketController {
 	public RealtimeResponse register(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		 
 		RealtimeResponse responseObject = realtimeUserService.registerUser(request);
-		responseObject.setEntities(realtimeUserService.getPlayers(request.getParameter("server")));
+		String serverName =  request.getParameter("server");
+		responseObject.setEntities( realtimeUserService.getPlayers(serverName ));
 		join2(responseObject);
 		return responseObject;
 	}
