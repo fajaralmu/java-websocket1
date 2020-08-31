@@ -87,17 +87,17 @@ public class RealtimeService {
 	}
 
 	public synchronized RealtimeResponse registerUser(HttpServletRequest request) {
-		if(null ==  request.getParameter("name")) {
+		if (null == request.getParameter("name") || request.getParameter("name").trim().equals("")) {
 			return RealtimeResponse.failed("invalid Name");
 		}
-		
+
 		isRegistering = true;
-		
+
 		final String name = request.getParameter("name").replace(" ", "_");
 		final String serverName = request.getParameter("server");
-		
+
 		System.out.println("Will Join NAME:" + name + ",SERVER:" + serverName);
-		
+
 		Entity user = entityRepository.getPlayerByName(name, serverName);
 		String responseMessage;
 		if (user == null) {
@@ -112,21 +112,21 @@ public class RealtimeService {
 			entity.setColor("rgb(" + random.nextInt(200) + "," + random.nextInt(200) + "," + random.nextInt(200) + ")");
 
 			user.setPhysical(entity);
-			responseMessage = name+" Successfully joined";
-		}else {
-			responseMessage = "Welcome back, "+ name + " !"; 
+			responseMessage = name + " Successfully joined";
+		} else {
+			responseMessage = "Welcome back, " + name + " !";
 		}
-		 
+
 		entityRepository.addUser(user, serverName);
-		
+
 		RealtimeResponse responseObject = new RealtimeResponse();
 		responseObject.setResponseCode("00");
 		responseObject.setResponseMessage(responseMessage);
 		responseObject.setEntity(user);
-		responseObject.setEntities(entityRepository.getPlayers(serverName));
-		
+		responseObject.setEntities(entityRepository.getPlayersAsList(serverName));
+
 		isRegistering = false;
-		
+
 		System.out.println("----------------------REGISTER USER: " + user);
 
 		return responseObject;
@@ -174,7 +174,7 @@ public class RealtimeService {
 		entityRepository.removePlayer(userId, request.getServerName());
 		RealtimeResponse response = new RealtimeResponse("00", "OK");
 		response.setEntity(user);
-		response.setEntities(entityRepository.getPlayers(request.getServerName()));
+		response.setEntities(entityRepository.getPlayersAsList(request.getServerName()));
 		if (user != null)
 			response.setMessage(new OutputMessage(user.getName(), "Good bye! i'm leaving now", new Date().toString()));
 		return response;
@@ -184,13 +184,13 @@ public class RealtimeService {
 		Integer userId = request.getEntity().getId();
 		Entity user = entityRepository.getPlayerByID(userId, request.getServerName());
 		log.info("REQ: {}", request);
-		
+
 		if (user == null) {
-			RealtimeResponse response =   RealtimeResponse.failed("Invalid USER!"); 
+			RealtimeResponse response = RealtimeResponse.failed("Invalid USER!");
 			response.setMessage(new OutputMessage("SYSTEM", "INVALID USER", new Date().toString()));
 			return response;
 		}
-		
+
 		RealtimeResponse response = new RealtimeResponse("00", "OK");
 		response.setEntity(user);
 		response.setServerName(request.getServerName());
@@ -198,28 +198,28 @@ public class RealtimeService {
 		return response;
 	}
 
-	private List<Entity> loopAndProcessSelectedEntity(String serverName, int requestedId, EntityLoop handler) {
-		final List<Entity> entities = entityRepository.getPlayers(serverName);
-
-		loop: for (int i = 0; i < entities.size(); i++) {
-			final Entity entity = entities.get(i);
-			final Entity processedEntity = handler.process(entity);
-
-			if (null == entity.getId() || entity.getId().equals(requestedId) == Boolean.FALSE) {
-				continue loop;
-			}
-
-//			if(processedEntity.isContinueLoop()) {
-//				continue;
+//	private List<Entity> loopAndProcessSelectedEntity(String serverName, int requestedId, EntityLoop handler) {
+//		final List<Entity> entities = entityRepository.getPlayersAsList(serverName);
+//
+//		loop: for (int i = 0; i < entities.size(); i++) {
+//			final Entity entity = entities.get(i);
+//			final Entity processedEntity = handler.process(entity);
+//
+//			if (null == entity.getId() || entity.getId().equals(requestedId) == Boolean.FALSE) {
+//				continue loop;
 //			}
-			if (processedEntity.isBreakLoop()) {
-				entities.set(i, processedEntity);
-				break loop;
-			}
-			entities.set(i, processedEntity);
-		}
-		return entities;
-	}
+//
+////			if(processedEntity.isContinueLoop()) {
+////				continue;
+////			}
+//			if (processedEntity.isBreakLoop()) {
+//				entities.set(i, processedEntity);
+//				break loop;
+//			}
+//			entities.set(i, processedEntity);
+//		}
+//		return entities;
+//	}
 
 	static interface EntityLoop {
 		/**
@@ -229,36 +229,6 @@ public class RealtimeService {
 		 * @return
 		 */
 		public Entity process(Entity entity);
-	}
-
-	public synchronized void updatev2(RealtimeRequest request) {
-		ThreadUtil.run(() -> {
-			List<Entity> entities = loopAndProcessSelectedEntity(request.getServerName(), request.getEntity().getId(), (Entity entity) -> {
-
-				entity.setLayoutId(request.getEntity().getLayoutId());
-
-				try {
-					int stageId = layoutService.getLayoutById(request.getEntity().getLayoutId()).getStageId();
-					entity.setStageId(stageId);
-				} catch (Exception ex) {
-					System.out.println(ex.getMessage() + "/**************NO STAGE HANDLED************/:"
-							+ request.getEntity().getLayoutId());
-
-					entity.setStageId(0);
-				}
-
-				updateFromRequest(entity, request.getEntity());
-				entity.setBreakLoop(true);
-
-				return entity;
-			});
-
-			List<Entity> sortedEntities = gamePlayService.calculateAndSortPlayer(entities);
-			RealtimeResponse response = new RealtimeResponse("00", "OK", request.getServerName(), sortedEntities);
-
-			entityRepository.setPlayers(sortedEntities, request.getServerName());
-			webSocket.convertAndSend("/wsResp/players", response);
-		});
 	}
 
 	private static void updateFromRequest(Entity entity, Entity requestEntity) {
@@ -276,32 +246,27 @@ public class RealtimeService {
 	public synchronized void update(RealtimeRequest request) {
 
 		ThreadUtil.run(() -> {
-			final String serverName = request.getServerName();
-			final List<Entity> entities = entityRepository.getPlayers(serverName);
+			final String serverName = request.getServerName(); 
+			final int entityId = request.getEntity().getId();
+			Entity entity = entityRepository.getPlayerByID(entityId, serverName);
 
-			loop: for (int i = 0; i < entities.size(); i++) {
-				Entity entity = entities.get(i);
-
-				if (entity.getId().equals(request.getEntity().getId())) {
-					int layoutId = request.getEntity().getLayoutId();
-					entity.setLayoutId(layoutId);
-					try {
-						int stageId = layoutService.getLayoutById(layoutId).getStageId();
-						entity.setStageId(stageId);
-					} catch (Exception ex) {
-						System.out.println(ex.getMessage() + "/**************NO STAGE HANDLED************/:" + layoutId);
-
-						entity.setStageId(0);
-					}
-
-					updateFromRequest(entity, request.getEntity());
-
-					entities.set(i, entity);
-					break loop;
+			if (entity.getId().equals(request.getEntity().getId())) {
+				int layoutId = request.getEntity().getLayoutId();
+				entity.setLayoutId(layoutId);
+				try {
+					int stageId = layoutService.getLayoutById(layoutId).getStageId();
+					entity.setStageId(stageId);
+				} catch (Exception ex) {
+					System.out.println(ex.getMessage() + "/**************NO STAGE HANDLED************/:" + layoutId); 
+					entity.setStageId(0);
 				}
-			}
 
-			List<Entity> sortedEntities = gamePlayService.calculateAndSortPlayer(entities);
+				updateFromRequest(entity, request.getEntity()); 
+			}
+			
+			entityRepository.updateUser(entity, serverName);
+
+			List<Entity> sortedEntities = gamePlayService.calculateAndSortPlayer(serverName);
 			RealtimeResponse response = new RealtimeResponse("00", "OK", serverName, sortedEntities);
 
 			entityRepository.setPlayers(sortedEntities, serverName);
@@ -311,36 +276,55 @@ public class RealtimeService {
 
 	}
 
+	/**
+	 * 
+	 * loop: for (int i = 0; i < entities.size(); i++) { Entity entity =
+	 * entities.get(i);
+	 * 
+	 * if (entity.getId().equals(request.getEntity().getId())) { int layoutId =
+	 * request.getEntity().getLayoutId(); entity.setLayoutId(layoutId); try { int
+	 * stageId = layoutService.getLayoutById(layoutId).getStageId();
+	 * entity.setStageId(stageId); } catch (Exception ex) {
+	 * System.out.println(ex.getMessage() +":" + layoutId);
+	 * 
+	 * entity.setStageId(0); }
+	 * 
+	 * updateFromRequest(entity, request.getEntity());
+	 * 
+	 * entities.set(i, entity); break loop; } }
+	 * 
+	 */
 	public String getJsonListOfLayouts() {
 		return layoutService.getJsonListOfLayouts();
 	}
 
 	public List<Entity> getPlayers(String serverName) {
-		return entityRepository.getPlayers(serverName);
+		return entityRepository.getPlayersAsList(serverName);
 	}
 
 	public synchronized void resetPosition(RealtimeRequest request) {
 		int entityId = request.getEntity().getId();
-		System.out.println("RESET POSITION "+entityId);
+		System.out.println("RESET POSITION " + entityId);
 		ThreadUtil.run(() -> {
 			String serverName = request.getServerName();
-			List<Entity> entities = loopAndProcessSelectedEntity(serverName, entityId, (Entity e) -> {
-				e.getPhysical().setX(layoutService.getStartX());
-				e.getPhysical().setY(layoutService.getStartY());
-				e.setForceUpdate(Boolean.TRUE);
-				e.setBreakLoop(true);
-				return e;
-			});
+			Entity e = entityRepository.getPlayerByID(entityId, serverName);
+			 
+			e.getPhysical().setX(layoutService.getStartX());
+			e.getPhysical().setY(layoutService.getStartY());
+			e.setForceUpdate(Boolean.TRUE);
+			e.setBreakLoop(true);
+				 
+			entityRepository.updateUser(e, serverName);
 			
-			List<Entity> sortedEntities = gamePlayService.calculateAndSortPlayer(entities);
-			RealtimeResponse response = new RealtimeResponse("00", "OK", request.getServerName(), sortedEntities);  
-			
+			List<Entity> sortedEntities = gamePlayService.calculateAndSortPlayer(serverName);
+			RealtimeResponse response = new RealtimeResponse("00", "OK", request.getServerName(), sortedEntities);
+
 			entityRepository.setPlayers(sortedEntities, serverName);
-			Entity theEntity =  entityRepository.getPlayerByID(entityId, serverName);
-			
-			System.out.println("theEntity force Update;"+theEntity.isForceUpdate());
-			System.out.println("POSITION: "+ theEntity.getPhysical());
-			
+			Entity theEntity = entityRepository.getPlayerByID(entityId, serverName);
+
+			System.out.println("theEntity force Update;" + theEntity.isForceUpdate());
+			System.out.println("POSITION: " + theEntity.getPhysical());
+
 			webSocket.convertAndSend("/wsResp/players", response);
 			System.out.println("Success Reset posiiton");
 		});

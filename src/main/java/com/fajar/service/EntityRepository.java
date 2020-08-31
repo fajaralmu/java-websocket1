@@ -2,6 +2,7 @@ package com.fajar.service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -11,31 +12,33 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.fajar.dto.Entity;
+import com.fajar.util.CollectionUtil;
 
 @Service
 public class EntityRepository {
 
-	private final Map<String, List<Entity>> entities = new  HashMap<String, List<Entity>>();
-	
+	private final Map<String, Map<Integer, Entity>> entities = new HashMap<String, Map<Integer, Entity>>();
+
 	@Autowired
 	private GameSettingService gameSettingService;
-	
+
 	@PostConstruct
 	public void init() {
-		List<String>servers = gameSettingService.getServerList();
+		List<String> servers = gameSettingService.getServerList();
 		for (String string : servers) {
-			entities.put(string, new ArrayList<Entity>());
+			entities.put(string, new HashMap<>());
 		}
 	}
 
-	public synchronized void addUser(Entity user,final String server) {
-		if (getPlayerByName(user.getName(), server) == null)
-		{
-			entities.get(server).add(user);
+	public synchronized void addUser(Entity user, final String server) {
+		checkServer(server);
+		if (getPlayerByName(user.getName(), server) == null) {
+			entities.get(server).put(user.getId(), user);
 		}
 	}
 
-	public List<Entity> getPlayers(String server) {
+	public Map<Integer, Entity> getPlayers(String server) {
+		checkServer(server);
 		return entities.get(server);
 	}
 
@@ -46,12 +49,15 @@ public class EntityRepository {
 	 * @return
 	 */
 	public Entity getPlayerByID(Integer id, String server) {
-		for (Entity user : entities.get(server)) {
-			if (user.getId().equals(id)) {
-				return user;
-			}
+		Map<Integer, Entity> entitymap = getEntityMap(server);
+		if (entitymap != null) {
+			return entitymap.get(id);
 		}
 		return null;
+	}
+
+	private Map<Integer, Entity> getEntityMap(String serverName) {
+		return entities.get(serverName);
 	}
 
 	/**
@@ -61,11 +67,13 @@ public class EntityRepository {
 	 * @return
 	 */
 	public Entity getPlayerByName(String name, String server) {
-		for (Entity user : entities.get(server)) {
-			if (user.getName().equals(name)) {
-				return user;
+		Map<Integer, Entity> entitymap = getEntityMap(server);
+		for (Integer key : entitymap.keySet()) {
+			if (entitymap.get(key).getName().equals(name)) {
+				return entitymap.get(key);
 			}
 		}
+
 		return null;
 	}
 
@@ -74,13 +82,13 @@ public class EntityRepository {
 	 * 
 	 * @param id
 	 */
-	public void removePlayer(Integer id,String server) {
-		for (Entity realtimeUser : entities.get(server)) {
-			if (realtimeUser.getId().equals(id)) {
-				entities.get(server).remove(realtimeUser);
-				break;
-			}
+	public synchronized void removePlayer(Integer id, String server) {
+		try {
+			entities.get(server).remove(id);
+		} catch (Exception e) {
+
 		}
+
 	}
 
 	/**
@@ -88,29 +96,41 @@ public class EntityRepository {
 	 * 
 	 * @param role
 	 */
-	public synchronized void removeByRole(Integer role,String server) {
+	public synchronized void removeByRole(Integer role, String serverName) {
 		List<Entity> playerList = new ArrayList<>();
-		playerList.addAll(entities.get(server));
+		playerList.addAll(CollectionUtil.mapToList(getEntityMap(serverName)));
+		
 		for (Entity player : playerList) {
 			if (player.getPhysical().getRole().equals(role)) {
-				removePlayer(player.getId(),server);
+				removePlayer(player.getId(), serverName);
 			}
 		}
 	}
 
-	/**
-	 * add to list
-	 * @param entity
-	 */
-	public void add(Entity entity,String server) {
-		if (entities.get(server) == null) {
-			entities.put(server, new ArrayList<Entity>());
+	private void checkServer(String serverName) {
+		if (entities.get(serverName) == null) {
+			entities.put(serverName, new LinkedHashMap<>());
 		}
-		this.entities.get(server).add(entity);
 	}
 
-	public void setPlayers(List<Entity> sortedEntities, String server) { 
-		this.entities.put(server,sortedEntities);
+	public void setPlayers(List<Entity> sortedEntities, String server) {
+		LinkedHashMap<Integer, Entity> entitiesMap = CollectionUtil.listToLinkedHashMap(sortedEntities);
+		this.entities.put(server, entitiesMap);
+	}
+
+	public List<Entity> getPlayersAsList(String serverName) {
+		Map<Integer, Entity> players = getPlayers(serverName);
+		return CollectionUtil.mapToList(players);
+	}
+
+	public void updateUser(Entity entity, String serverName) {
+		try {
+			entities.get(serverName).put(entity.getId(), entity);
+		}catch (Exception e) {
+			e.printStackTrace();
+//			System.out.println("Error updating entity");
+		}
+		
 	}
 
 }

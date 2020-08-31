@@ -21,6 +21,9 @@ public class GamePlayService {
 
 	@Autowired
 	private LayoutService layoutService;
+	@Autowired
+	private EntityRepository entityRepository;
+	
 	
 	static final int XPOS = 1, YPOS = 2;
 
@@ -78,7 +81,8 @@ public class GamePlayService {
 
 	}
 
-	public List<Entity> calculateAndSortPlayer(List<Entity> players) {
+	public List<Entity> calculateAndSortPlayer(String serverName) {
+		List<Entity> players = entityRepository.getPlayersAsList(serverName);
 		List<Entity> playerSortedByStage = new ArrayList<Entity>();
 		List<Entity> finalSortedPlayer = new ArrayList<>(); 
 		Map<Integer, List<Entity>> groupedPlayerByStage = new HashMap<>();
