@@ -73,7 +73,8 @@
 		 
 		<!-- INPUTS -->
 		<p></p>
-		<table  class="table-borderless" style="table-layout: fixed; width: 1000px; " valign="top">
+		<div id="wait"><h2>Please Wait..</h2></div>
+		<table id="input-layout" hidden="true" class="table-borderless" style="table-layout: fixed; width: 1000px; " valign="top">
 			<tr valign="top">
 				<td>Select Room</td>
 				<td><select class="form-control" id="server-list">
@@ -106,8 +107,13 @@
 					<h4>Press 'R' to reset position!</h4>
 				</td>
 			</tr>
+			<tr>
+				<td colspan="3">
+					<p>Connected: <span id="connect-info"></span></p>
+				</td>
+			</tr>
 		</table>
-		<p>Connected: <span id="connect-info"></span></p>
+		
 		<!-- <h2>Touchpad-Control</h2><div id="touchpad-control"  </div> -->
 	</div>
 
@@ -331,7 +337,11 @@
 		}
 		
 		function informGameReady(){
-			doInformGameReady().then(function(){ });
+			doInformGameReady().then(function(){ 
+				_byId("input-layout").removeAttribute("hidden");
+				_byId("wait").setAttribute("hidden", "true");
+				
+			});
 		} 
 		
 		function doInformGameReady(){

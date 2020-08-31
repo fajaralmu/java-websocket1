@@ -80,13 +80,13 @@ public class RealtimeService {
 		thread.start();
 	}
 
-	private boolean intersectLayout(Entity player) {
-		for (Entity layoutItem : layoutService.getLayouts()) {
-			if (Physical.intersect(player, layoutItem))
-				return true;
-		}
-		return false;
-	}
+//	private boolean intersectLayout(Entity player) {
+//		for (Entity layoutItem : layoutService.getLayouts()) {
+//			if (Physical.intersect(player, layoutItem))
+//				return true;
+//		}
+//		return false;
+//	}
 
 	public synchronized RealtimeResponse registerUser(HttpServletRequest request) {
 		if (null == request.getParameter("name") || request.getParameter("name").trim().equals("")) {
