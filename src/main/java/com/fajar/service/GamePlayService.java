@@ -153,7 +153,7 @@ public class GamePlayService {
 	}
 
 	public int getMinLap(List<Entity> players) {
-		int minLap = getMaxLap(players);
+		int minLap = Integer.MAX_VALUE;//getMaxLap(players);
 		for (int p = 0 ;p <players.size();p++) {
 			Entity entity = players.get(p);
 			if (entity.getLap() < minLap) {
