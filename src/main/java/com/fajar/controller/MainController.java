@@ -44,13 +44,13 @@ public class MainController {
 
 	}
 
-	@RequestMapping(value = { "redirect/{protocol}/{link}/{domainExt}" }, method = RequestMethod.GET)
+	@RequestMapping(value = { "redirect/{protocol}/{link}/{domainExt}", "redirect/{protocol}/{link}/{domainExt}/{additionals}" }, method = RequestMethod.GET)
 	public void goTo(@PathVariable(name = "protocol") String protocol, @PathVariable(name = "link") String link,
-			@PathVariable(name = "domainExt") String domainExt, HttpServletRequest request,
+			@PathVariable(name = "domainExt") String domainExt ,  @PathVariable(name = "additionals", required = false) String additionals, HttpServletRequest request,
 			HttpServletResponse response) throws IOException {
-		response.setContentType("text/html");
+		 
 		try {
-			writeResponse(protocol, link, domainExt, request, response);
+			writeResponse(protocol, link, domainExt, additionals, request, response);
 			response.setStatus(200);
 		} catch (Exception e) {
 			response.getWriter().write("ERROR BRO: " + e.getMessage());
@@ -58,16 +58,22 @@ public class MainController {
 
 	}
 
-	private void writeResponse(String protocol, String link, String domainExt,  HttpServletRequest request, HttpServletResponse response)
+	private void writeResponse(String protocol, String link, String domainExt, String additionals,  HttpServletRequest request, HttpServletResponse response)
 			throws IOException {
 		String fullPath =protocol + "://" + link + "." + domainExt;
+		String fullPathStringified =protocol + ":\\/\\/" + link + "." + domainExt;
+		if(additionals != null) {
+			fullPath+="/"+additionals;
+		}
 		System.out.println("redirecting to: " + fullPath);
 		ResponseEntity<String> result = restTemplate.getForEntity(fullPath,
 				String.class);
 		String html = (result.getBody());
 		String replacement = request.getContextPath()+"/redirect/"+protocol+"/"+link+"/"+domainExt;
-		
+		String replacementStringified = request.getContextPath()+"\\/redirect\\/"+protocol+"\\/"+link+"\\/"+domainExt;
+		response.setContentType(result.getHeaders().getContentType().getType());
 		html = html.replace(fullPath, replacement);
+		html = html.replace(fullPathStringified, replacementStringified);
 		response.getWriter().write(html);
 	}
 }
