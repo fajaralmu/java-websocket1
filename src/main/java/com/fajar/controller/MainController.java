@@ -50,7 +50,7 @@ public class MainController {
 			HttpServletResponse response) throws IOException {
 		response.setContentType("text/html");
 		try {
-			writeResponse(protocol, link, domainExt, response);
+			writeResponse(protocol, link, domainExt, request, response);
 			response.setStatus(200);
 		} catch (Exception e) {
 			response.getWriter().write("ERROR BRO: " + e.getMessage());
@@ -58,12 +58,16 @@ public class MainController {
 
 	}
 
-	private void writeResponse(String protocol, String link, String domainExt, HttpServletResponse response)
+	private void writeResponse(String protocol, String link, String domainExt,  HttpServletRequest request, HttpServletResponse response)
 			throws IOException {
-		System.out.println("redirecting to: " + protocol + "://" + link + "." + domainExt);
-		ResponseEntity<String> result = restTemplate.getForEntity(protocol + "://" + link + "." + domainExt,
+		String fullPath =protocol + "://" + link + "." + domainExt;
+		System.out.println("redirecting to: " + fullPath);
+		ResponseEntity<String> result = restTemplate.getForEntity(fullPath,
 				String.class);
-		System.out.println(result.getBody());
-		response.getWriter().write(result.getBody());
+		String html = (result.getBody());
+		String replacement = request.getContextPath()+"/redirect/"+protocol+"/"+link+"/"+domainExt;
+		
+		html = html.replace(fullPath, replacement);
+		response.getWriter().write(html);
 	}
 }
